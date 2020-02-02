@@ -118,7 +118,7 @@ func wordPrefix(w string) string {
 		}
 	}
 
-	// DictionaryParser::isCyrillic(w[0]) (TODO: find a test case for this)
+	// DictionaryParser::isCyrillic(w[0])
 	// skip if true
 	if !(len(r) != 0 && unicode.Is(unicode.Cyrillic, r[0])) {
 		// add an 'a' for right padding if not 2 chars
@@ -127,7 +127,7 @@ func wordPrefix(w string) string {
 		}
 	}
 
-	// DictionaryParser::isCyrillic(w[0]) (TODO: find a test case for this)
+	// DictionaryParser::isCyrillic(w[0])
 	// skip if != false
 	switch {
 	case !(len(r) != 0 && unicode.Is(unicode.Cyrillic, r[0])):
