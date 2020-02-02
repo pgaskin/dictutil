@@ -48,3 +48,75 @@ steps:
 trigger:
   event:
     exclude: [promote]
+
+---
+
+name: cross
+kind: pipeline
+type: docker
+
+steps:
+- name: marisa-windows-386
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.6-main
+  entrypoint: ["/bin/bash"]
+  commands:
+  - set -e
+  - apt-get update -qqy && apt-get install -qqy automake autoconf libtool wget tar make file
+  - mkdir -p marisa/marisa-windows-386/out
+  - cd marisa/marisa-windows-386 && wget -O- https://github.com/s-yata/marisa-trie/archive/970b20c141f11d9d7572a6bb8d0488f2e0520e22.tar.gz | tar xzf - --strip-components=1 && cd ../..
+  - cd marisa/marisa-windows-386 && autoreconf -i && cd ../..
+  - cd marisa/marisa-windows-386 && ./configure --enable-shared=no --enable-static=yes --prefix=/ --host=i686-w64-mingw32 LDFLAGS="-static -static-libgcc -static-libstdc++" && cd ../..
+  - cd marisa/marisa-windows-386 && make && cd ../..
+  - cd marisa/marisa-windows-386 && make install DESTDIR=$PWD/out && cd ../..
+  - find marisa/marisa-windows-386/out | xargs file
+- name: marisa-linux-amd64
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.6-main
+  entrypoint: ["/bin/bash"]
+  commands:
+  - set -e
+  - apt-get update -qqy && apt-get install -qqy automake autoconf libtool wget tar make file
+  - mkdir -p marisa/marisa-linux-amd64/out
+  - cd marisa/marisa-linux-amd64 && wget -O- https://github.com/s-yata/marisa-trie/archive/970b20c141f11d9d7572a6bb8d0488f2e0520e22.tar.gz | tar xzf - --strip-components=1 && cd ../..
+  - cd marisa/marisa-linux-amd64 && autoreconf -i && cd ../..
+  - cd marisa/marisa-linux-amd64 && ./configure --enable-shared=no --enable-static=yes --prefix=/ --host=x86_64-linux-gnu LDFLAGS="-static -static-libgcc -static-libstdc++" && cd ../..
+  - cd marisa/marisa-linux-amd64 && make && cd ../..
+  - cd marisa/marisa-linux-amd64 && make install DESTDIR=$PWD/out && cd ../..
+  - find marisa/marisa-linux-amd64/out | xargs file
+- name: marisa-linux-arm
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.6-arm
+  entrypoint: ["/bin/bash"]
+  commands:
+  - set -e
+  - apt-get update -qqy && apt-get install -qqy automake autoconf libtool wget tar make file
+  - mkdir -p marisa/marisa-linux-arm/out
+  - cd marisa/marisa-linux-arm && wget -O- https://github.com/s-yata/marisa-trie/archive/970b20c141f11d9d7572a6bb8d0488f2e0520e22.tar.gz | tar xzf - --strip-components=1 && cd ../..
+  - cd marisa/marisa-linux-arm && autoreconf -i && cd ../..
+  - cd marisa/marisa-linux-arm && ./configure --enable-shared=no --enable-static=yes --prefix=/ --host=arm-linux-gnueabihf LDFLAGS="-static -static-libgcc -static-libstdc++" && cd ../..
+  - cd marisa/marisa-linux-arm && make && cd ../..
+  - cd marisa/marisa-linux-arm && make install DESTDIR=$PWD/out && cd ../..
+  - find marisa/marisa-linux-arm/out | xargs file
+- name: marisa-darwin-amd64
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.6-darwin
+  entrypoint: ["/bin/bash"]
+  commands:
+  - set -e
+  - apt-get update -qqy && apt-get install -qqy automake autoconf libtool wget tar make file
+  - mkdir -p marisa/marisa-darwin-amd64/out
+  - cd marisa/marisa-darwin-amd64 && wget -O- https://github.com/s-yata/marisa-trie/archive/970b20c141f11d9d7572a6bb8d0488f2e0520e22.tar.gz | tar xzf - --strip-components=1 && cd ../..
+  - cd marisa/marisa-darwin-amd64 && autoreconf -i && cd ../..
+  - cd marisa/marisa-darwin-amd64 && ./configure --enable-shared=no --enable-static=yes --prefix=/ --host=x86_64-darwin CC="o64-clang" CXX="o64-clang++" LDFLAGS="-static-libstdc++" && cd ../..
+  - cd marisa/marisa-darwin-amd64 && make && cd ../..
+  - cd marisa/marisa-darwin-amd64 && make install DESTDIR=$PWD/out && cd ../..
+  - find marisa/marisa-darwin-amd64/out | xargs file
+# TODO: dictutil, dictgen
+- name: upload-marisa
+  image: debian:1.13-buster
+  commands:
+  - apt update -qqy >/dev/null && apt install -qqy curl tar xz-utils >/dev/null
+  - tar cvJf marisa-cross.txz . -C marisa
+  - curl -F'file=@marisa-cross.txz' https://0x0.st
+  depends_on: [marisa-windows-386, marisa-linux-amd64, marisa-linux-arm, marisa-darwin-amd64]
+
+trigger:
+  event:
+    exclude: [promote]
