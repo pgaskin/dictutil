@@ -15,6 +15,6 @@ dictutil is a low-level tool to unpack, pack, and perform other operations on Ko
 - Coming soon.
 
 ## dictgen
-dictgen is an easy-to-use tool/library to generate Kobo dictionaries from scratch or use in conversion scripts.
+dictgen is an easy-to-use tool/library to generate Kobo dictionaries from scratch or use in conversion scripts. It deals with all the unusual bits (e.g. variant capitalization, prefix generation, etc) for you and gives warnings when it can't.
 
 - Coming soon.

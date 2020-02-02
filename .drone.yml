@@ -14,3 +14,18 @@ steps:
 
 exclude:
   event: [promote]
+
+---
+
+name: dictgen
+kind: pipeline
+type: docker
+
+steps:
+- name: test
+  image: golang:1.13-buster
+  commands:
+  - go test -coverprofile=/dev/null -v ./dictgen
+
+exclude:
+  event: [promote]
