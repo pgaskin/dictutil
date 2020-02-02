@@ -1,0 +1,35 @@
+%module marisa
+
+%include <typemaps.i>
+%include <stl.i>
+%include <std_string.i>
+%include <exception.i>
+
+%{
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include "marisa_swig.h"
+%}
+
+%apply (char *STRING, size_t LENGTH) { (const char *ptr, size_t length) };
+
+%exception {
+    try {
+        errno = 0;
+        $action;
+    } catch (const marisa::Exception &ex) {
+        printf("%s\n", strerror(errno));
+        _swig_gopanic(ex.what());
+    } catch (...) {
+        _swig_gopanic("Unknown exception");
+    }
+}
+
+%rename(pushBackStringWithWeight) marisa_swig::Keyset::pushBack(const char *, size_t, float);
+%rename(pushBackString) marisa_swig::Keyset::pushBack(const char *, size_t);
+
+%rename(setQueryId) marisa_swig::Agent::setQuery(size_t);
+%rename(setQueryString) marisa_swig::Agent::setQuery(const char *, size_t);
+
+%include "marisa_swig.h"

@@ -29,3 +29,19 @@ steps:
 
 exclude:
   event: [promote]
+
+---
+
+name: marisa
+kind: pipeline
+type: docker
+
+steps:
+- name: test
+  image: golang:1.13-buster
+  commands:
+  - apt-get update -qqy && apt-get install -qqy swig4.0 libmarisa-dev
+  - go test -v ./marisa
+
+exclude:
+  event: [promote]
