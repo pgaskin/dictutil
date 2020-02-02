@@ -1,0 +1,13 @@
+name: kobodict
+kind: pipeline
+type: docker
+
+steps:
+- name: test
+  image: golang:1.13-buster
+  commands:
+  - go test -coverprofile=/dev/null -v ./kobodict
+- name: bench
+  image: golang:1.13-buster
+  commands:
+  - go test -bench=. -benchmem ./kobodict
