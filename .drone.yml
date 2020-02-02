@@ -95,27 +95,27 @@ steps:
   - cd marisa/marisa-linux-arm && make && cd ../..
   - cd marisa/marisa-linux-arm && make install DESTDIR=$PWD/out && cd ../..
   - find marisa/marisa-linux-arm/out | xargs file
-- name: marisa-darwin-amd64
-  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.6-darwin
-  entrypoint: ["/bin/bash"]
-  commands:
-  - set -e
-  - apt-get update -qqy && apt-get install -qqy automake autoconf libtool wget tar make file
-  - mkdir -p marisa/marisa-darwin-amd64/out
-  - cd marisa/marisa-darwin-amd64 && wget -O- https://github.com/s-yata/marisa-trie/archive/970b20c141f11d9d7572a6bb8d0488f2e0520e22.tar.gz | tar xzf - --strip-components=1 && cd ../..
-  - cd marisa/marisa-darwin-amd64 && autoreconf -i && cd ../..
-  - cd marisa/marisa-darwin-amd64 && ./configure --enable-shared=no --enable-static=yes --prefix=/ --host=x86_64-darwin CC="o64-clang" CXX="o64-clang++" LDFLAGS="-static-libstdc++" && cd ../..
-  - cd marisa/marisa-darwin-amd64 && make && cd ../..
-  - cd marisa/marisa-darwin-amd64 && make install DESTDIR=$PWD/out && cd ../..
-  - find marisa/marisa-darwin-amd64/out | xargs file
+#- name: marisa-darwin-amd64
+#  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.6-darwin
+#  entrypoint: ["/bin/bash"]
+#  commands:
+#  - set -e
+#  - apt-get update -qqy && apt-get install -qqy automake autoconf libtool wget tar make file
+#  - mkdir -p marisa/marisa-darwin-amd64/out
+#  - cd marisa/marisa-darwin-amd64 && wget -O- https://github.com/s-yata/marisa-trie/archive/970b20c141f11d9d7572a6bb8d0488f2e0520e22.tar.gz | tar xzf - --strip-components=1 && cd ../..
+#  - cd marisa/marisa-darwin-amd64 && autoreconf -i && cd ../..
+#  - cd marisa/marisa-darwin-amd64 && ./configure --enable-shared=no --enable-static=yes --prefix=/ --host=x86_64-darwin CC="o64-clang" CXX="o64-clang++" AR="x86_64-apple-darwin15-ar" LDFLAGS="-static-libstdc++" && cd ../..
+#  - cd marisa/marisa-darwin-amd64 && make && cd ../..
+#  - cd marisa/marisa-darwin-amd64 && make install DESTDIR=$PWD/out && cd ../..
+#  - find marisa/marisa-darwin-amd64/out | xargs file
 # TODO: dictutil, dictgen
 - name: upload-marisa
-  image: debian:1.13-buster
+  image: debian:buster
   commands:
   - apt update -qqy >/dev/null && apt install -qqy curl tar xz-utils >/dev/null
-  - tar cvJf marisa-cross.txz . -C marisa
+  - tar cvJf marisa-cross.txz -C marisa ./*/out
   - curl -F'file=@marisa-cross.txz' https://0x0.st
-  depends_on: [marisa-windows-386, marisa-linux-amd64, marisa-linux-arm, marisa-darwin-amd64]
+  depends_on: [marisa-windows-386, marisa-linux-amd64, marisa-linux-arm]
 
 trigger:
   event:
