@@ -12,8 +12,9 @@ steps:
   commands:
   - go test -bench=. -benchmem ./kobodict
 
-exclude:
-  event: [promote]
+trigger:
+  event:
+    exclude: [promote]
 
 ---
 
@@ -27,8 +28,9 @@ steps:
   commands:
   - go test -cover -v ./dictgen
 
-exclude:
-  event: [promote]
+trigger:
+  event:
+    exclude: [promote]
 
 ---
 
@@ -40,8 +42,9 @@ steps:
 - name: test
   image: golang:1.13-buster
   commands:
-  - apt-get update -qqy && apt-get install -qqy swig4.0 libmarisa-dev
+  - apt-get update -qqy && apt-get install -qqy swig libmarisa-dev
   - go test -v ./marisa
 
-exclude:
-  event: [promote]
+trigger:
+  event:
+    exclude: [promote]
