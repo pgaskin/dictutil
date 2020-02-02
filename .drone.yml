@@ -11,3 +11,6 @@ steps:
   image: golang:1.13-buster
   commands:
   - go test -bench=. -benchmem ./kobodict
+
+exclude:
+  event: [promote]
