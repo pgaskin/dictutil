@@ -6,7 +6,7 @@ steps:
 - name: test
   image: golang:1.13-buster
   commands:
-  - go test -coverprofile=/dev/null -v ./kobodict
+  - go test -cover -v ./kobodict
 - name: bench
   image: golang:1.13-buster
   commands:
@@ -25,7 +25,7 @@ steps:
 - name: test
   image: golang:1.13-buster
   commands:
-  - go test -coverprofile=/dev/null -v ./dictgen
+  - go test -cover -v ./dictgen
 
 exclude:
   event: [promote]
