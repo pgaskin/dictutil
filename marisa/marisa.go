@@ -1,5 +1,7 @@
 package marisa
 
-// #cgo CPPFLAGS: -I.
-// #cgo LDFLAGS: -lmarisa
+//go:generate go run -tags libmarisa_generate libmarisa_generate.go
+
+// #cgo CPPFLAGS:
+// #cgo LDFLAGS:
 import "C"
