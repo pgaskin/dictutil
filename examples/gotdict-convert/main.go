@@ -23,7 +23,7 @@ func main() {
 	}
 
 	fmt.Fprintf(os.Stderr, "Parsing gotdict.\n")
-	gd, err := ParseGOTDict(filepath.Join(*gotdict, "_definitions"), "")
+	gd, err := ParseGOTDict(filepath.Join(*gotdict, "_definitions"), "") //, filepath.Join(*gotdict, "images"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: parse gotdict: %v\n", err)
 		os.Exit(1)

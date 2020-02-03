@@ -124,9 +124,9 @@ func ParseGOTDict(defdir, imgdir string) (GOTDict, error) {
 		def.Definition = string(md)
 
 		if imgdir == "" {
-			def.Definition = regexp.MustCompile(`(<p>\s*Map on [Nn]ext [Pp]age[.]?\s*</p>|\s+[(]Map on [Nn]ext [Pp]age[.]?[)]|<img[^>]+)`).ReplaceAllLiteralString(def.Definition, "")
+			def.Definition = regexp.MustCompile(`(\s*Map on [Nn]ext [Pp]age\.?)|(\s*\(Map on [Nn]ext [Pp]age\.?\))|(!\[[^]]*\]\([^)]+\))`).ReplaceAllLiteralString(def.Definition, "")
 		} else {
-			for _, img := range regexp.MustCompile(`img src="(images/)?([^"]+)"`).FindAllStringSubmatch(def.Definition, -1) {
+			for _, img := range regexp.MustCompile(`!\[[^]]*\]\((images/)?([^)]+)\)`).FindAllStringSubmatch(def.Definition, -1) {
 				if img[1] == "" {
 					return nil, fmt.Errorf("parse %s: unknown image path %#v", fi.Name(), img[1])
 				} else if imgbuf, err := ioutil.ReadFile(filepath.Join(imgdir, img[2])); err != nil {
