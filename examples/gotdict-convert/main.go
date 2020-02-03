@@ -12,7 +12,7 @@ import (
 func main() {
 	pflag.CommandLine.SortFlags = false
 	gotdict := pflag.StringP("gotdict", "g", "."+string(os.PathSeparator)+"gotdict", "The path to the local copy of github.com/wjdp/gotdict.")
-	output := pflag.StringP("output", "o", "."+string(os.PathSeparator)+"gotdict.df", "The output file path (will be overwritten if it exists) (- is stdout)")
+	output := pflag.StringP("output", "o", "."+string(os.PathSeparator)+"gotdict.df", "The output filename (will be overwritten if it exists) (- is stdout)")
 	help := pflag.BoolP("help", "h", false, "Show this help text")
 	pflag.Parse()
 
@@ -22,6 +22,7 @@ func main() {
 		return
 	}
 
+	fmt.Fprintf(os.Stderr, "Parsing gotdict.\n")
 	gd, err := ParseGOTDict(filepath.Join(*gotdict, "_definitions"), "")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: parse gotdict: %v\n", err)
@@ -29,6 +30,7 @@ func main() {
 		return
 	}
 
+	fmt.Fprintf(os.Stderr, "Transforming definitions.\n")
 	var df dictgen.DictFile
 	for _, d := range gd {
 		var hwi string
@@ -44,13 +46,15 @@ func main() {
 		})
 	}
 
-	if *output == "-" {
+	fmt.Fprintf(os.Stderr, "Writing dictfile.\n")
+	switch *output {
+	case "-":
 		if err := df.WriteDictFile(os.Stdout); err != nil {
 			fmt.Fprintf(os.Stderr, "Error: write dictfile: %v\n", err)
 			os.Exit(1)
 			return
 		}
-	} else {
+	default:
 		f, err := os.OpenFile(*output, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: create dictfile: %v\n", err)
@@ -72,6 +76,6 @@ func main() {
 		}
 	}
 
-	fmt.Fprintf(os.Stderr, "Successfully converted %d entries from %s to %s.\n", len(df), *gotdict, *output)
+	fmt.Fprintf(os.Stderr, "Successfully converted %d entries from gotdict %s to dictfile %s.\n", len(df), *gotdict, *output)
 	os.Exit(0)
 }
