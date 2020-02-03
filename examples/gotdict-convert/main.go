@@ -16,7 +16,7 @@ func main() {
 	help := pflag.BoolP("help", "h", false, "Show this help text")
 	pflag.Parse()
 
-	if *help || len(os.Args) != 1 {
+	if *help || pflag.NArg() != 0 {
 		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\nOptions:\n%s\nTo convert the resulting dictfile into a dictzip, use dictgen.\n", os.Args[0], pflag.CommandLine.FlagUsages())
 		os.Exit(0)
 		return
