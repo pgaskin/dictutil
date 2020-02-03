@@ -23,3 +23,8 @@ dictgen is an easy-to-use tool/library to generate Kobo dictionaries from scratc
 These are some tools which make use of dictutil.
 
 - **[gotdict-convert](./examples/gotdict-convert):** Converts [github.com/wjdp/gotdict](https://github.com/wjdp/gotdict) to a dictfile.
+
+## other
+
+- **[dictword-test](https://github.com/geek1011/kobo-mods/tree/master/dictword-test):** Calculates word prefixes using libnickel.
+- **[marisa](https://github.com/geek1011/dictutil/tree/master/marisa):** Marisa bindings for Go.
