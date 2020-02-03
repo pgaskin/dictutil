@@ -151,6 +151,8 @@ func ParseDictFile(r io.Reader) (DictFile, error) {
 	return df, nil
 }
 
+// WriteDictFile validates the DictFile and writes it to w in the dictfile
+// format.
 func (df DictFile) WriteDictFile(w io.Writer) error {
 	if err := df.Validate(); err != nil {
 		return err
@@ -169,6 +171,8 @@ func (df DictFile) WriteDictFile(w io.Writer) error {
 	return nil
 }
 
+// WriteKoboHTML validates the DictFile and writes it to w in the dicthtml
+// format.
 func (df DictFile) WriteKoboHTML(w io.Writer) error {
 	if err := df.Validate(); err != nil {
 		return err
@@ -195,6 +199,7 @@ func (df DictFile) WriteKoboHTML(w io.Writer) error {
 	return nil
 }
 
+// Validate validates the entries in the DictFile.
 func (df DictFile) Validate() error {
 	// TODO: check for empty words and variants
 	// TODO: fields can't have </w </html <var <variant </var </variant name="
