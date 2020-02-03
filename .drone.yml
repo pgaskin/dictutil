@@ -82,3 +82,25 @@ steps:
 trigger:
   event:
     exclude: [promote]
+
+---
+
+name: gotdict-convert
+kind: pipeline
+type: docker
+
+steps:
+- name: build
+  image: golang:1.13-buster
+  commands:
+  - go build -o gotdict-convert ./examples/gotdict-convert
+- name: convert
+  image: golang:1.13-buster
+  commands:
+  - git clone https://github.com/wjdp/gotdict
+  - ./gotdict-convert
+  - wc -c gotdict.df
+
+trigger:
+  event:
+    exclude: [promote]
