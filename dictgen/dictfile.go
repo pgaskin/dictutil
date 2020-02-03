@@ -4,12 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"sort"
 	"strings"
 	"text/template"
-
-	"github.com/geek1011/dictutil/kobodict"
-	"gopkg.in/russross/blackfriday.v2"
 )
 
 type DictFile []*DictFileEntry
@@ -151,6 +147,14 @@ func ParseDictFile(r io.Reader) (DictFile, error) {
 	return df, nil
 }
 
+// Validate validates the entries in the DictFile.
+func (df DictFile) Validate() error {
+	// TODO: check for empty words and variants
+	// TODO: fields can't have </w </html <var <variant </var </variant name="
+	// TODO: in addition, words and headwords can't have "
+	return nil
+}
+
 // WriteDictFile validates the DictFile and writes it to w in the dictfile
 // format.
 func (df DictFile) WriteDictFile(w io.Writer) error {
@@ -169,88 +173,6 @@ func (df DictFile) WriteDictFile(w io.Writer) error {
 		}
 	}
 	return nil
-}
-
-// WriteKoboHTML validates the DictFile and writes it to w in the dicthtml
-// format.
-func (df DictFile) WriteKoboHTML(w io.Writer) error {
-	if err := df.Validate(); err != nil {
-		return err
-	}
-
-	// must be sorted for proper matching
-	dfs := df[:]
-	sort.Slice(dfs, func(i int, j int) bool {
-		return dfs[i].Headword < dfs[j].Headword
-	})
-
-	if _, err := w.Write([]byte("<html>")); err != nil {
-		return err
-	}
-	for _, dfe := range dfs {
-		if err := dfe.writeKoboHTML(w); err != nil {
-			return err
-		}
-	}
-	if _, err := w.Write([]byte("</html>")); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Validate validates the entries in the DictFile.
-func (df DictFile) Validate() error {
-	// TODO: check for empty words and variants
-	// TODO: fields can't have </w </html <var <variant </var </variant name="
-	// TODO: in addition, words and headwords can't have "
-	return nil
-}
-
-// note: we don't want the html/template escaping, this isn't actually proper
-// html, and also, the whitespaces in the end tags should stay EXACTLY as is (
-// yes, I know there is a space before the end of the a but not the variant) to
-// provide the best possible matches against the regexps Kobo uses. Also, the
-// output should not have any newlines. Also, keep in mind headwords can have
-// unescaped html tags in it, and they will be rendered properly by Kobo.
-var koboHTMLTmpl = template.Must(template.New("").Funcs(template.FuncMap{
-	"md": func(md string) string {
-		return string(blackfriday.Run([]byte(md)))
-	},
-	"normhw": func(headword string) string {
-		return kobodict.NormalizeWordReference(headword, false)
-	},
-	"normv": func(variant string) string {
-		return kobodict.NormalizeWordReference(variant, true)
-	},
-}).Parse(`
-{{- /* trim */ -}}
-
-<w>
-	{{- if .NoHeader -}}
-		<a name="{{normhw .Headword}}" />
-	{{- else -}}
-		<p><a name="{{normhw .Headword}}" /><b>{{.Headword}}</b>{{with .HeaderInfo}} {{.}}{{end}}</p>
-	{{- end -}}
-	<var>
-		{{- range .Variant -}}
-			<variant name="{{normv .}}"/>
-		{{- end -}}
-	</var>
-	{{- with .Definition -}}
-		{{- if $.RawHTML -}}
-			{{.}}
-		{{- else -}}
-			{{md .}}
-		{{- end -}}
-	{{- end -}}
-</w>
-
-{{- /* trim */ -}}
-`))
-
-func (d DictFileEntry) writeKoboHTML(w io.Writer) error {
-	return koboHTMLTmpl.Execute(w, d)
 }
 
 // note: this assumes the entry is valid

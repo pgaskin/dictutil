@@ -83,8 +83,7 @@ Blah blah blah.
 `,
 	OutKoboHTML: `<html><w><p><a name="blank" /><b>blank</b></p><var></var></w><w><a name="custom" /><var><variant name="normalizeme"/></var><b>custom word:</b>
 <p>test</p></w><w><p><a name="headword" /><b>headword</b> info</p><var><variant name="variant1"/><variant name="variant2"/></var><p>test
-test</p>
-</w><w><p><a name="markdown" /><b>markdown</b> -test</p><var></var><ol>
+test</p></w><w><p><a name="markdown" /><b>markdown</b> -test</p><var></var><ol>
 <li>Definition point 1.
 
 <ul>
@@ -95,8 +94,7 @@ test</p>
 <li>Blah <em>blah</em> <strong>blah</strong>!</li>
 </ol>
 
-<p>Blah blah blah.</p>
-</w></html>`,
+<p>Blah blah blah.</p></w></html>`,
 }}
 
 func TestDictFile(t *testing.T) {
