@@ -5,9 +5,9 @@ layout: default
 ## dicthtml
 These pages are some notes I've made about the Kobo dictionary format based on reverse engineering the firmware and the official dictionaries.
 
-- [Format](./dicthtml/format)
-- [Prefixes](./dicthtml/prefixes)
-- [v1/v2 dictionaries](./dicthtml/v1v2)
+- **[Format](./dicthtml/format):** About the Kobo dictionary format.
+- **[Prefixes](./dicthtml/prefixes):** Details about prefix calculation.
+- **[v1/v2 dictionaries](./dicthtml/v1v2):** Changes between v1/v2 dictionaries.
 
 ## dictutil
 dictutil is a low-level tool to unpack, pack, and perform other operations on Kobo dictzips.
@@ -22,4 +22,4 @@ dictgen is an easy-to-use tool/library to generate Kobo dictionaries from scratc
 ## examples
 These are some tools which make use of dictutil.
 
-- [gotdict-convert](./examples/gotdict-convert)
+- **[gotdict-convert](./examples/gotdict-convert):** Converts [github.com/wjdp/gotdict](https://github.com/wjdp/gotdict) to a dictfile.
