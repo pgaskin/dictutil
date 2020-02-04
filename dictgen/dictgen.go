@@ -11,16 +11,15 @@ import (
 	"gopkg.in/russross/blackfriday.v2"
 )
 
-func (df DictFile) WriteDictzip(w io.Writer) error {
+// WriteDictzip write the dictfile to a kobodict.Writer, which should not have
+// been used yet. The writer is not closed automatically.
+func (df DictFile) WriteDictzip(dw *kobodict.Writer) error {
 	var prefixes []string
 	prefixed := df.Prefixed()
 	for pfx := range prefixed {
 		prefixes = append(prefixes, pfx)
 	}
 	sort.Strings(prefixes)
-
-	dw := kobodict.NewWriter(w)
-	defer dw.Close() // note: we'll actually check the error at the end if everything else is successful
 
 	for _, pfx := range prefixes {
 		for _, dfe := range prefixed[pfx] {
@@ -40,7 +39,7 @@ func (df DictFile) WriteDictzip(w io.Writer) error {
 		}
 	}
 
-	return dw.Close()
+	return nil
 }
 
 // Prefixed shards the DictFile into the different word prefixes. The original

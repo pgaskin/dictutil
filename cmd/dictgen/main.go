@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/geek1011/dictutil/dictgen"
+	"github.com/geek1011/dictutil/kobodict"
 	"github.com/spf13/pflag"
 )
 
@@ -65,34 +66,37 @@ func main() {
 		}
 	}
 
-	fmt.Fprintf(os.Stderr, "Generating dictzip.\n")
+	fmt.Fprintf(os.Stderr, "Opening output.\n")
+	var f io.WriteCloser
 	switch *output {
 	case "-":
-		if err := tdf.WriteDictzip(os.Stdout); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: write dictzip: %v\n", err)
-			os.Exit(1)
-			return
-		}
+		f = os.Stdout
 	default:
-		f, err := os.OpenFile(*output, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-		if err != nil {
+		if ff, err := os.OpenFile(*output, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "Error: create dictzip: %v\n", err)
 			os.Exit(1)
 			return
+		} else {
+			f = ff
 		}
+	}
 
-		if err := tdf.WriteDictzip(f); err != nil {
-			f.Close()
-			fmt.Fprintf(os.Stderr, "Error: write dictzip: %v\n", err)
-			os.Exit(1)
-			return
-		}
-
-		if err := f.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: write dictzip: %v\n", err)
-			os.Exit(1)
-			return
-		}
+	fmt.Fprintf(os.Stderr, "Generating dictzip.\n")
+	dw := kobodict.NewWriter(f)
+	if err := tdf.WriteDictzip(dw); err != nil {
+		f.Close()
+		fmt.Fprintf(os.Stderr, "Error: write dictzip: %v\n", err)
+		os.Exit(1)
+		return
+	} else if err := dw.Close(); err != nil {
+		f.Close()
+		fmt.Fprintf(os.Stderr, "Error: write dictzip: %v\n", err)
+		os.Exit(1)
+		return
+	} else if err := f.Close(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: write dictzip: %v\n", err)
+		os.Exit(1)
+		return
 	}
 
 	fmt.Fprintf(os.Stderr, "Successfully wrote %d entries from %d dictfile(s) to dictzip %s.\n", len(tdf), pflag.NArg(), *output)
