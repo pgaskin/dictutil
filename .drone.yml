@@ -6,10 +6,12 @@ steps:
 - name: test
   image: golang:1.13-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go test -cover -v ./kobodict
 - name: bench
   image: golang:1.13-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go test -bench=. -benchmem ./kobodict
 
 trigger:
@@ -26,7 +28,29 @@ steps:
 - name: test
   image: golang:1.13-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go test -cover -v ./dictgen
+
+trigger:
+  event:
+    exclude: [promote]
+
+---
+
+name: dictgen-cmd
+kind: pipeline
+type: docker
+
+steps:
+- name: build
+  image: golang:1.13-buster
+  commands:
+  - apt-get update -qqy && apt-get install -qqy swig
+  - go build -o dictgen-out ./cmd/dictgen
+- name: run
+  image: golang:1.13-buster
+  commands:
+  - ./dictgen-out --help
 
 trigger:
   event:
@@ -93,7 +117,12 @@ steps:
 - name: build
   image: golang:1.13-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go build -o gotdict-convert ./examples/gotdict-convert
+- name: run
+  image: golang:1.13-buster
+  commands:
+  - ./gotdict-convert --help
 - name: convert
   image: golang:1.13-buster
   commands:
