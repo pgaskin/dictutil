@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/geek1011/dictutil/dictgen"
 	"github.com/geek1011/dictutil/kobodict"
@@ -13,6 +15,7 @@ import (
 func main() {
 	pflag.CommandLine.SortFlags = false
 	output := pflag.StringP("output", "o", "dicthtml.zip", "The output filename (will be overwritten if it exists) (- is stdout)")
+	encrypt := pflag.StringP("encrypt", "e", "", "Encrypt the dictzip using the specified encryption method (format: method:keyhex)")
 	// TODO: image-dir
 	help := pflag.BoolP("help", "h", false, "Show this help text")
 	pflag.Parse()
@@ -21,6 +24,25 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [options] dictfile...\n\nOptions:\n%s\nIf multiple dictfiles (*.df) are provided, they will be merged (duplicate entries are fine; they will be shown in sequential order). To read from stdin, use - as the filename.\n\nThe dictfile format:\n  TODO: short doc text\n", os.Args[0], pflag.CommandLine.FlagUsages())
 		os.Exit(0)
 		return
+	}
+
+	var e kobodict.Crypter
+	if *encrypt != "" {
+		if spl := strings.SplitN(*encrypt, ":", 2); len(spl) < 2 {
+			fmt.Fprintf(os.Stderr, "Error: invalid format for --encrypt: no ':' found.\n")
+			os.Exit(2)
+			return
+		} else if key, err := hex.DecodeString(spl[1]); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: invalid format for --encrypt: decode hex: %v.\n", err)
+			os.Exit(2)
+			return
+		} else if enc, err := kobodict.NewCrypter(spl[0], key); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: invalid format for --encrypt: initialize encrypter: %v.\n", err)
+			os.Exit(2)
+			return
+		} else {
+			e = enc
+		}
 	}
 
 	var tdf dictgen.DictFile
@@ -83,6 +105,7 @@ func main() {
 
 	fmt.Fprintf(os.Stderr, "Generating dictzip.\n")
 	dw := kobodict.NewWriter(f)
+	dw.SetEncrypter(e)
 	if err := tdf.WriteDictzip(dw); err != nil {
 		f.Close()
 		fmt.Fprintf(os.Stderr, "Error: write dictzip: %v\n", err)
