@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -133,6 +134,25 @@ func TestDictFile(t *testing.T) {
 		} else if tc.OutDictFile != buf.String() {
 			fmt.Printf("expected:\n`%s`\n\ngot:\n`%s`", tc.OutDictFile, buf.String())
 			t.Fatalf("case %#v: unexpected dictfile output", tc.What)
+		}
+
+		pdf, err := ParseDictFile(buf)
+		if err != nil {
+			t.Fatalf("case %#v: reparse written dictfile: unexpected error: %v", tc.What, err)
+		}
+		sort.Slice(pdf, func(i, j int) bool {
+			return pdf[i].Headword < pdf[j].Headword
+		})
+		edf := df[:]
+		sort.Slice(edf, func(i, j int) bool {
+			return edf[i].Headword < edf[j].Headword
+		})
+		if jpdf, err := json.Marshal(pdf); err != nil {
+			panic(pdf)
+		} else if jedf, err := json.Marshal(edf); err != nil {
+			panic(pdf)
+		} else if !reflect.DeepEqual(jpdf, jedf) {
+			t.Fatalf("case %#v: reparse written dictfile: differs from original (orig:%s) (reparsed:%s)", tc.What, jedf, jpdf)
 		}
 
 		buf.Reset()
