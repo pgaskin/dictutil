@@ -10,6 +10,7 @@ import (
 // Crypter represents a symmetric dictionary encryption method.
 type Crypter interface {
 	Encrypter
+	Decrypter
 }
 
 // CryptMethodAES represents AES-128-ECB encryption with PKCS#7 padding.
