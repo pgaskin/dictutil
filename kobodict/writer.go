@@ -103,7 +103,7 @@ func (w *Writer) CreateDicthtml(prefix string) (io.Writer, error) {
 // treatment of other files is undefined. In addition, subdirectories are not
 // supported. The behaviour is undefined if a dicthtml file is added this way.
 func (w *Writer) CreateFile(filename string) (io.Writer, error) {
-	if strings.Contains(filename, "/") {
+	if strings.Contains(filename, "/") || strings.Contains(filename, "\\") {
 		return nil, fmt.Errorf("invalid filename: must not contain slashes")
 	} else if strings.Contains(filename, "words") {
 		return nil, fmt.Errorf("invalid filename: must not be 'words'")
