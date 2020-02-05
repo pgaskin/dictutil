@@ -1,3 +1,8 @@
 package kobodict
 
-// TODO: maybe an install func (add locale to config, add to db, copy to dict folder, prompt to install patch)?
+// TODO(maybe): func Install(kobopath, dictzip string, locale, label string) error
+//       which will:
+//       - add locale to config ApplicationPreferences/ExtraLocales
+//       - copy and rename dict to .kobo/dict/dicthtml*.zip
+//       - add row to db dictionary table ("-{locale}", os.Stat(dictzip).Size(), "Extra:_ {label}", true, true)
+//       - prompt about installing patch

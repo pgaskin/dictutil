@@ -130,7 +130,7 @@ steps:
   - git -C gotdict checkout 0a675ef59b5068a91315d594f807dc8d9ae4a777
   - ./gotdict-convert
   - wc -c gotdict.df
-# TODO: upload
+# TODO(v0): upload
 
 trigger:
   event:

@@ -149,9 +149,9 @@ func ParseDictFile(r io.Reader) (DictFile, error) {
 
 // Validate validates the entries in the DictFile.
 func (df DictFile) Validate() error {
-	// TODO: check for empty words and variants
-	// TODO: fields can't have </w </html <var <variant </var </variant name="
-	// TODO: in addition, words and headwords can't have "
+	// TODO(v0): check for empty words and variants
+	// TODO(v0): fields can't have </w </html <var <variant </var </variant name="
+	// TODO(v0): in addition, words and headwords can't have "
 	return nil
 }
 

@@ -21,7 +21,7 @@ type testcase struct {
 	OutKoboHTML string
 }
 
-// TODO: more specific tests
+// TODO(v1): more specific tests
 var testcases = []testcase{{
 	What: "some of everything",
 	In: `@ blank

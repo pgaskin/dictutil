@@ -4,4 +4,4 @@ layout: default
 
 # Dictionary format
 
-TODO: document the overall format, word matching, edge cases, images, etc.
+TODO(v0): document the overall format, word matching, edge cases, images, etc.
