@@ -129,9 +129,25 @@ steps:
   - git clone https://github.com/wjdp/gotdict
   - git -C gotdict checkout 0a675ef59b5068a91315d594f807dc8d9ae4a777
   - ./gotdict-convert
-  - wc -c gotdict.df
-# TODO(v0): upload
+  - ls -lah gotdict.df
+- name: generate
+  image: golang:1.13-buster
+  commands:
+  - apt-get update -qqy && apt-get install -qqy swig
+  - go run ./cmd/dictgen -o dicthtml-gt.zip gotdict.df
+  - ls -lah dicthtml-gt.zip
+- name: upload
+  image: curlimages/curl
+  command: [
+    "--no-progress-meter",
+    "--upload-file", "dicthtml-gt.zip",
+    "https://transfer.sh/dicthtml-gt.zip"
+  ]
+
+depends_on: [dictgen-cmd]
 
 trigger:
   event:
     exclude: [promote]
+
+# TODO(v0): releases
