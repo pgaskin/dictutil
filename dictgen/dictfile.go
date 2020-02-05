@@ -138,7 +138,7 @@ func ParseDictFile(r io.Reader) (DictFile, error) {
 			dfe.RawHTML = true
 			dfe.Definition = v
 		} else if strings.Contains(dfe.Definition, "<html>") {
-			return nil, fmt.Errorf("dictfile: entry at line %d: why does the definition contain a <html> tag...", dfe.line)
+			return nil, fmt.Errorf("dictfile: entry at line %d: why does the definition contain a <html> tag ... to make it raw HTML, it should be at the very beginning", dfe.line)
 		}
 	}
 
@@ -147,11 +147,46 @@ func ParseDictFile(r io.Reader) (DictFile, error) {
 	return df, nil
 }
 
-// Validate validates the entries in the DictFile.
+// Validate validates the entries in the DictFile. Note that duplicate entries
+// are fine, and are encouraged if necessary (Kobo will merge them).
 func (df DictFile) Validate() error {
-	// TODO(v0): check for empty words and variants
-	// TODO(v0): fields can't have </w </html <var <variant </var </variant name="
-	// TODO(v0): in addition, words and headwords can't have "
+	illegal := func(s string, word bool) error {
+		if word && strings.Contains(s, "\"") {
+			return fmt.Errorf("must not contain %#v", "\"")
+		}
+		for _, c := range []string{
+			"<w", "</w",
+			"<html", "</html",
+			"<var", "</var",
+			"<a name=",
+		} {
+			// TODO: optimize
+			if strings.Contains(s, c) {
+				return fmt.Errorf("must not contain %#v", c)
+			}
+		}
+		return nil
+	}
+	for i, dfe := range df {
+		if strings.TrimSpace(dfe.Headword) == "" {
+			return fmt.Errorf("word %#v (i:%d, dfe:%#v): headword must not be blank", dfe.Headword, i, dfe)
+		} else if err := illegal(dfe.Headword, true); err != nil {
+			return fmt.Errorf("word %#v (i:%d): headword contains illegal string: %w", dfe.Headword, i, err)
+		}
+		for _, v := range dfe.Variant {
+			if strings.TrimSpace(v) == "" {
+				return fmt.Errorf("word %#v (i:%d): variant %#v must not be blank", dfe.Headword, i, v)
+			} else if err := illegal(v, true); err != nil {
+				return fmt.Errorf("word %#v (i:%d): variant %#v contains illegal string : %w", dfe.Headword, i, v, err)
+			}
+		}
+		if err := illegal(dfe.HeaderInfo, false); err != nil {
+			return fmt.Errorf("word %#v (i:%d): header info %#v contains illegal string : %w", dfe.Headword, i, dfe.HeaderInfo, err)
+		}
+		if err := illegal(dfe.Definition, false); err != nil {
+			return fmt.Errorf("word %#v (i:%d): definition %#v contains illegal string : %w", dfe.Headword, i, dfe.Definition, err)
+		}
+	}
 	return nil
 }
 
