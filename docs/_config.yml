@@ -1,5 +1,7 @@
 title: dictutil
 remote_theme: pmarsceill/just-the-docs
+url: https://pgaskin.net
+baseurl: /dictutil
 description: Tools, notes, and other stuff related to Kobo dictionaries.
 search_enabled: false
 aux_links:
