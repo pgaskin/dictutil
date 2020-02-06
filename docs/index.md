@@ -10,6 +10,7 @@ These pages are some notes I've made about the Kobo dictionary format based on r
 - **[Format](./dicthtml/format):** About the Kobo dictionary format.
 - **[Prefixes](./dicthtml/prefixes):** Details about prefix calculation.
 - **[v1/v2 dictionaries](./dicthtml/v1v2):** Changes between v1/v2 dictionaries.
+- **[Installing custom dictionaries](./dicthtml/install):** Notes about sideloading dictionaries.
 
 ## dictutil
 dictutil is a low-level tool to unpack, pack, and perform other operations on Kobo dictzips.
