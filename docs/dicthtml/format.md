@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Dictionary format
+parent: dicthtml
 ---
 
 # Dictionary format

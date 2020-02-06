@@ -1,4 +1,12 @@
-theme: jekyll-theme-leap-day
-title: "dictutil"
-description: "Tools, notes, and other stuff related to Kobo dictionaries."
-show_downloads: false
+title: dictutil
+remote_theme: pmarsceill/just-the-docs
+description: Tools, notes, and other stuff related to Kobo dictionaries.
+search_enabled: false
+aux_links:
+  Download:
+  - http://github.com/geek1011/dictutil/releases/latest
+  GitHub:
+  - http://github.com/geek1011/dictutil
+heading_anchors: true
+footer_content: Copyright &copy; 2020 Patrick Gaskin.
+ga_tracking: UA-66226417-1

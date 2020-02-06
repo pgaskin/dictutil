@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Installing custom dictionaries
+parent: dicthtml
 ---
 
 # Installing custom dictionaries

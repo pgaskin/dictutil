@@ -1,5 +1,7 @@
 ---
 layout: default
+title: gotdict-convert
+parent: Examples
 ---
 
 # gotdict-convert

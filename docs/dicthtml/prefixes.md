@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Prefixes
+parent: dicthtml
 ---
 
 # Prefixes
