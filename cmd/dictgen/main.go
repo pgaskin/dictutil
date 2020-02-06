@@ -15,7 +15,7 @@ import (
 func main() {
 	pflag.CommandLine.SortFlags = false
 	output := pflag.StringP("output", "o", "dicthtml.zip", "The output filename (will be overwritten if it exists) (- is stdout)")
-	encrypt := pflag.StringP("encrypt", "e", "", "Encrypt the dictzip using the specified encryption method (format: method:keyhex)")
+	crypt := pflag.StringP("crypt", "c", "", "Encrypt the dictzip using the specified encryption method (format: method:keyhex)")
 	// TODO(v1): image-dir
 	help := pflag.BoolP("help", "h", false, "Show this help text")
 	pflag.Parse()
@@ -27,8 +27,8 @@ func main() {
 	}
 
 	var e kobodict.Crypter
-	if *encrypt != "" {
-		if spl := strings.SplitN(*encrypt, ":", 2); len(spl) < 2 {
+	if *crypt != "" {
+		if spl := strings.SplitN(*crypt, ":", 2); len(spl) < 2 {
 			fmt.Fprintf(os.Stderr, "Error: invalid format for --encrypt: no ':' found.\n")
 			os.Exit(2)
 			return

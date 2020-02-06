@@ -58,6 +58,27 @@ trigger:
 
 ---
 
+name: dictutil-cmd
+kind: pipeline
+type: docker
+
+steps:
+- name: build
+  image: golang:1.13-buster
+  commands:
+  - apt-get update -qqy && apt-get install -qqy swig
+  - go build -o dictutil-out ./cmd/dictutil
+- name: run
+  image: golang:1.13-buster
+  commands:
+  - ./dictutil-out --help
+
+trigger:
+  event:
+    exclude: [promote]
+
+---
+
 name: marisa
 kind: pipeline
 type: docker
