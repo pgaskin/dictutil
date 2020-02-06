@@ -46,7 +46,7 @@ func main() {
 		}
 	} else if cmd, ok := cmdMap[os.Args[1]]; !ok {
 		globalHelp()
-		os.Exit(2)
+		os.Exit(0)
 	} else {
 		args := append([]string{os.Args[0] + " " + os.Args[1]}, os.Args[2:]...)
 		fs := pflag.NewFlagSet(args[0], pflag.ExitOnError)
