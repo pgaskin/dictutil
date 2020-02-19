@@ -7,6 +7,9 @@ parent: dicthtml
 # Installing custom dictionaries
 Sideloading custom dictionaries is easy, but slightly finicky.
 
+## Using dictutil
+You can easily install dictionaries using dictutil. First, if you are not replacing a built-in dictionary, enable and install the **Enable searches on extra dictionaries** [patch](https://pgaskin.net/kobopatch-patches). Then, follow the [instructions for using the install command](../dictutil/install).
+
 ## Manual installation
 1. Enable and install the **Enable searches on extra dictionaries** [patch](https://pgaskin.net/kobopatch-patches).
 2. Copy the dictionary to `KOBOeReader/.kobo/dict/dicthtml-LOCALE.zip`, where **LOCALE** is a string consisting of 2 lowercase alphanumeric characters. It does not have to be a valid locale.
@@ -20,9 +23,6 @@ Sideloading custom dictionaries is easy, but slightly finicky.
 5. Eject your eReader and test the dictionary.
     - If the dictionary is unselectable, ensure you followed the steps correctly, especially regarding the locale codes.
     - If the dictionary says that the word wasn't found, or just acts unusually in general, ensure the dictionary file is valid.
-
-## Using dictutil
-Coming soon.
 
 ## About locale names and patches
 The reason why the patch is required is due to a bug in the firmware. When you choose an entry from the dictionary dropdown, it tries to find a locale name matching it (which it uses to construct the filename for the dicthtml). Kobo has a hard-coded list of supported built-in locales, and supports adding extra ones using the **ApplicationPreferences->ExtraLocales** config file option (a comma separated list of locale codes). These locales have an automatically generated name of "Extra: LOCALE".
