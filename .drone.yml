@@ -83,7 +83,7 @@ steps:
 - name: run
   image: golang:1.13-buster
   commands:
-  - ./dictutil-out --help
+  - ./dictutil-out help
 
 trigger:
   event:
