@@ -196,6 +196,14 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 	}
 
 	if *builtin == "restore" {
+		// TODO: reconsider whether this belongs in uninstall, as:
+		//  - This doesn't update the file size.
+		//  - This doesn't ensure there is actually a DB entry for the restored
+		//    dict.
+		//  - This isn't really uninstalling.
+		//  - It might not even belong in dictutil at all because the URLs may
+		//    change (and it isn't that hard to manually download a dictionary
+		//    to install it with dictutil install)
 		url := "https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v2/" + filepath.Base(dictPath)
 		fmt.Printf("Restoring original dictionary from %#v.\n", url)
 
