@@ -127,6 +127,8 @@ func libmarisa(files map[string][]byte, version string) (io.Reader, error) {
 		strings.NewReader("#pragma GCC diagnostic warning \"-Weffc++\"\n"),
 		strings.NewReader("#pragma GCC diagnostic warning \"-Wextra\"\n"),
 		strings.NewReader("#pragma GCC diagnostic warning \"-Wconversion\"\n"),
+		// Silence a warning.
+		strings.NewReader("#pragma GCC diagnostic ignored \"-Wimplicit-fallthrough=\"\n"),
 		// Include the libs themselves.
 		bytes.NewReader(marisaGrimoireIOLib),
 		bytes.NewReader(marisaGrimoireTrieLib),

@@ -41,6 +41,7 @@
 #pragma GCC diagnostic warning "-Weffc++"
 #pragma GCC diagnostic warning "-Wextra"
 #pragma GCC diagnostic warning "-Wconversion"
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough="
 #if (defined _WIN32) || (defined _WIN64)
  #include <sys/types.h>
  #include <sys/stat.h>
