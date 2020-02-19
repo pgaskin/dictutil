@@ -10,6 +10,8 @@ Sideloading custom dictionaries is easy, but slightly finicky.
 ## Using dictutil
 You can easily install dictionaries using dictutil. First, if you are not replacing a built-in dictionary, enable and install the **Enable searches on extra dictionaries** [patch](https://pgaskin.net/kobopatch-patches). Then, follow the [instructions for using the install command](../dictutil/install).
 
+You can uninstall custom dictionaries (including reverting overwritten built-in ones) using the [uninstall command](../dictutil/uninstall).
+
 ## Manual installation
 1. Enable and install the **Enable searches on extra dictionaries** [patch](https://pgaskin.net/kobopatch-patches).
 2. Copy the dictionary to `KOBOeReader/.kobo/dict/dicthtml-LOCALE.zip`, where **LOCALE** is a string consisting of 2 lowercase alphanumeric characters. It does not have to be a valid locale.

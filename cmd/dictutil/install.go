@@ -47,13 +47,22 @@ var (
 	builtinSorted []string
 )
 
-func init() {
-	commands = append(commands, &command{Name: "install", Short: "I", Description: "Install a dictzip file", Main: installMain})
-
-	for k := range builtinDict {
-		builtinSorted = append(builtinSorted, k)
+func findDevice(root string) (string, string, error) {
+	if len(root) == 0 {
+		kobos, err := kobo.Find()
+		if err != nil {
+			return "", "", err
+		} else if len(kobos) == 0 {
+			return "", "", fmt.Errorf("no devices detected")
+		}
+		root = kobos[0]
 	}
-	sort.Strings(builtinSorted)
+
+	_, version, _, err := kobo.ParseKoboVersion(root)
+	if err != nil {
+		return "", "", fmt.Errorf("parse Kobo version file for %#v: %w.\n", root, err)
+	}
+	return root, version, nil
 }
 
 func builtinHelp() {
@@ -66,6 +75,20 @@ func builtinHelp() {
 			fmt.Fprintf(os.Stderr, "  %-40s %s\n", fmt.Sprintf("%s (dicthtml-%s.zip)", loc, loc), lbl)
 		}
 	}
+}
+
+func builtinInit() {
+	for k := range builtinDict {
+		builtinSorted = append(builtinSorted, k)
+	}
+	sort.Strings(builtinSorted)
+}
+
+// the stuff above is shared with uninstall
+
+func init() {
+	commands = append(commands, &command{Name: "install", Short: "I", Description: "Install a dictzip file", Main: installMain})
+	builtinInit()
 }
 
 func installMain(args []string, fs *pflag.FlagSet) int {
@@ -86,7 +109,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 
 	if *builtin != "replace" && *builtin != "ignore" {
 		fmt.Fprintf(os.Stderr, "Error: invalid built-in dictionary mode %#v, see --help for more details.\n", *builtin)
-		return 1
+		return 2
 	}
 
 	df, err := os.Open(fs.Args()[0])
@@ -113,7 +136,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 		dictLocale = m[1]
 	}
 
-	if !regexp.MustCompile(`^[a-zA-Z0-9]{2}$`).MatchString(dictLocale) {
+	if !regexp.MustCompile(`^[a-zA-Z0-9]{2}$`).MatchString(dictLocale) { // this is a bit on the overly safe side, but there's not much harm in it anyways, and it can be loosened if needed
 		fmt.Fprintf(os.Stderr, "Error: invalid locale %#v specified.\n", dictLocale)
 		return 1
 	}
@@ -125,7 +148,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 		dictFilename = "dicthtml-" + dictLocale + ".zip"
 	}
 
-	kobopath, version, err := installFindDevice(*root)
+	kobopath, version, err := findDevice(*root)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: could not detect a Kobo eReader (you can specify one manually with --kobo): %v.\n", err)
 		return 1
@@ -133,7 +156,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 
 	fmt.Printf("Found Kobo eReader at %#v with firmware version %s.\n", kobopath, version)
 	if kobo.VersionCompare(version, "4.7.10364") < 0 {
-		fmt.Fprintf(os.Stderr, "Error: firmware version too old (v2 dictionaries were only introduced in 4.7.10364).")
+		fmt.Fprintf(os.Stderr, "Error: firmware version too old (v2 dictionaries were only introduced in 4.7.10364).\n")
 		return 1
 	}
 
@@ -213,10 +236,11 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 			}
 			if added {
 				fmt.Printf("  Locale %#v already added to ExtraLocales.\n", dictLocale)
-			} else {
-				fmt.Printf("  Adding locale %#v to ExtraLocales.\n", dictLocale)
-				locales = append(locales, dictLocale)
+				return nil
 			}
+
+			fmt.Printf("  Adding locale %#v to ExtraLocales.\n", dictLocale)
+			locales = append(locales, dictLocale)
 			sort.Strings(locales)
 
 			buf.WriteString("\n[ApplicationPreferences]\n") // this will get merged by Qt
@@ -289,22 +313,4 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 	fmt.Printf("\nSuccessfully installed dictzip %#v to Kobo %#v.\n", fs.Args()[0], kobopath)
 
 	return 0
-}
-
-func installFindDevice(root string) (string, string, error) {
-	if len(root) == 0 {
-		kobos, err := kobo.Find()
-		if err != nil {
-			return "", "", err
-		} else if len(kobos) == 0 {
-			return "", "", fmt.Errorf("no devices detected")
-		}
-		root = kobos[0]
-	}
-
-	_, version, _, err := kobo.ParseKoboVersion(root)
-	if err != nil {
-		return "", "", fmt.Errorf("parse Kobo version file for %#v: %w.\n", root, err)
-	}
-	return root, version, nil
 }
