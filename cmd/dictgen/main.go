@@ -12,6 +12,8 @@ import (
 	"github.com/spf13/pflag"
 )
 
+var version = "dev"
+
 func main() {
 	pflag.CommandLine.SortFlags = false
 	output := pflag.StringP("output", "o", "dicthtml.zip", "The output filename (will be overwritten if it exists) (- is stdout)")
@@ -21,7 +23,7 @@ func main() {
 	pflag.Parse()
 
 	if *help || pflag.NArg() == 0 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [options] dictfile...\n\nOptions:\n%s\nIf multiple dictfiles (*.df) are provided, they will be merged (duplicate entries are fine; they will be shown in sequential order). To read from stdin, use - as the filename.\n\nThe dictfile format:\n  TODO(v0): short doc text\n", os.Args[0], pflag.CommandLine.FlagUsages())
+		fmt.Fprintf(os.Stderr, "Usage: %s [options] dictfile...\n\nVersion: dictgen %s\n\nOptions:\n%s\nIf multiple dictfiles (*.df) are provided, they will be merged (duplicate entries are fine; they will be shown in sequential order). To read from stdin, use - as the filename.\n\nThe dictfile format:\n  TODO(v0): short doc text\n", os.Args[0], version, pflag.CommandLine.FlagUsages())
 		os.Exit(0)
 		return
 	}

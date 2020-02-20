@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/pflag"
 )
 
+var version = "dev"
+
 func main() {
 	pflag.CommandLine.SortFlags = false
 	gotdict := pflag.StringP("gotdict", "g", "."+string(os.PathSeparator)+"gotdict", "The path to the local copy of github.com/wjdp/gotdict.")
@@ -17,7 +19,7 @@ func main() {
 	pflag.Parse()
 
 	if *help || pflag.NArg() != 0 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\nOptions:\n%s\nTo convert the resulting dictfile into a dictzip, use dictgen.\n", os.Args[0], pflag.CommandLine.FlagUsages())
+		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\nVersion: %s\n\nOptions:\n%s\nTo convert the resulting dictfile into a dictzip, use dictgen.\n", os.Args[0], version, pflag.CommandLine.FlagUsages())
 		os.Exit(0)
 		return
 	}
