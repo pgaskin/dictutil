@@ -57,7 +57,7 @@ func main() {
 }
 
 func globalHelp() {
-	fmt.Fprintf(os.Stderr, "Usage: %s command [options] [arguments]\n\nDictutil provides low-level utilities to manipulate Kobo dictionaries.\n\nVersion: dictutil %s\n\nCommands:\n", os.Args[0], version)
+	fmt.Fprintf(os.Stderr, "Usage: %s command [options] [arguments]\n\nDictutil provides low-level utilities to manipulate Kobo dictionaries (v2).\n\nVersion: dictutil %s\n\nCommands:\n", os.Args[0], version)
 	for _, cmd := range commands {
 		fmt.Fprintf(os.Stderr, "  %-20s %s\n", fmt.Sprintf("%s (%s)", cmd.Name, cmd.Short), cmd.Description)
 	}
