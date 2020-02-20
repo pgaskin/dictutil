@@ -1,11 +1,12 @@
 ---
 layout: default
+title: Documentation
 ---
 
 # Dictutil
 {: .fs-9 }
 
-A collection of documentation and tools for Kobo dictionaries.
+A collection of documentation and tools for working with Kobo dictionaries.
 {: .fs-6 .fw-300 }
 
 [Download](https://github.com/geek1011/dictutil/releases){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [dicthtml](./dicthtml){: .btn .fs-5 .mb-4 .mb-md-0 } [dictgen](./dictgen){: .btn .fs-5 .mb-4 .mb-md-0 } [dictutil](./dictutil){: .btn .fs-5 .mb-4 .mb-md-0 }
