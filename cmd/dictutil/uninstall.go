@@ -130,10 +130,11 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 			for fs.Scan() {
 				if bytes.HasPrefix(fs.Bytes(), []byte("ExtraLocales=")) {
 					for _, loc := range strings.Split(strings.SplitN(fs.Text(), "=", 2)[1], ",") {
+						loc = strings.TrimSpace(loc)
 						if loc == dictLocale {
 							filtered = true
 						} else {
-							locales = append(locales, strings.TrimSpace(loc))
+							locales = append(locales, loc)
 						}
 					}
 					continue
