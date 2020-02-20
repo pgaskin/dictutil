@@ -179,11 +179,10 @@ steps:
   - ls -lah dicthtml-gt.zip
 - name: upload
   image: curlimages/curl
-  command: [
-    "--no-progress-meter",
-    "--upload-file", "dicthtml-gt.zip",
-    "https://transfer.sh/dicthtml-gt.zip"
-  ]
+  entrypoint: ["/bin/bash"]
+  commands:
+  - "curl --no-progress-meter -F 'file=@gotdict.df'      'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
+  - "curl --no-progress-meter -F 'file=@dicthtml-gt.zip' 'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
 
 depends_on: [dictgen-cmd]
 
