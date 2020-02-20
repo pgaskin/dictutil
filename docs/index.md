@@ -2,6 +2,16 @@
 layout: default
 ---
 
+# Dictutil
+{: .fs-9 }
+
+A collection of documentation and tools for Kobo dictionaries.
+{: .fs-6 .fw-300 }
+
+[Download](https://github.com/geek1011/dictutil/releases){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [dicthtml](./dicthtml){: .btn .fs-5 .mb-4 .mb-md-0 } [dictgen](./dictgen){: .btn .fs-5 .mb-4 .mb-md-0 } [dictutil](./dictutil){: .btn .fs-5 .mb-4 .mb-md-0 }
+
+---
+
 These tools are designed to work with v2 dictionaries (4.7.10364+).
 
 ## dicthtml
@@ -15,12 +25,18 @@ These pages are some notes I've made about the Kobo dictionary format based on r
 ## dictutil
 dictutil is a low-level tool to unpack, pack, and perform other operations on Kobo dictzips.
 
-- Coming soon.
+- **[Dictutil](./dictutil)**
+- **[Install](./dictutil/install):** Install a dictzip.
+- **[Uninstall](./dictutil/uninstall):** Uninstall a dictzip.
+- **[Pack](./dictutil/pack):** Pack a dictzip from a dictdir.
+- **[Unpack](./dictutil/unpack):** Unpack a dictzip into a dictdir.
+- **[Prefix](./dictutil/prefix):** Calculate the dicthtml prefix for a word.
 
 ## dictgen
 dictgen is an easy-to-use tool/library to generate Kobo dictionaries from scratch or use in conversion scripts. It deals with all the unusual bits (e.g. variant capitalization, prefix generation, etc) for you and gives warnings when it can't.
 
-- Coming soon.
+- **[Dictgen](./dictgen#usage)**
+- **[Dictfile format](./dictgen#dictfile-format)**
 
 ## examples
 These are some tools which make use of dictutil.
