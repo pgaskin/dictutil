@@ -159,8 +159,8 @@ func (w *Writer) Close() error {
 
 // SetEncrypter sets the Encrypter used to encrypt dicthtml files. This must be
 // will only apply to dicthtml files added after the encrypter is set.
-func (r *Writer) SetEncrypter(e Encrypter) {
-	r.e = e
+func (w *Writer) SetEncrypter(e Encrypter) {
+	w.e = e
 }
 
 func (w *Writer) marisaBytes() (buf []byte, err error) {
