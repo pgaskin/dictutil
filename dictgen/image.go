@@ -45,6 +45,9 @@ type ImageHandler interface {
 	// addition, custom CSS (which must not contain any double quotes) can be
 	// returned to be set on the img tag.
 	Transform(src string, ir io.Reader, dw *kobodict.Writer) (nsrc string, css string, err error)
+
+	// Description returns a human-readable description of what the handler does.
+	Description() string
 }
 
 // ImageHandlerRemove removes images from the dicthtml.
@@ -53,6 +56,11 @@ type ImageHandlerRemove struct{}
 // Transform implements ImageHandler.
 func (*ImageHandlerRemove) Transform(string, io.Reader, *kobodict.Writer) (string, string, error) {
 	return "", "", nil
+}
+
+// Description implements ImageHandler.
+func (*ImageHandlerRemove) Description() string {
+	return "remove images"
 }
 
 // ImageHandlerEmbed adds the images to the dictzip without any additional
@@ -78,6 +86,11 @@ func (*ImageHandlerEmbed) Transform(src string, ir io.Reader, dw *kobodict.Write
 	return "dict:///" + fn, "", nil
 }
 
+// Description implements ImageHandler.
+func (*ImageHandlerEmbed) Description() string {
+	return "add to dictzip as-is (warning: nickel is buggy with this as of firmware 4.19.14123)"
+}
+
 // ImageHandlerBase64 optimizes the image and encodes it as base64. This is the
 // most compatible option, but it comes at the expense of space and speed. In
 // addition, if there are too many images, it can lead to nickel running out of
@@ -100,14 +113,7 @@ type ImageHandlerBase64 struct {
 	JPEGQuality int
 }
 
-// Transform implements ImageHandler.
-func (ih *ImageHandlerBase64) Transform(src string, ir io.Reader, dw *kobodict.Writer) (string, string, error) {
-	img, err := imaging.Decode(ir)
-	if err != nil {
-		return "", "", fmt.Errorf("ImageHandlerBase64: decode image: %w", err)
-	}
-
-	// resize it
+func (ih *ImageHandlerBase64) params() (maxWidth, maxHeight int, noGrayscale bool, jpegQuality int) {
 	mw, mh := float64(ih.MaxSize.X), float64(ih.MaxSize.Y)
 	if mw < 1 {
 		mw = 1000
@@ -115,20 +121,32 @@ func (ih *ImageHandlerBase64) Transform(src string, ir io.Reader, dw *kobodict.W
 	if mh < 1 {
 		mh = 1000
 	}
-	ow, oh := float64(img.Bounds().Dx()), float64(img.Bounds().Dy())
-	sf := math.Min(mw/ow, mh/oh)
-	nw, nh := ow*sf, oh*sf
-	img = imaging.Resize(img, int(nw), int(nh), imaging.Lanczos)
-
-	// make it grayscale
-	if !ih.NoGrayscale {
-		img = imaging.Grayscale(img)
-	}
-
-	// set the quality
+	ng := ih.NoGrayscale
 	jq := ih.JPEGQuality
 	if jq == 0 {
 		jq = 60
+	}
+	return int(mw), int(mh), ng, jq
+}
+
+// Transform implements ImageHandler.
+func (ih *ImageHandlerBase64) Transform(src string, ir io.Reader, dw *kobodict.Writer) (string, string, error) {
+	mw, mh, ng, jq := ih.params()
+
+	// decode the image
+	img, err := imaging.Decode(ir)
+	if err != nil {
+		return "", "", fmt.Errorf("ImageHandlerBase64: decode image: %w", err)
+	}
+
+	// resize it
+	ow, oh := float64(img.Bounds().Dx()), float64(img.Bounds().Dy())
+	sf := math.Min(float64(mw)/ow, float64(mh)/oh)
+	img = imaging.Resize(img, int(ow*sf), int(oh*sf), imaging.Lanczos)
+
+	// make it grayscale
+	if ng {
+		img = imaging.Grayscale(img)
 	}
 
 	// encode the image
@@ -144,6 +162,12 @@ func (ih *ImageHandlerBase64) Transform(src string, ir io.Reader, dw *kobodict.W
 
 	// build the URL
 	return "data:image/jpeg;base64," + buf.String(), css, nil
+}
+
+// Description implements ImageHandler.
+func (ih *ImageHandlerBase64) Description() string {
+	mw, mh, ng, jq := ih.params()
+	return fmt.Sprintf("optimize and encode as base64 data URL (max_width=%d, max_height=%d, grayscale=%t, jpeg_quality=%d)", mw, mh, ng, jq)
 }
 
 var imgTagRe = regexp.MustCompile(`(<img)(\s+(?:[^>]*\s+)?src\s*=\s*['"]+)([^'"]+)(['"][^>]*>)`)
