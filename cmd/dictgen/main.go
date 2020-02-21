@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"os"
 	"strings"
@@ -18,7 +21,7 @@ func main() {
 	pflag.CommandLine.SortFlags = false
 	output := pflag.StringP("output", "o", "dicthtml.zip", "The output filename (will be overwritten if it exists) (- is stdout)")
 	crypt := pflag.StringP("crypt", "c", "", "Encrypt the dictzip using the specified encryption method (format: method:keyhex)")
-	// TODO(v1): image-dir
+	imageMethod := pflag.StringP("image-method", "I", "base64", "How to handle images (if an image path is relative, it is loaded from the current dir) (base64 - optimize and encode as base64, embed - add to dictzip, remove)")
 	help := pflag.BoolP("help", "h", false, "Show this help text")
 	pflag.Parse()
 
@@ -45,6 +48,20 @@ func main() {
 		} else {
 			e = enc
 		}
+	}
+
+	var ih dictgen.ImageHandler
+	switch *imageMethod {
+	case "base64":
+		ih = new(dictgen.ImageHandlerBase64)
+	case "embed":
+		ih = new(dictgen.ImageHandlerEmbed)
+	case "remove":
+		ih = new(dictgen.ImageHandlerRemove)
+	default:
+		fmt.Fprintf(os.Stderr, "Error: invalid value for --image-method, see --help for details.")
+		os.Exit(2)
+		return
 	}
 
 	var tdf dictgen.DictFile
@@ -96,19 +113,19 @@ func main() {
 	case "-":
 		f = os.Stdout
 	default:
-		if ff, err := os.OpenFile(*output, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644); err != nil {
+		ff, err := os.OpenFile(*output, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: create dictzip: %v\n", err)
 			os.Exit(1)
 			return
-		} else {
-			f = ff
 		}
+		f = ff
 	}
 
 	fmt.Fprintf(os.Stderr, "Generating dictzip.\n")
 	dw := kobodict.NewWriter(f)
 	dw.SetEncrypter(e)
-	if err := tdf.WriteDictzip(dw, &dictgen.ImageHandlerRemove{}); err != nil {
+	if err := tdf.WriteDictzip(dw, ih); err != nil {
 		f.Close()
 		fmt.Fprintf(os.Stderr, "Error: write dictzip: %v\n", err)
 		os.Exit(1)
