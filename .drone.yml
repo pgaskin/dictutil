@@ -191,7 +191,7 @@ steps:
   commands:
   - "curl --no-progress-meter -F 'file=@gotdict.df'      'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
   - "curl --no-progress-meter -F 'file=@dicthtml-gt.zip' 'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
-  - "echo; echo 'Don't use the dictionaries with images below right now; nickel is currently too buggy with images.'"
+  - "echo; echo 'Do not use the dictionaries with images below right now; nickel is currently too buggy with images.'"
   - "curl --no-progress-meter -F 'file=@gotdict.img.df'      'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
   - "curl --no-progress-meter -F 'file=@dicthtml-gt.img.zip' 'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
 
