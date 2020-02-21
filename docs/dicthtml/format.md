@@ -124,11 +124,13 @@ A dicthtml file can optionally be encrypted using AES-128-ECB encryption and PKC
 ### *.gif, *.jpg, etc
 Dictzips can also contain a few specific types of resources. As of firmware 4.19.14123, only GIF (with the `.gif` extension and the `GIF` magic) and JPEG (with the `.jpg` extension and the `JFIF` magic) images are supported.
 
-To reference the images, you must use a URL like `dict:///example.gif`; just `example.gif` won't work. But beware: if anything after `dict:` doesn't exist, nickel will segfault and reboot when you try to view the entry. **As of firmware 4.19.14123, including images from the dictzip using this method is slightly buggy and may cause the entire definition to appear blank. In this case, you will need to try one of the methods outlined below.**
+To reference the images, you must use a URL like `dict:///example.gif`; just `example.gif` won't work. But beware: if anything after `dict:` doesn't exist, nickel will segfault and reboot when you try to view the entry.
 
 Another way to add images is to reference them with a data URL (e.g. `<img src="data:image/gif;base64,...">`). The advantage is that you don't need to include images separately, and any filetype will work, but the disadvantage is that large images will significantly increase the loading time for the dictionary.
 
 If you have control over the target device, you can also use `file:///...` URLs to reference a local file (which can also be of any filetype).
+
+As of firmware 4.19.14123, all of these methods are too buggy (due to bugs in libnickel) to be usable. The only one which works is base64-encoded images in the full-screen dictionary view (i.e. not the in-book dictionary). The `dict:///` URLs cause the webview to appear blank, and the base64-encoded and file URLs cause nickel to segfault in the in-book dictionary view. See [#1](https://github.com/geek1011/dictutil/issues/1) for more details.
 
 ## Example
 

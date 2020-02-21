@@ -88,7 +88,7 @@ func (*ImageHandlerEmbed) Transform(src string, ir io.Reader, dw *kobodict.Write
 
 // Description implements ImageHandler.
 func (*ImageHandlerEmbed) Description() string {
-	return "add to dictzip as-is (warning: nickel is buggy with this as of firmware 4.19.14123)"
+	return "add to dictzip as-is (warning: this causes entries to appear blank due to a bug in nickel as of firmware 4.19.14123)"
 }
 
 // ImageHandlerBase64 optimizes the image and encodes it as base64. This is the
@@ -167,7 +167,7 @@ func (ih *ImageHandlerBase64) Transform(src string, ir io.Reader, dw *kobodict.W
 // Description implements ImageHandler.
 func (ih *ImageHandlerBase64) Description() string {
 	mw, mh, ng, jq := ih.params()
-	return fmt.Sprintf("optimize and encode as base64 data URL (max_width=%d, max_height=%d, grayscale=%t, jpeg_quality=%d)", mw, mh, ng, jq)
+	return fmt.Sprintf("optimize and encode as base64 data URL (max_width=%d, max_height=%d, grayscale=%t, jpeg_quality=%d) (warning: this causes segfaults in the in-book dictionary due to a bug in nickel as of firmware 4.19.14123)", mw, mh, ng, jq)
 }
 
 var imgTagRe = regexp.MustCompile(`(<img)(\s+(?:[^>]*\s+)?src\s*=\s*['"]+)([^'"]+)(['"][^>]*>)`)
