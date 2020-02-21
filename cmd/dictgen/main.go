@@ -125,7 +125,7 @@ func main() {
 	fmt.Fprintf(os.Stderr, "Generating dictzip.\n")
 	dw := kobodict.NewWriter(f)
 	dw.SetEncrypter(e)
-	if err := tdf.WriteDictzip(dw, ih); err != nil {
+	if err := tdf.WriteDictzip(dw, ih, dictgen.ImageFuncFilesystem); err != nil {
 		f.Close()
 		fmt.Fprintf(os.Stderr, "Error: write dictzip: %v\n", err)
 		os.Exit(1)

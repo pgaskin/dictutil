@@ -8,6 +8,7 @@ import (
 	"image"
 	"io"
 	"math"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -15,6 +16,26 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/geek1011/dictutil/kobodict"
 )
+
+// ImageFunc reads an image from the path (it may be absolute or relative) src,
+// and returns an io.Reader for the image contents. If the returned reader
+// implements io.Closer, it will automatically be called after the image has
+// been processed.
+type ImageFunc func(src string) (io.Reader, error)
+
+// ImageFuncFilesystem loads an image from the filesystem. If src is relative,
+// it is resolved relative to the current dir.
+func ImageFuncFilesystem(src string) (io.Reader, error) {
+	rsrc, err := filepath.Abs(src)
+	if err != nil {
+		return nil, fmt.Errorf("resolve path %#v: %w", src, err)
+	}
+	f, err := os.Open(rsrc)
+	if err != nil {
+		return nil, fmt.Errorf("open image file %#v (resolved from %#v): %w", rsrc, src, err)
+	}
+	return f, nil // f will be closed by transformHTMLImages
+}
 
 // ImageHandler transforms images referenced in a DictFile.
 type ImageHandler interface {
@@ -134,14 +155,14 @@ var imgTagRe = regexp.MustCompile(`(<img)(\s+(?:[^>]*\s+)?src\s*=\s*['"]+)([^'"]
 //
 // The dictwriter may be used during this process, so callers should not rely on
 // any entries opened before calling this.
-func transformHTMLImages(ih ImageHandler, dw *kobodict.Writer, html []byte, openImage func(src string) (io.Reader, error)) ([]byte, error) {
+func transformHTMLImages(ih ImageHandler, dw *kobodict.Writer, html []byte, img ImageFunc) ([]byte, error) {
 	nhtml := html[:]
 	for _, m := range imgTagRe.FindAllSubmatch(html, -1) {
 		t, a, b, src, c := m[0], m[1], m[2], m[3], m[4]
 		if bytes.HasPrefix(src, []byte("data:")) {
 			continue
 		}
-		ir, err := openImage(string(src))
+		ir, err := img(string(src))
 		if err != nil {
 			return nil, fmt.Errorf("transform image %#v: open file: %w", string(src), err)
 		}

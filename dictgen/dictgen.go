@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 	"text/template"
@@ -14,9 +12,11 @@ import (
 	"gopkg.in/russross/blackfriday.v2"
 )
 
-// WriteDictzip write the dictfile to a kobodict.Writer, which should not have
-// been used yet. The writer is not closed automatically.
-func (df DictFile) WriteDictzip(dw *kobodict.Writer, ih ImageHandler) error {
+// WriteDictzip writes the dictfile to a kobodict.Writer, which should not have
+// been used yet. The writer is not closed automatically. If the ImageHandler
+// requires a file to be opened (i.e. not ImageHandlerRemove), the provided
+// ImageFunc will be called.
+func (df DictFile) WriteDictzip(dw *kobodict.Writer, ih ImageHandler, img ImageFunc) error {
 	var prefixes []string
 	prefixed := df.Prefixed()
 	for pfx := range prefixed {
@@ -39,17 +39,7 @@ func (df DictFile) WriteDictzip(dw *kobodict.Writer, ih ImageHandler) error {
 		hbuf.Reset()
 		if err := prefixed[pfx].WriteKoboHTML(hbuf); err != nil {
 			return fmt.Errorf("generate dicthtml for %s: %w", pfx, err)
-		} else if buf, err := transformHTMLImages(ih, dw, hbuf.Bytes(), func(src string) (io.Reader, error) {
-			rsrc, err := filepath.Abs(src)
-			if err != nil {
-				return nil, fmt.Errorf("resolve path %#v: %w", src, err)
-			}
-			f, err := os.Open(rsrc)
-			if err != nil {
-				return nil, fmt.Errorf("open image file %#v (resolved from %#v): %w", rsrc, src, err)
-			}
-			return f, nil // f will be closed by transformHTMLImages
-		}); err != nil {
+		} else if buf, err := transformHTMLImages(ih, dw, hbuf.Bytes(), img); err != nil {
 			return fmt.Errorf("generate dicthtml for %s: transform images: %w", pfx, err)
 		} else if hw, err := dw.CreateDicthtml(pfx); err != nil {
 			return fmt.Errorf("write dicthtml for %s: %w", pfx, err)
