@@ -130,6 +130,12 @@ func (w *Writer) CreateFile(filename string) (io.Writer, error) {
 	return w.last, nil
 }
 
+// Exists checks if a file already exists in the dictzip with the specified name.
+func (w *Writer) Exists(fn string) bool {
+	_, ok := w.used[fn]
+	return ok
+}
+
 // Close writes the marisa index and the zip footer. The error should not be
 // ignored. It does not close the underlying writer.
 func (w *Writer) Close() error {
