@@ -20,16 +20,18 @@ import (
 type ImageHandler interface {
 	// Transform transforms an image read from ir, and returns a new value for
 	// the img tag's src attribute. As a special case, if an empty string is
-	// returned and the error is nil, the image tag is removed entirely.
-	Transform(src string, ir io.Reader, dw *kobodict.Writer) (nsrc string, err error)
+	// returned and the error is nil, the image tag is removed entirely. In
+	// addition, custom CSS (which must not contain any double quotes) can be
+	// returned to be set on the img tag.
+	Transform(src string, ir io.Reader, dw *kobodict.Writer) (nsrc string, css string, err error)
 }
 
 // ImageHandlerRemove removes images from the dicthtml.
 type ImageHandlerRemove struct{}
 
 // Transform implements ImageHandler.
-func (*ImageHandlerRemove) Transform(string, io.Reader, *kobodict.Writer) (string, error) {
-	return "", nil
+func (*ImageHandlerRemove) Transform(string, io.Reader, *kobodict.Writer) (string, string, error) {
+	return "", "", nil
 }
 
 // ImageHandlerEmbed adds the images to the dictzip without any additional
@@ -38,27 +40,32 @@ func (*ImageHandlerRemove) Transform(string, io.Reader, *kobodict.Writer) (strin
 type ImageHandlerEmbed struct{}
 
 // Transform implements ImageHandler.
-func (*ImageHandlerEmbed) Transform(src string, ir io.Reader, dw *kobodict.Writer) (string, error) {
+func (*ImageHandlerEmbed) Transform(src string, ir io.Reader, dw *kobodict.Writer) (string, string, error) {
 	if !strings.HasSuffix(src, ".jpg") && !strings.HasSuffix(src, ".gif") {
-		return "", fmt.Errorf("ImageHandlerEmbed: unsupported image file %s: extension must be .jpg or .gif when embedding", src)
+		return "", "", fmt.Errorf("ImageHandlerEmbed: unsupported image file %s: extension must be .jpg or .gif when embedding", src)
 	}
 
 	// to generate a deterministic usually-unique filename
 	fn := fmt.Sprintf("%x%s", sha1.Sum([]byte(src)), filepath.Ext(src))
 	if !dw.Exists(fn) { // CreateFile will error if it already exists, and we're pretty confident the file is identical anyways
 		if iw, err := dw.CreateFile(fn); err != nil {
-			return "", fmt.Errorf("ImageHandlerEmbed: create dictfile entry %#v: %w", fn, err)
+			return "", "", fmt.Errorf("ImageHandlerEmbed: create dictfile entry %#v: %w", fn, err)
 		} else if _, err := io.Copy(iw, ir); err != nil {
-			return "", fmt.Errorf("ImageHandlerEmbed: copy image to dictfile: %w", err)
+			return "", "", fmt.Errorf("ImageHandlerEmbed: copy image to dictfile: %w", err)
 		}
 	}
-	return "dict:///" + fn, nil
+	return "dict:///" + fn, "", nil
 }
 
 // ImageHandlerBase64 optimizes the image and encodes it as base64. This is the
 // most compatible option, but it comes at the expense of space and speed. In
 // addition, if there are too many images, it can lead to nickel running out of
 // memory when parsing the dictionary (and sickel should reboot it).
+//
+// In addition, it adds CSS to fix sizing issues (by default, images appear
+// really small when rendered in the dictionary due to default styling).
+//
+// This is currently the recommended option for adding images.
 //
 // You must import image/* yourself for format support.
 type ImageHandlerBase64 struct {
@@ -73,10 +80,10 @@ type ImageHandlerBase64 struct {
 }
 
 // Transform implements ImageHandler.
-func (ih *ImageHandlerBase64) Transform(src string, ir io.Reader, dw *kobodict.Writer) (string, error) {
+func (ih *ImageHandlerBase64) Transform(src string, ir io.Reader, dw *kobodict.Writer) (string, string, error) {
 	img, err := imaging.Decode(ir)
 	if err != nil {
-		panic(err)
+		return "", "", fmt.Errorf("ImageHandlerBase64: decode image: %w", err)
 	}
 
 	// resize it
@@ -107,22 +114,30 @@ func (ih *ImageHandlerBase64) Transform(src string, ir io.Reader, dw *kobodict.W
 	buf := bytes.NewBuffer(nil)
 	bw := base64.NewEncoder(base64.StdEncoding, buf)
 	if err := imaging.Encode(bw, img, imaging.JPEG, imaging.JPEGQuality(jq)); err != nil {
-		panic(err)
+		return "", "", fmt.Errorf("ImageHandlerBase64: encode new image to dictfile: %w", err)
 	}
 	_ = bw.Close()
-	return "data:image/jpeg;base64," + buf.String(), nil
+
+	// generate the css
+	css := fmt.Sprintf("width:%dpx;height:%dpx;max-width:100%%;margin:1em auto;page-break-before:auto;object-fit:scale-down;object-position:center", img.Bounds().Dx(), img.Bounds().Dy())
+
+	// build the URL
+	return "data:image/jpeg;base64," + buf.String(), css, nil
 }
 
-var imgTagRe = regexp.MustCompile(`(<img\s+(?:[^>]*\s+)?src\s*=\s*['"]+)([^'"]+)(['"][^>]*>)`)
+var imgTagRe = regexp.MustCompile(`(<img)(\s+(?:[^>]*\s+)?src\s*=\s*['"]+)([^'"]+)(['"][^>]*>)`)
 
 // transformHTMLImages transforms img tags in the specified HTML, using
 // openImage to read the specified paths. If openImage implements io.Closer,
 // it will be closed automatically. Img tags which reference have a data URL are
 // skipped.
+//
+// The dictwriter may be used during this process, so callers should not rely on
+// any entries opened before calling this.
 func transformHTMLImages(ih ImageHandler, dw *kobodict.Writer, html []byte, openImage func(src string) (io.Reader, error)) ([]byte, error) {
 	nhtml := html[:]
 	for _, m := range imgTagRe.FindAllSubmatch(html, -1) {
-		t, a, src, b := m[0], m[1], m[2], m[3]
+		t, a, b, src, c := m[0], m[1], m[2], m[3], m[4]
 		if bytes.HasPrefix(src, []byte("data:")) {
 			continue
 		}
@@ -130,7 +145,7 @@ func transformHTMLImages(ih ImageHandler, dw *kobodict.Writer, html []byte, open
 		if err != nil {
 			return nil, fmt.Errorf("transform image %#v: open file: %w", string(src), err)
 		}
-		nsrc, err := ih.Transform(string(src), ir, dw)
+		nsrc, css, err := ih.Transform(string(src), ir, dw)
 		if err != nil {
 			if c, ok := ir.(io.Closer); ok {
 				c.Close()
@@ -140,10 +155,14 @@ func transformHTMLImages(ih ImageHandler, dw *kobodict.Writer, html []byte, open
 		if c, ok := ir.(io.Closer); ok {
 			c.Close()
 		}
+		var nstyle string
+		if len(css) != 0 {
+			nstyle = " style=\"" + css + "\""
+		}
 		if len(nsrc) == 0 {
 			nhtml = bytes.Replace(nhtml, t, nil, 1)
 		} else {
-			nhtml = bytes.Replace(nhtml, t, append(a, append([]byte(nsrc), b...)...), 1)
+			nhtml = bytes.Replace(nhtml, t, []byte(string(a)+nstyle+string(b)+nsrc+string(c)), 1)
 		}
 	}
 	return nhtml, nil

@@ -16,11 +16,11 @@ src = "test"
 alt="asd" />
 	`
 	exImg := [][]string{
-		{`<img src="`, `test`, `">`},
-		{`<img src="`, `test`, `" />`},
-		{`<img src="`, `test`, `" alt="asd" />`},
-		{`<img height="10" width="10" src="`, `test`, `" alt="asd" />`},
-		{`<img height="10" width="10"
+		{`<img`, ` src="`, `test`, `">`},
+		{`<img`, ` src="`, `test`, `" />`},
+		{`<img`, ` src="`, `test`, `" alt="asd" />`},
+		{`<img`, ` height="10" width="10" src="`, `test`, `" alt="asd" />`},
+		{`<img`, ` height="10" width="10"
 src = "`, `test`, `"
 alt="asd" />`},
 	}
