@@ -169,18 +169,22 @@ steps:
   commands:
   - git clone https://github.com/wjdp/gotdict
   - git -C gotdict checkout 0a675ef59b5068a91315d594f807dc8d9ae4a777
-  - ./gotdict-convert
+  - ./gotdict-convert -o gotdict.noimg.df
+  - ./gotdict-convert -o gotdict.df --images
   - ls -lah gotdict.df
 - name: generate
   image: golang:1.13-buster
   commands:
   - apt-get update -qqy && apt-get install -qqy swig
+  - go run ./cmd/dictgen -o dicthtml-gt.noimg.zip gotdict.noimg.df
   - go run ./cmd/dictgen -o dicthtml-gt.zip gotdict.df
   - ls -lah dicthtml-gt.zip
 - name: upload
   image: curlimages/curl
   entrypoint: ["/bin/bash"]
   commands:
+  - "curl --no-progress-meter -F 'file=@gotdict.noimg.df'      'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
+  - "curl --no-progress-meter -F 'file=@dicthtml-gt.noimg.zip' 'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
   - "curl --no-progress-meter -F 'file=@gotdict.df'      'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
   - "curl --no-progress-meter -F 'file=@dicthtml-gt.zip' 'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
 

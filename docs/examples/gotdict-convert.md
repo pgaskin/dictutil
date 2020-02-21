@@ -14,9 +14,12 @@ Images are not supported yet.
 ```
 Usage: gotdict-convert [options]
 
+Version: dev
+
 Options:
   -g, --gotdict string   The path to the local copy of github.com/wjdp/gotdict. (default "./gotdict")
   -o, --output string    The output filename (will be overwritten if it exists) (- is stdout) (default "./gotdict.df")
+  -I, --images           Include images in dictfile
   -h, --help             Show this help text
 
 To convert the resulting dictfile into a dictzip, use dictgen.

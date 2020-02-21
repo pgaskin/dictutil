@@ -15,6 +15,7 @@ func main() {
 	pflag.CommandLine.SortFlags = false
 	gotdict := pflag.StringP("gotdict", "g", "."+string(os.PathSeparator)+"gotdict", "The path to the local copy of github.com/wjdp/gotdict.")
 	output := pflag.StringP("output", "o", "."+string(os.PathSeparator)+"gotdict.df", "The output filename (will be overwritten if it exists) (- is stdout)")
+	images := pflag.BoolP("images", "I", false, "Include images in dictfile")
 	help := pflag.BoolP("help", "h", false, "Show this help text")
 	pflag.Parse()
 
@@ -24,8 +25,15 @@ func main() {
 		return
 	}
 
-	fmt.Fprintf(os.Stderr, "Parsing gotdict.\n")
-	gd, err := ParseGOTDict(filepath.Join(*gotdict, "_definitions"), "") //, filepath.Join(*gotdict, "images"))
+	var img string
+	if *images {
+		fmt.Fprintf(os.Stderr, "Parsing gotdict (with images).\n")
+		img = filepath.Join(*gotdict, "images")
+	} else {
+		fmt.Fprintf(os.Stderr, "Parsing gotdict (no images).\n")
+	}
+
+	gd, err := ParseGOTDict(filepath.Join(*gotdict, "_definitions"), img, true)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: parse gotdict: %v\n", err)
 		os.Exit(1)

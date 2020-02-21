@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -54,8 +55,10 @@ const (
 	GOTTypeWord GOTType = "word"
 )
 
-// ParseGOTDict parses the GOTDict. If imgdir is an empty string, images are removed.
-func ParseGOTDict(defdir, imgdir string) (GOTDict, error) {
+// ParseGOTDict parses the GOTDict. If imgdir is an empty string, images are
+// removed. If imgref is true, image paths are set to the full filepath rather
+// than reading the images to memory.
+func ParseGOTDict(defdir, imgdir string, imgref bool) (GOTDict, error) {
 	var dict GOTDict
 
 	fis, err := ioutil.ReadDir(defdir)
@@ -126,16 +129,30 @@ func ParseGOTDict(defdir, imgdir string) (GOTDict, error) {
 		if imgdir == "" {
 			def.Definition = regexp.MustCompile(`(\s*Map on [Nn]ext [Pp]age\.?)|(\s*\(Map on [Nn]ext [Pp]age\.?\))|(!\[[^]]*\]\([^)]+\))`).ReplaceAllLiteralString(def.Definition, "")
 		} else {
+			var repl []string
 			for _, img := range regexp.MustCompile(`!\[[^]]*\]\((images/)?([^)]+)\)`).FindAllStringSubmatch(def.Definition, -1) {
 				if img[1] == "" {
 					return nil, fmt.Errorf("parse %s: unknown image path %#v", fi.Name(), img[1])
-				} else if imgbuf, err := ioutil.ReadFile(filepath.Join(imgdir, img[2])); err != nil {
-					return nil, fmt.Errorf("parse %s: read image %s: %w", fi.Name(), img[1], err)
+				}
+				fn, err := filepath.Abs(filepath.Join(imgdir, img[2]))
+				if err != nil {
+					return nil, fmt.Errorf("parse %s: resolve image %#v: %w", fi.Name(), img[1], err)
+				}
+				if imgref {
+					if _, err := os.Stat(fn); err != nil {
+						return nil, fmt.Errorf("parse %s: stat image %#v: %w", fi.Name(), img[1], err)
+					}
+					repl = append(repl, "("+img[1]+img[2]+")", "("+fn+")")
 				} else {
+					imgbuf, err := ioutil.ReadFile(fn)
+					if err != nil {
+						return nil, fmt.Errorf("parse %s: read image %#v: %w", fi.Name(), img[1], err)
+					}
 					def.Images[img[2]] = imgbuf
+					repl = append(repl, "("+img[1]+img[2]+")", "("+img[2]+")")
 				}
 			}
-			def.Definition = strings.ReplaceAll(def.Definition, "images/", "")
+			def.Definition = strings.NewReplacer(repl...).Replace(def.Definition)
 		}
 
 		def.Definition = strings.TrimSpace(def.Definition)
