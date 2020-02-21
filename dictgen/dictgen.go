@@ -1,8 +1,11 @@
 package dictgen
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"text/template"
@@ -13,7 +16,7 @@ import (
 
 // WriteDictzip write the dictfile to a kobodict.Writer, which should not have
 // been used yet. The writer is not closed automatically.
-func (df DictFile) WriteDictzip(dw *kobodict.Writer) error {
+func (df DictFile) WriteDictzip(dw *kobodict.Writer, ih ImageHandler) error {
 	var prefixes []string
 	prefixed := df.Prefixed()
 	for pfx := range prefixed {
@@ -21,6 +24,7 @@ func (df DictFile) WriteDictzip(dw *kobodict.Writer) error {
 	}
 	sort.Strings(prefixes)
 
+	hbuf := bytes.NewBuffer(nil)
 	for _, pfx := range prefixes {
 		for _, dfe := range prefixed[pfx] {
 			if err := dw.AddWord(dfe.Headword); err != nil {
@@ -32,9 +36,24 @@ func (df DictFile) WriteDictzip(dw *kobodict.Writer) error {
 				}
 			}
 		}
-		if hw, err := dw.CreateDicthtml(pfx); err != nil {
+		hbuf.Reset()
+		if err := prefixed[pfx].WriteKoboHTML(hbuf); err != nil {
+			return fmt.Errorf("generate dicthtml for %s: %w", pfx, err)
+		} else if buf, err := transformHTMLImages(ih, dw, hbuf.Bytes(), func(src string) (io.Reader, error) {
+			rsrc, err := filepath.Abs(src)
+			if err != nil {
+				return nil, fmt.Errorf("resolve path %#v: %w", src, err)
+			}
+			f, err := os.Open(rsrc)
+			if err != nil {
+				return nil, fmt.Errorf("open image file %#v (resolved from %#v): %w", rsrc, src, err)
+			}
+			return f, nil // f will be closed by transformHTMLImages
+		}); err != nil {
+			return fmt.Errorf("generate dicthtml for %s: transform images: %w", pfx, err)
+		} else if hw, err := dw.CreateDicthtml(pfx); err != nil {
 			return fmt.Errorf("write dicthtml for %s: %w", pfx, err)
-		} else if err = prefixed[pfx].WriteKoboHTML(hw); err != nil {
+		} else if _, err = hw.Write(buf); err != nil {
 			return fmt.Errorf("write dicthtml for %s: %w", pfx, err)
 		}
 	}
