@@ -43,6 +43,8 @@ trigger:
   event:
     exclude: [promote]
 
+depends_on: [kobodict]
+
 ---
 
 name: dictgen-cmd
@@ -63,6 +65,8 @@ steps:
 trigger:
   event:
     exclude: [promote]
+
+depends_on: [dictgen]
 
 ---
 
@@ -88,6 +92,8 @@ steps:
 trigger:
   event:
     exclude: [promote]
+
+depends_on: [kobodict]
 
 ---
 
@@ -189,11 +195,11 @@ steps:
   - "curl --no-progress-meter -F 'file=@gotdict.img.df'      'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
   - "curl --no-progress-meter -F 'file=@dicthtml-gt.img.zip' 'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
 
-depends_on: [dictgen-cmd]
-
 trigger:
   event:
     exclude: [promote]
+
+depends_on: [dictgen-cmd]
 
 ---
 
@@ -276,6 +282,10 @@ steps:
   when: {ref: {include: ["refs/tags/*"]}}
   depends_on: [notes, list]
 
+trigger:
+  event:
+    exclude: [promote]
+
 depends_on:
 - kobodict
 - dictgen
@@ -283,7 +293,3 @@ depends_on:
 - dictutil-cmd
 - marisa
 - gotdict-convert
-
-trigger:
-  event:
-    exclude: [promote]
