@@ -125,6 +125,19 @@ func main() {
 	fmt.Fprintf(os.Stderr, "Generating dictzip.\n")
 	dw := kobodict.NewWriter(f)
 	dw.SetEncrypter(e)
+	if e != nil {
+		fmt.Fprintf(os.Stderr, "  Using encryption.\n")
+	}
+	switch v := ih.(type) {
+	case *dictgen.ImageHandlerBase64:
+		fmt.Fprintf(os.Stderr, "  Using image method: optimize and encode as base64 data URL (max_width=%d, max_height=%d, grayscale=%t, jpeg_quality=%d).\n", v.MaxSize.X, v.MaxSize.Y, !v.NoGrayscale, v.JPEGQuality)
+	case *dictgen.ImageHandlerEmbed:
+		fmt.Fprintf(os.Stderr, "  Using image method: add to dictzip as-is (warning: nickel is buggy with this as of firmware 4.19.14123).\n")
+	case *dictgen.ImageHandlerRemove:
+		fmt.Fprintf(os.Stderr, "  Using image method: remove images.\n")
+	default:
+		fmt.Fprintf(os.Stderr, "  Using image method: %#v.\n", v)
+	}
 	if err := tdf.WriteDictzip(dw, ih, dictgen.ImageFuncFilesystem); err != nil {
 		f.Close()
 		fmt.Fprintf(os.Stderr, "Error: write dictzip: %v\n", err)
