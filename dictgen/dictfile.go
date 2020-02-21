@@ -8,8 +8,10 @@ import (
 	"text/template"
 )
 
+// A DictFile is a high-level representation of a Kobo dictionary.
 type DictFile []*DictFileEntry
 
+// DictFileEntry represents a single entry in the DictFile.
 type DictFileEntry struct {
 	Headword string
 	Variant  []string
@@ -23,6 +25,8 @@ type DictFileEntry struct {
 	line int // for internal use if parsed, zero otherwise
 }
 
+// ParseDictFile parses a DictFile from it's textual representation (usually
+// stored in a file with the extension .df).
 func ParseDictFile(r io.Reader) (DictFile, error) {
 	var df DictFile
 	var dfe *DictFileEntry
