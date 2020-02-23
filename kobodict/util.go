@@ -39,11 +39,11 @@ func WordPrefix(word string) string {
 	pfx := []rune(word)
 
 	for i, c := range pfx {
-		pfx[i] = unicode.ToLower(c) // this includes accented chars
-		if i >= 2 {
-			pfx = pfx[:i] // trim to 2 chars
+		if i >= 2 || c == '\x00' { // limit to 2 chars, also cut at null
+			pfx = pfx[:i] // trim up to current char
 			break
 		}
+		pfx[i] = unicode.ToLower(c) // this includes accented chars
 	}
 
 	for len(pfx) != 0 {
@@ -58,13 +58,6 @@ func WordPrefix(word string) string {
 		if unicode.IsSpace(pfx[len(pfx)-1]) {
 			pfx = pfx[:len(pfx)-1] // trim right space
 		} else {
-			break
-		}
-	}
-
-	for i, c := range pfx {
-		if c == '\x00' {
-			pfx = pfx[:i] // cut string at first null
 			break
 		}
 	}
