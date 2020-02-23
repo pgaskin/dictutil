@@ -187,6 +187,7 @@ func (w *Writer) marisaBytes() (buf []byte, err error) {
 	for _, word := range words {
 		ks.PushBackString(word)
 	}
+	defer marisa.DeleteKeyset(ks)
 
 	td, err := ioutil.TempDir("", "marisa")
 	if err != nil {
@@ -195,6 +196,8 @@ func (w *Writer) marisaBytes() (buf []byte, err error) {
 	defer os.RemoveAll(td)
 
 	trie := marisa.NewTrie()
+	defer marisa.DeleteTrie(trie)
+
 	trie.Build(ks)
 	trie.Save(filepath.Join(td, "words"))
 

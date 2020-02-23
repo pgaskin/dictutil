@@ -131,9 +131,13 @@ func (r *Reader) marisaWords() (words []string, err error) {
 
 	// based on marisa-dump
 	trie := marisa.NewTrie()
+	defer marisa.DeleteTrie(trie)
+
 	trie.Load(tf.Name())
 
 	agent := marisa.NewAgent()
+	defer marisa.DeleteAgent(agent)
+
 	agent.SetQueryString("")
 
 	for trie.PredictiveSearch(agent) {
