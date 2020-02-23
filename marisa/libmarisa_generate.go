@@ -42,7 +42,7 @@ func main() {
 	} else if err := func() error {
 		if mr, err := hmarisa(files, version); err != nil {
 			return err
-		} else if mf, err := os.OpenFile("marisa.h", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644); err != nil {
+		} else if mf, err := os.OpenFile("libmarisa.h", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644); err != nil {
 			return err
 		} else if _, err := io.Copy(mf, mr); err != nil {
 			mf.Close()
@@ -51,7 +51,7 @@ func main() {
 			return mf.Close()
 		}
 	}(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: generate marisa.h: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error: generate libmarisa.h: %v\n", err)
 		os.Exit(1)
 		return
 	}
@@ -64,7 +64,7 @@ func hmarisa(files map[string][]byte, version string) (io.Reader, error) {
 		return nil, err
 	}
 
-	fmt.Printf("Generating marisa.h\n")
+	fmt.Printf("Generating libmarisa.h\n")
 	return io.MultiReader(
 		// A custom header.
 		strings.NewReader("// AUTOMATICALLY GENERATED, DO NOT EDIT!\n"),

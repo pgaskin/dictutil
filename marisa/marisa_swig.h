@@ -1,7 +1,7 @@
 #ifndef MARISA_SWIG_H_
 #define MARISA_SWIG_H_
 
-#include <marisa.h>
+#include <libmarisa.h>
 
 namespace marisa_swig {
 
