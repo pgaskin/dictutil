@@ -72,10 +72,6 @@ func ParseGOTDict(defdir, imgdir string, imgref bool) (GOTDict, error) {
 			continue
 		}
 
-		if fi.Name() == "reach.mdd" {
-			continue // FIX: older duplicate of the-reach.mdd
-		}
-
 		buf, err := ioutil.ReadFile(filepath.Join(defdir, fi.Name()))
 		if err != nil {
 			return nil, err
@@ -85,10 +81,6 @@ func ParseGOTDict(defdir, imgdir string, imgref bool) (GOTDict, error) {
 			Title string   `yaml:"title"`
 			Terms []string `yaml:"terms"`
 			Type  GOTType  `yaml:"type"`
-
-			// FIX: some entries have a messed up format
-			Term  []string `yaml:"term"`
-			House string   `yaml:"house"`
 		}
 
 		md, err := unmarshalStrictFrontMatter(buf, &obj)
@@ -107,19 +99,13 @@ func ParseGOTDict(defdir, imgdir string, imgref bool) (GOTDict, error) {
 		seen[obj.Title] = def
 		def.Title = obj.Title
 
-		for _, terms := range [][]string{obj.Terms, obj.Term} {
-			for _, term := range terms {
-				term = strings.TrimSpace(term)
-				if term == obj.Title {
-					continue // FIX: some entries duplicate the title as a term
-				} else if term == "Jon Umber" {
-					continue // FIX: duplicated terms
-				} else if odef, ok := seen[term]; ok {
-					return nil, fmt.Errorf("parse %s: already seen term %#v in other def %#v", fi.Name(), term, odef)
-				}
-				seen[term] = def
-				def.Terms = append(def.Terms, term)
+		for _, term := range obj.Terms {
+			term = strings.TrimSpace(term)
+			if odef, ok := seen[term]; ok && term != "Jon Umber" { // it's usually a mistake to have duplicate terms (but remember that dictgen will handle them fine)
+				return nil, fmt.Errorf("parse %s: already seen term %#v in other def %#v", fi.Name(), term, odef)
 			}
+			seen[term] = def
+			def.Terms = append(def.Terms, term)
 		}
 
 		def.Type = GOTType(strings.TrimSpace(string(obj.Type)))

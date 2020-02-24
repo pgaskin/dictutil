@@ -168,7 +168,7 @@ steps:
   image: golang:1.13-buster
   commands:
   - git clone https://github.com/wjdp/gotdict
-  - git -C gotdict checkout 0a675ef59b5068a91315d594f807dc8d9ae4a777
+  - git -C gotdict checkout 6b4d6cdbb1f5d899d418783ab842f487aafa79ec
   - ./gotdict-convert -o gotdict.df
   - ./gotdict-convert -o gotdict.img.df --images
   - ls -lah gotdict.df
