@@ -8,11 +8,11 @@ platform:
 
 steps:
 - name: test
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - go test -cover -v ./kobodict
 - name: bench
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - go test -bench=. -benchmem ./kobodict
 
@@ -32,7 +32,7 @@ platform:
 
 steps:
 - name: test
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - go test -cover -v ./dictgen
 
@@ -50,11 +50,11 @@ type: docker
 
 steps:
 - name: build
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - go build -o dictgen-out ./cmd/dictgen
 - name: run
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - ./dictgen-out --help
 
@@ -76,11 +76,11 @@ platform:
 
 steps:
 - name: build
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - go build -o dictutil-out ./cmd/dictutil
 - name: run
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - ./dictutil-out help
 
@@ -102,39 +102,39 @@ platform:
 
 steps:
 - name: generate
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - apt-get update -qqy && apt-get install -qqy swig
   - go generate ./marisa
   - git status --porcelain ./marisa/libmarisa.cc ./marisa/marisa.h
   - '[ ! -n "$(git status --porcelain ./marisa/libmarisa.cc ./marisa/marisa.h)" ] || { echo "Error: Generated files are not up to date, please run go generate and commit the result."; false; }'
 - name: test
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - go test -v ./marisa
 - name: build-windows-386
-  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.8-main
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
   command: [
     "--platforms", "windows/386",
     "--build-cmd", "CGO_ENABLED=1 go build -x ./marisa",
   ]
   depends_on: [test]
 - name: build-linux-amd64
-  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.8-main
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
   command: [
     "--platforms", "linux/amd64",
     "--build-cmd", "CGO_ENABLED=1 go build -x ./marisa",
   ]
   depends_on: [test]
 - name: build-linux-arm
-  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.8-arm
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-arm
   command: [
     "--platforms", "linux/armv6",
     "--build-cmd", "CGO_ENABLED=1 go build -x ./marisa",
   ]
   depends_on: [test]
 - name: build-darwin-amd64
-  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.8-darwin
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-darwin
   command: [
     "--platforms", "darwin/amd64",
     "--build-cmd", "CGO_ENABLED=1 go build -x ./marisa",
@@ -157,15 +157,15 @@ platform:
 
 steps:
 - name: build
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - go build -o gotdict-convert ./examples/gotdict-convert
 - name: run
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - ./gotdict-convert --help
 - name: convert
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - git clone https://github.com/wjdp/gotdict
   - git -C gotdict checkout 6b4d6cdbb1f5d899d418783ab842f487aafa79ec
@@ -173,7 +173,7 @@ steps:
   - ./gotdict-convert -o gotdict.img.df --images
   - ls -lah gotdict.df
 - name: generate
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - go run ./cmd/dictgen -Iremove -o dicthtml-gt.zip gotdict.df
   - go run ./cmd/dictgen -Ibase64 -o dicthtml-gt.img.zip gotdict.img.df
@@ -205,12 +205,12 @@ platform:
 
 steps:
 - name: notes
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - git fetch --tags
   - git log "$(git describe --tags --abbrev=0 HEAD~1)..HEAD" --oneline --format='%h %s' | tee -a notes.md
 - name: build-linux-amd64
-  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.8-main
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
   command: [
     "--platforms", "linux/amd64",
     "--build-cmd", "
@@ -219,7 +219,7 @@ steps:
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-64bit ./examples/gotdict-convert",
   ]
 - name: build-linux-386
-  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.8-main
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
   command: [
     "--platforms", "linux/amd64",
     "--build-cmd", "
@@ -228,7 +228,7 @@ steps:
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-32bit ./examples/gotdict-convert",
   ]
 - name: build-linux-arm
-  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.8-arm
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-arm
   command: [
     "--platforms", "linux/armv6",
     "--build-cmd", "
@@ -237,7 +237,7 @@ steps:
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-arm ./examples/gotdict-convert",
   ]
 - name: build-windows-386
-  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.8-main
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
   command: [
     "--platforms", "windows/386",
     "--build-cmd", "
@@ -246,7 +246,7 @@ steps:
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-windows.exe ./examples/gotdict-convert",
   ]
 - name: build-darwin-amd64
-  image: docker.elastic.co/beats-dev/golang-crossbuild:1.13.8-darwin
+  image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-darwin
   command: [
     "--platforms", "darwin/amd64",
     "--build-cmd", "
@@ -255,7 +255,7 @@ steps:
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/gotdict-convert-darwin-64bit ./examples/gotdict-convert",
   ]
 - name: list
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   commands:
   - ls -lah build
   depends_on: [build-linux-amd64, build-linux-arm, build-linux-386, build-windows-386, build-darwin-amd64]
