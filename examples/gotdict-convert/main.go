@@ -20,7 +20,7 @@ func main() {
 	pflag.Parse()
 
 	if *help || pflag.NArg() != 0 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\nVersion: %s\n\nOptions:\n%s\nTo convert the resulting dictfile into a dictzip, use dictgen.\n", os.Args[0], version, pflag.CommandLine.FlagUsages())
+		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\nVersion: gotdict-convert %s\n\nOptions:\n%s\nTo convert the resulting dictfile into a dictzip, use dictgen.\n", os.Args[0], version, pflag.CommandLine.FlagUsages())
 		os.Exit(0)
 		return
 	}
