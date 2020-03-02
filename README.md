@@ -103,6 +103,10 @@ Options:
   -h, --help                  Show this help text
 
 If multiple dictfiles (*.df) are provided, they will be merged (duplicate entries are fine; they will be shown in sequential order). To read from stdin, use - as the filename.
+
+Note that the only usable image method is currently removing them or using base64-encoding (for firmware 4.20.14601+; older versions segfault in the in-book dictionary), as embedded dict:/// image URLs cause the webviews to appear blank (this is a nickel bug). See https://github.com/geek1011/dictutil/issues/1 for more details.
+
+See https://pgaskin.net/dictutil/dictgen for more information about the dictfile format.
 ```
 
 **See [here](https://pgaskin.net/dictutil/dictgen) for information and examples of the dictfile format.**

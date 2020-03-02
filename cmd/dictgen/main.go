@@ -21,12 +21,12 @@ func main() {
 	pflag.CommandLine.SortFlags = false
 	output := pflag.StringP("output", "o", "dicthtml.zip", "The output filename (will be overwritten if it exists) (- is stdout)")
 	crypt := pflag.StringP("crypt", "c", "", "Encrypt the dictzip using the specified encryption method (format: method:keyhex)")
-	imageMethod := pflag.StringP("image-method", "I", "remove", "How to handle images (if an image path is relative, it is loaded from the current dir) (base64 - optimize and encode as base64, embed - add to dictzip, remove)")
+	imageMethod := pflag.StringP("image-method", "I", "base64", "How to handle images (if an image path is relative, it is loaded from the current dir) (base64 - optimize and encode as base64, embed - add to dictzip, remove)")
 	help := pflag.BoolP("help", "h", false, "Show this help text")
 	pflag.Parse()
 
 	if *help || pflag.NArg() == 0 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [options] dictfile...\n\nVersion: dictgen %s\n\nOptions:\n%s\nIf multiple dictfiles (*.df) are provided, they will be merged (duplicate entries are fine; they will be shown in sequential order). To read from stdin, use - as the filename.\n\nNote that images are currently unusable (with the exception of base64-encoded\n  images in the full-screen dictionary) due to bugs in nickel. See https://github.com/geek1011/dictutil/commit/b403da2f458d50ebb45a3c52c2dd126be030c64d#commitcomment-37414958.\n\nSee https://pgaskin.net/dictutil/dictgen for more information about the dictfile format.\n", os.Args[0], version, pflag.CommandLine.FlagUsages())
+		fmt.Fprintf(os.Stderr, "Usage: %s [options] dictfile...\n\nVersion: dictgen %s\n\nOptions:\n%s\nIf multiple dictfiles (*.df) are provided, they will be merged (duplicate entries are fine; they will be shown in sequential order). To read from stdin, use - as the filename.\n\nNote that the only usable image method is currently removing them or using base64-encoding (for firmware 4.20.14601+; older versions segfault in the in-book dictionary if images are enabled), as embedded dict:/// image URLs cause the webviews to appear blank (this is a nickel bug). See https://github.com/geek1011/dictutil/issues/1 for more details.\n\nSee https://pgaskin.net/dictutil/dictgen for more information about the dictfile format.\n", os.Args[0], version, pflag.CommandLine.FlagUsages())
 		os.Exit(0)
 		return
 	}
