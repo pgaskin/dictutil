@@ -15,7 +15,7 @@ func main() {
 	pflag.CommandLine.SortFlags = false
 	gotdict := pflag.StringP("gotdict", "g", "."+string(os.PathSeparator)+"gotdict", "The path to the local copy of github.com/wjdp/gotdict.")
 	output := pflag.StringP("output", "o", "."+string(os.PathSeparator)+"gotdict.df", "The output filename (will be overwritten if it exists) (- is stdout)")
-	images := pflag.BoolP("images", "I", false, "Include images in dictfile")
+	images := pflag.BoolP("images", "I", false, "Include images in the generated dictfile")
 	help := pflag.BoolP("help", "h", false, "Show this help text")
 	pflag.Parse()
 
