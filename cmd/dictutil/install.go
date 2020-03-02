@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	builtinUpdated = "4.19.14123"
+	builtinUpdated = "4.20.14601"
 	builtinDict    = map[string]string{
 		"de":        "Deutsch",
 		"de-en":     "Deutsch - English",

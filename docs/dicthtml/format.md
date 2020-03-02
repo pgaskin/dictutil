@@ -12,7 +12,7 @@ This document describes [version 2](./v1v2) of Kobo dictionaries. Japanese dicti
 
 Kobo dictzips are standard ZIP files. In general, they are named `dicthtml-LOCALE.zip` where **LOCALE** is the ISO-639-1 language code (although custom locale codes can be used if added to ExtraLocales in the Kobo config file). In addition, a dictzip may be named `dicthtml-LOCALE-LOCALE.zip` for translation dictionaries. Some official dictionaries have slightly different locale codes (e.g. `jaxxdjs`), but these are exceptions.
 
-As of firmware 4.19.14123, the official dictionaries are hosted on `https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v2/dicthtml*.zip`, and support the following locales:
+As of firmware 4.20.14601, the official dictionaries are hosted on `https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v2/dicthtml*.zip`, and support the following locales:
 
 | Locale     | Language |
 | ---        | --- |
@@ -131,6 +131,8 @@ Another way to add images is to reference them with a data URL (e.g. `<img src="
 If you have control over the target device, you can also use `file:///...` URLs to reference a local file (which can also be of any filetype).
 
 As of firmware 4.19.14123, all of these methods are too buggy (due to bugs in libnickel) to be usable. The only one which works is base64-encoded images in the full-screen dictionary view (i.e. not the in-book dictionary). The `dict:///` URLs cause the webview to appear blank, and the base64-encoded and file URLs cause nickel to segfault in the in-book dictionary view. See [#1](https://github.com/geek1011/dictutil/issues/1) for more details.
+
+Starting in firmware 4.20.14601, the base64 method works perfectly in both views (yay!). Other URLs don't segfault the in-book dictionary view anymore, and `dict:///` URLs still blank the webview.
 
 ## Example
 
