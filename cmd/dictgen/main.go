@@ -26,7 +26,7 @@ func main() {
 	pflag.Parse()
 
 	if *help || pflag.NArg() == 0 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [options] dictfile...\n\nVersion: dictgen %s\n\nOptions:\n%s\nIf multiple dictfiles (*.df) are provided, they will be merged (duplicate entries are fine; they will be shown in sequential order). To read from stdin, use - as the filename.\n\nNote that the only usable image method is currently removing them or using base64-encoding (for firmware 4.20.14601+; older versions segfault in the in-book dictionary if images are enabled), as embedded dict:/// image URLs cause the webviews to appear blank (this is a nickel bug). See https://github.com/geek1011/dictutil/issues/1 for more details.\n\nSee https://pgaskin.net/dictutil/dictgen for more information about the dictfile format.\n", os.Args[0], version, pflag.CommandLine.FlagUsages())
+		fmt.Fprintf(os.Stderr, "Usage: %s [options] dictfile...\n\nVersion: dictgen %s\n\nOptions:\n%s\nIf multiple dictfiles (*.df) are provided, they will be merged (duplicate entries are fine; they will be shown in sequential order). To read from stdin, use - as the filename.\n\nNote that currently, the only usable image method is removing them or using base64-encoding (for firmware 4.20.14601+; older versions segfault in the in-book dictionary if images are enabled), as embedded dict:/// image URLs cause the webviews to appear blank (this is a nickel bug). See https://github.com/geek1011/dictutil/issues/1 for more details.\n\nSee https://pgaskin.net/dictutil/dictgen for more information about the dictfile format.\n", os.Args[0], version, pflag.CommandLine.FlagUsages())
 		os.Exit(0)
 		return
 	}
