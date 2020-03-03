@@ -95,7 +95,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 	fs.SortFlags = false
 	root := fs.StringP("kobo", "k", "", "KOBOeReader path (default: automatically detected)")
 	locale := fs.StringP("locale", "l", "", "Locale name to use (format: ALPHANUMERIC{2}; translation dictionaries are not supported) (default: detected from filename if in format dicthtml-**.zip)")
-	name := fs.StringP("name", "n", "", "Custom additional label for dictionary (ignored when replacing built-in dictionaries)")
+	name := fs.StringP("name", "n", "", "Custom additional label for dictionary (ignored when replacing built-in dictionaries) (doesn't have any effect on 4.20.14601)")
 	builtin := fs.StringP("builtin", "b", "replace", "How to handle built-in locales [replace = replace and prevent from syncing] [ignore = replace and leave syncing as-is]")
 	help := fs.BoolP("help", "h", false, "Show this help text")
 	fs.Parse(args[1:])
