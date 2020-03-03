@@ -17,7 +17,7 @@ You can uninstall custom dictionaries (including reverting overwritten built-in 
 2. Copy the dictionary to `KOBOeReader/.kobo/dict/dicthtml-LOCALE.zip`, where **LOCALE** is a string consisting of 2 lowercase alphanumeric characters. It does not have to be a valid locale.
 3. Open `KOBOeReader/.kobo/KoboReader.sqlite` in a SQLite3 editor, and add a row to the Dictionary table with the following values:
     - **Suffix:** `-LOCALE`, where **LOCALE** is the locale code you chose earlier. This is used when constructing filenames.
-    - **Name:** `Extra:_LOCALE LABEL`, where **LOCALE** is the locale code you chose earlier, and **LABEL** is a custom label (it can have spaces in it).
+    - **Name:** `Extra:_LOCALE LABEL`, where **LOCALE** is the locale code you chose earlier, and **LABEL** is a custom label (it can have spaces in it) (custom labels don't show on firmware 4.20.14601).
     - **Installed:** `true`. This one is self-explanatory.
     - **Size:** `SIZE`, where *SIZE* is the size of the dictzip in bytes. This is displayed in the dictionary settings, but is unused otherwise, so it's fine if it isn't accurate as long as it is a valid number. For built-in dictionaries with `IsSynced` set, it is used to check for updates.
     - **IsSynced:** `false`. This is used to see if the sync process should attempt to sync the specified dictionary. If true, the `Size` column is checked against the expected size of the latest version (from the dictionary download server), and if it does not match, the new dictionary is downloaded over it.
