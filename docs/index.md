@@ -15,6 +15,9 @@ A collection of documentation and tools for working with Kobo dictionaries.
 
 These tools are designed to work with v2 dictionaries (4.7.10364+).
 
+## Getting started
+If you're interested in creating dictionaries, look at the [dictgen documentation](./dictgen). If you're interested in installing or manipulating existing dictionaries, see the [dictutil documentation](./dictutil). Otherwise, see the [dicthtml documentation](./dicthtml) for more information about the Kobo dictionary format.
+
 ## dicthtml
 These pages are some notes I've made about the Kobo dictionary format based on reverse engineering the firmware and the official dictionaries.
 
