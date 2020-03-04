@@ -18,4 +18,28 @@ Options:
 ```
 
 ## Examples
-TODO
+
+**Unpack a dictionary:**
+
+```sh
+dictutil unpack dicthtml.zip
+# The output is written to ./dicthtml
+```
+
+```sh
+dictutil unpack dicthtml-fr.zip
+# The output is written to ./dicthtml-fr
+```
+
+**Unpack a dictionary to a custom directory:**
+
+```
+dictutil unpack --output mydictionary dicthtml.zip
+```
+
+## Details
+An unpacked dictdir contains:
+
+- `words`: The parsed marisa word list (newline-separated).
+- `*.html`: The ungzipped dicthtml files.
+- `*`: Any additional files as-is.

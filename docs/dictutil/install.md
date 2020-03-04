@@ -25,4 +25,30 @@ Note:
 ```
 
 ## Examples
-TODO
+
+**Install a dictionary with the locale in the filename (dicthtml-\*\*.zip):**
+
+```sh
+dictutil install dicthtml-aa.zip
+```
+
+**Install a dictionary with a different locale:**
+
+```sh
+dictutil install --locale aa mydictionary.zip
+```
+
+**Install a dictionary on a specific Kobo:**
+
+```sh
+dictutil install --kobo /path/to/KOBOeReader dicthtml-aa.zip
+```
+
+**Install a dictionary with a custom label (4.19.14123 and older):**
+
+```sh
+dictutil install --name "My Dictionary" dicthtml-aa.zip
+```
+
+## Details
+See [installing dictionaries](../dicthtml/install) for more details on how this works.

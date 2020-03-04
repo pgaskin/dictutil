@@ -18,4 +18,19 @@ Options:
 ```
 
 ## Examples
-TODO
+
+**Pack a dictdir:**
+
+```sh
+dictutil pack /path/to/dictdir
+# the output is written to dicthtml.zip
+```
+
+**Pack a dictdir to a specific filename:**
+
+```sh
+dictutil pack --output "dicthtml-aa.zip" /path/to/dictdir
+```
+
+## Input format
+The input dictdir is the same as the output of [dictutil unpack](./unpack).

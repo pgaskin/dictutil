@@ -17,4 +17,21 @@ Options:
 ```
 
 ## Examples
-TODO
+
+**Get the prefix for a word:**
+
+```sh
+dictutil prefix "word"
+```
+
+**Get the prefix for multiple words:**
+
+```sh
+dictutil prefix "word1" "word2" "word3"
+```
+
+**Get the prefix for multiple words as CSV:**
+
+```sh
+dictutil prefix --format csv "word1" "word2" "word3"
+```
