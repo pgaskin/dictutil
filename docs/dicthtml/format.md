@@ -53,7 +53,6 @@ To build the words file, you can use something like the following C++ code:
 
 ```cpp
 #include <algorithm>
-#include <marisa/trie.h>
 #include <string>
 #include <vector>
 #include <marisa.h>
@@ -235,7 +234,7 @@ testing 1
     <w>
         <a name="test-image" />
         <var></var>
-        <p>Image (a black square): <img src="dict:///example.gif" /></p>
+        <p>Image (a black square) (this won't work on current firmware versions): <img src="dict:///example.gif" /></p>
     </w>
     <w>
         <a name="test-image-base64" />
