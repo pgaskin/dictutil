@@ -12,7 +12,7 @@ import (
 	"text/template"
 
 	"github.com/geek1011/dictutil/kobodict"
-	"gopkg.in/russross/blackfriday.v2"
+	"github.com/russross/blackfriday/v2"
 )
 
 // WriteDictzip writes the dictfile to a kobodict.Writer, which should not have
