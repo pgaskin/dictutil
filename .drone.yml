@@ -196,6 +196,49 @@ depends_on: [dictgen-cmd]
 
 ---
 
+name: webster1913-convert
+kind: pipeline
+type: docker
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: build
+  image: golang:1.14-buster
+  commands:
+  - go build -o webster1913-convert ./examples/webster1913-convert
+- name: run
+  image: golang:1.14-buster
+  commands:
+  - ./webster1913-convert --help
+- name: convert
+  image: golang:1.14-buster
+  commands:
+  - wget -O webster1913.txt http://www.gutenberg.org/ebooks/29765.txt.utf-8
+  - ./webster1913-convert -o webster1913.df webster1913.txt
+  - ls -lah webster1913.df
+- name: generate
+  image: golang:1.14-buster
+  commands:
+  - go run ./cmd/dictgen -o dicthtml-wb.zip webster1913.df
+  - ls -lah dicthtml-wb*.zip
+- name: upload
+  image: curlimages/curl
+  entrypoint: ["/bin/bash"]
+  commands:
+  - "curl --no-progress-meter -F 'file=@webster1913.df'  'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
+  - "curl --no-progress-meter -F 'file=@dicthtml-wb.zip' 'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
+
+trigger:
+  event:
+    exclude: [promote]
+
+depends_on: [dictgen-cmd]
+
+---
+
 kind: pipeline
 name: release
 
@@ -216,7 +259,8 @@ steps:
     "--build-cmd", "
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-linux-64bit ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-linux-64bit ./cmd/dictgen &&
-      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-64bit ./examples/gotdict-convert",
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-64bit ./examples/gotdict-convert &&
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-convert-linux-64bit ./examples/webster1913-convert",
   ]
 - name: build-linux-386
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
@@ -225,7 +269,8 @@ steps:
     "--build-cmd", "
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-linux-32bit ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-linux-32bit ./cmd/dictgen &&
-      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-32bit ./examples/gotdict-convert",
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-32bit ./examples/gotdict-convert &&
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-linux-32bit ./examples/webster1913-convert",
   ]
 - name: build-linux-arm
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-arm
@@ -234,7 +279,8 @@ steps:
     "--build-cmd", "
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-linux-arm ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-linux-arm ./cmd/dictgen &&
-      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-arm ./examples/gotdict-convert",
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-arm ./examples/gotdict-convert &&
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-linux-arm ./examples/webster1913-convert",
   ]
 - name: build-windows-386
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
@@ -243,7 +289,8 @@ steps:
     "--build-cmd", "
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-windows.exe ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-windows.exe ./cmd/dictgen &&
-      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-windows.exe ./examples/gotdict-convert",
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-windows.exe ./examples/gotdict-convert &&
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-convert-windows.exe ./examples/webster1913-convert",
   ]
 - name: build-darwin-amd64
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-darwin
@@ -252,7 +299,8 @@ steps:
     "--build-cmd", "
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/dictutil-darwin-64bit ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/dictgen-darwin-64bit ./cmd/dictgen &&
-      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/gotdict-convert-darwin-64bit ./examples/gotdict-convert",
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/gotdict-convert-darwin-64bit ./examples/gotdict-convert &&
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/webster1913-convert-darwin-64bit ./examples/webster1913-convert",
   ]
 - name: list
   image: golang:1.14-buster
@@ -281,3 +329,4 @@ depends_on:
 - dictutil-cmd
 - marisa
 - gotdict-convert
+- webster1913-convert
