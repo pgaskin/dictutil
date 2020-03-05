@@ -126,7 +126,8 @@ func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
 				state = StateEntryMeaningText
 			case phraseDefnStartRe.Match(ln):
 				meaning = nil
-				entry.PhraseDefns = append(entry.PhraseDefns, string(phraseDefnStartRe.ReplaceAll(ln, nil)))
+				entry.PhraseDefns = append(entry.PhraseDefns, string(bytes.TrimSpace(bytes.Replace(lnt, []byte("--"), nil, 1))))
+				entry.Variant = append(entry.Variant, string(bytes.ToLower(phraseDefnStartRe.FindSubmatch(ln)[1])))
 				state = StateEntryPhraseDefn
 			case blankLine:
 				// ignore
@@ -147,7 +148,8 @@ func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
 				state = StateEntryMeaningText
 			case phraseDefnStartRe.Match(ln):
 				meaning = nil
-				entry.PhraseDefns = append(entry.PhraseDefns, string(phraseDefnStartRe.ReplaceAll(ln, nil)))
+				entry.PhraseDefns = append(entry.PhraseDefns, string(bytes.TrimSpace(bytes.Replace(lnt, []byte("--"), nil, 1))))
+				entry.Variant = append(entry.Variant, string(bytes.ToLower(phraseDefnStartRe.FindSubmatch(ln)[1])))
 				state = StateEntryPhraseDefn
 			case len(meaning.Text) > 5 && len(lnt) < 55 && bytes.HasSuffix(lnt, []byte{'.'}) && !noteStartRe.Match(ln):
 				// if there is already some body text, it is not a hard-wrapped
@@ -172,7 +174,8 @@ func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
 				state = StateEntryMeaningText
 			case phraseDefnStartRe.Match(ln):
 				meaning = nil
-				entry.PhraseDefns = append(entry.PhraseDefns, string(phraseDefnStartRe.ReplaceAll(ln, nil)))
+				entry.PhraseDefns = append(entry.PhraseDefns, string(bytes.TrimSpace(bytes.Replace(lnt, []byte("--"), nil, 1))))
+				entry.Variant = append(entry.Variant, string(bytes.ToLower(phraseDefnStartRe.FindSubmatch(ln)[1])))
 				state = StateEntryPhraseDefn
 			case blankLine:
 				// ignore
@@ -190,7 +193,8 @@ func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
 				state = StateEntryExtra
 			case phraseDefnStartRe.Match(ln):
 				meaning = nil
-				entry.PhraseDefns = append(entry.PhraseDefns, string(lnt))
+				entry.PhraseDefns = append(entry.PhraseDefns, string(bytes.TrimSpace(bytes.Replace(lnt, []byte("--"), nil, 1))))
+				entry.Variant = append(entry.Variant, string(bytes.ToLower(phraseDefnStartRe.FindSubmatch(ln)[1])))
 				state = StateEntryPhraseDefn
 			default:
 				entry.Synonyms[len(entry.Synonyms)-1] += " " + string(lnt)
@@ -199,8 +203,8 @@ func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
 			switch {
 			case phraseDefnStartRe.Match(ln):
 				meaning = nil
-				entry.PhraseDefns = append(entry.PhraseDefns, string(phraseDefnStartRe.ReplaceAll(ln, nil)))
-				entry.Variant = append(entry.Variant, string(phraseDefnStartRe.FindSubmatch(ln)[1]))
+				entry.PhraseDefns = append(entry.PhraseDefns, string(bytes.TrimSpace(bytes.Replace(lnt, []byte("--"), nil, 1))))
+				entry.Variant = append(entry.Variant, string(bytes.ToLower(phraseDefnStartRe.FindSubmatch(ln)[1])))
 				state = StateEntryPhraseDefn
 			case blankLine:
 				// allow a blank line to end it for reducing the chance of bugs.

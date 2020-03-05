@@ -9,7 +9,6 @@ import (
 	"html/template"
 	"io"
 	"os"
-	"regexp"
 
 	"github.com/spf13/pflag"
 
@@ -19,15 +18,19 @@ import (
 
 var version = "dev"
 
-var spldcRe = regexp.MustCompile(`[.,]`)
 var deftmpl = template.Must(template.New("").Funcs(template.FuncMap{
 	"spldc": func(s string) []string {
-		return spldcRe.Split(s, 2)
+		for i, c := range s {
+			if c == '.' || c == ',' || c == '(' {
+				return []string{s[:i], s[i:]}
+			}
+		}
+		return []string{"", s}
 	},
 }).Parse(`
 	{{- with .Etymology}}<p><i>{{.}}</i></p>{{end -}}
 	{{- with .Meanings}}<ol>{{range .}}<li>{{.Text}}{{with .Example}}<br/><br/>{{.}}{{end}}</li>{{end}}</ol>{{end -}}
-	{{- with .PhraseDefns}}<p>{{range $n, $v := .}}{{if $n}} {{end}}{{range $x, $y := (spldc $v)}}{{if $x}}<span>{{$y}}</span>{{else}}<b>{{$y}}. </b>{{end}}{{end}}{{end}}</p>{{end -}}
+	{{- with .PhraseDefns}}<p>{{range $n, $v := .}}{{if $n}} {{end}}{{range $x, $y := (spldc $v)}}{{if $x}}<span>{{$y}}</span>{{else}}<b>{{$y}}</b>{{end}}{{end}}{{end}}</p>{{end -}}
 	{{- with .Synonyms}}<p>{{range $n, $v := .}}{{if $n}} {{end}}{{$v}}{{end}}</p>{{end -}}
 	{{- with .Extra}}<p>{{.}}</p>{{end -}}
 `))
