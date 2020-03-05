@@ -1,3 +1,4 @@
+// Command dictgen is a CLI wrapper around package dictgen.
 package main
 
 import (

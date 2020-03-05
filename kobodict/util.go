@@ -1,3 +1,5 @@
+// Package kobodict implements reading, writing, and other utilities for Kobo
+// dictionaries (v2).
 package kobodict
 
 import (

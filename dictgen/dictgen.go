@@ -1,3 +1,6 @@
+// Package dictgen simplifies creating full-featured dictionaries for Kobo
+// eReaders, with support for images, unicode prefixes, raw html, markdown, and
+// more.
 package dictgen
 
 import (

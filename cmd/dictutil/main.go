@@ -1,3 +1,6 @@
+// Command dictutil provides commands for installing, removing, unpacking,
+// packing, and performing low-level modifications and tests on Kobo
+// dictionaries.
 package main
 
 import (
