@@ -7,6 +7,12 @@ parent: examples
 # webster1913-convert
 This tool converts [Project Gutenberg's Webster's Unabridged Dictionary](http://www.gutenberg.org/ebooks/29765.txt.utf-8) into a dictfile for conversion into a Kobo dictzip.
 
+## Download
+Pre-built dictionaries can be downloaded from the following links:
+- Webster's 1913 Dictionary: [dictzip (dicthtml-wb.zip)](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts/webster1913/dicthtml-wb.zip?branch=master&all=false&pr=false), [source dictfile (webster1913.df)](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts/webster1913/webster1913.df?branch=master&all=false&pr=false)
+
+You can use [dictutil](../dictutil/install) to install the dictionaries, or see [here](../dicthtml/install) for manual installation instructions.
+
 ## Usage
 
 ```
@@ -26,6 +32,3 @@ To convert the resulting dictfile into a dictzip, use dictgen.
 The source dictionary can be downloaded [here](http://www.gutenberg.org/ebooks/29765.txt.utf-8) or [here](https://github.com/geek1011/dictserver/raw/master/data/dictionary.txt).
 
 You can also use the parser as a [Go library](https://pkg.go.dev/github.com/geek1011/dictutil/examples/webster1913-convert/webster1913).
-
-## Pre-converted files
-Ready-to-use builds for Kobo eReaders can be found [here](https://cloud.drone.io/geek1011/dictutil). Choose the top item, click on `webster1913-convert`, then click on `upload` to find the link to the latest version.

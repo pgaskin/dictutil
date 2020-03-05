@@ -1,0 +1,40 @@
+image: ubuntu
+version: "{build}"
+
+environment:
+  GO111MODULE: on
+
+cache:
+- go1.14.deb
+
+install:
+- "wget --no-clobber -O go1.14.deb https://deb.geek1011.net/pool/main/g/go/go_1.14-godeb1_amd64.deb || true"
+- sudo dpkg -i go1.14.deb
+- go mod download
+
+test_script:
+- go test -v ./...
+
+build_script:
+- mkdir bin gotdict webster1913
+- go build -o ./bin/dictgen             ./cmd/dictgen
+- go build -o ./bin/gotdict-convert     ./examples/gotdict-convert
+- go build -o ./bin/webster1913-convert ./examples/webster1913-convert
+- curl -#Lo ./webster1913/webster1913.txt http://www.gutenberg.org/ebooks/29765.txt.utf-8
+- curl -#Lo - https://github.com/wjdp/gotdict/archive/6b4d6cdbb1f5d899d418783ab842f487aafa79ec.tar.gz | tar -xzf - --strip-components=1 -C ./gotdict
+- ./bin/gotdict-convert     -o ./gotdict/gotdict.df         -g ./gotdict --images
+- ./bin/gotdict-convert     -o ./gotdict/gotdict.noimg.df   -g ./gotdict
+- ./bin/webster1913-convert -o ./webster1913/webster1913.df ./webster1913/webster1913.txt
+- ./bin/dictgen -Ibase64 -o ./gotdict/dicthtml-gt.zip       ./gotdict/gotdict.df
+- ./bin/dictgen -Iremove -o ./gotdict/dicthtml-gt.noimg.zip ./gotdict/gotdict.noimg.df
+- ./bin/dictgen -Iremove -o ./webster1913/dicthtml-wb.zip   ./webster1913/webster1913.df
+
+artifacts:
+- path: gotdict/gotdict.df
+- path: gotdict/gotdict.noimg.df
+- path: gotdict/dicthtml-gt.zip
+- path: gotdict/dicthtml-gt.noimg.zip
+- path: webster1913/webster1913.df
+- path: webster1913/dicthtml-wb.zip
+
+deploy: off

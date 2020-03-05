@@ -20,6 +20,15 @@ Dictutil implements [version 2](https://pgaskin.net/dictutil/dicthtml/v1v2) of t
 
 For more information, see the [documentation](https://pgaskin.net/dictutil). If you just want a quick overview of the utilities provided, continue reading below.
 
+## Download
+- **Documentation** can be found on the [website](https://pgaskin.net/dictutil).
+- **Tools** (dictutil, dictgen, gotdict-convert, webster1913-convert) can be downloaded from the [releases](https://github.com/geek1011/dictutil/releases) page.
+- **Pre-built dictionaries** from gotdict-convert and webster1913-convert can be downloaded from [AppVeyor](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts) or from the links below:
+  - GOTDict *(with images, firmware 4.20.14601+)*: [dictzip (dicthtml-gt.zip)](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts/gotdict/dicthtml-gt.zip?branch=master&all=false&pr=false), [source dictfile (gotdict.df)](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts/gotdict/gotdict.df?branch=master&all=false&pr=false)
+  - GOTDict *(without images)*: [dictzip (dicthtml-gt.noimg.zip)](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts/gotdict/dicthtml-gt.noimg.zip?branch=master&all=false&pr=false), [source dictfile (gotdict.noimg.df)](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts/gotdict/gotdict.noimg.df?branch=master&all=false&pr=false)
+  - Webster's 1913 Dictionary: [dictzip (dicthtml-wb.zip)](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts/webster1913/dicthtml-wb.zip?branch=master&all=false&pr=false), [source dictfile (webster1913.df)](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts/webster1913/webster1913.df?branch=master&all=false&pr=false)
+- **API documentation** for the Go libraries can be found on [pkg.go.dev](https://pkg.go.dev/github.com/geek1011/dictutil).
+
 ## Usage
 See the [documentation](https://pgaskin.net/dictutil) for more detailed information and examples.
 
@@ -145,4 +154,4 @@ Arguments:
 To convert the resulting dictfile into a dictzip, use dictgen.
 ```
 
-The dictionary can be downloaded [here](http://www.gutenberg.org/ebooks/29765.txt.utf-8) or [here](https://github.com/geek1011/dictserver/raw/master/data/dictionary.txt).
+The original dictionary can be downloaded [here](http://www.gutenberg.org/ebooks/29765.txt.utf-8) or [here](https://github.com/geek1011/dictserver/raw/master/data/dictionary.txt).
