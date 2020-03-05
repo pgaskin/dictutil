@@ -9,7 +9,7 @@ This tool converts [Project Gutenberg's Webster's Unabridged Dictionary](http://
 
 ## Download
 Pre-built dictionaries can be downloaded from the following links:
-- Webster's 1913 Dictionary: [dictzip (dicthtml-wb.zip)](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts/webster1913/dicthtml-wb.zip?branch=master&all=false&pr=false), [source dictfile (webster1913.df)](https://ci.appveyor.com/project/geek1011/dictutil/build/artifacts/webster1913/webster1913.df?branch=master&all=false&pr=false)
+- Webster's 1913 Dictionary: [dictzip (dicthtml-wb.zip)](https://ci.appveyor.com/api/projects/geek1011/dictutil/artifacts/webster1913/dicthtml-wb.zip?branch=master&all=false&pr=false), [source dictfile (webster1913.df)](https://ci.appveyor.com/api/projects/geek1011/dictutil/artifacts/webster1913/webster1913.df?branch=master&all=false&pr=false)
 
 You can use [dictutil](../dictutil/install) to install the dictionaries, or see [here](../dicthtml/install) for manual installation instructions.
 
