@@ -38,7 +38,7 @@ var (
 	synStartRe          = regexp.MustCompile(`^Syn.\s*$`)
 	synItemStartRe      = regexp.MustCompile(`^\s+--\s+`)
 	phraseDefnStartRe   = regexp.MustCompile(`^\s+--\s+([A-Za-z ]+?[A-Za-z])\s*(\([^)]+\))?[,.]\s*`)
-	wordInfoFormRe = regexp.MustCompile(`(?:p\. p\.|vb\. n\.|p\. pr\.) +([A-Z][a-z]+)[:;.,]`)
+	wordInfoFormRe      = regexp.MustCompile(`(?:p\. p\.|vb\. n\.|p\. pr\.) +([A-Z][a-z]+)[:;.,]`)
 )
 
 type state int
@@ -198,6 +198,7 @@ func ParseWebster1913(r io.Reader, progress func(i int, w string)) (Webster1913,
 			case phraseDefnStartRe.Match(ln):
 				meaning = nil
 				entry.PhraseDefns = append(entry.PhraseDefns, string(phraseDefnStartRe.ReplaceAll(ln, nil)))
+				entry.Variant = append(entry.Variant, string(phraseDefnStartRe.FindSubmatch(ln)[1]))
 				state = StateEntryPhraseDefn
 			case blankLine:
 				// allow a blank line to end it for reducing the chance of bugs.
