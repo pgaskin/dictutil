@@ -1,3 +1,5 @@
+// Command gotdict-convert converts GOTDict (https://github.com/wjdp/gotdict) to
+// a dictgen dictfile.
 package main
 
 import (
@@ -5,15 +7,17 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/geek1011/dictutil/dictgen"
 	"github.com/spf13/pflag"
+
+	"github.com/geek1011/dictutil/dictgen"
+	"github.com/geek1011/dictutil/examples/gotdict-convert/gotdict"
 )
 
 var version = "dev"
 
 func main() {
 	pflag.CommandLine.SortFlags = false
-	gotdict := pflag.StringP("gotdict", "g", "."+string(os.PathSeparator)+"gotdict", "The path to the local copy of github.com/wjdp/gotdict.")
+	gotdictp := pflag.StringP("gotdict", "g", "."+string(os.PathSeparator)+"gotdict", "The path to the local copy of github.com/wjdp/gotdict.")
 	output := pflag.StringP("output", "o", "."+string(os.PathSeparator)+"gotdict.df", "The output filename (will be overwritten if it exists) (- is stdout)")
 	images := pflag.BoolP("images", "I", false, "Include images in the generated dictfile")
 	help := pflag.BoolP("help", "h", false, "Show this help text")
@@ -28,12 +32,12 @@ func main() {
 	var img string
 	if *images {
 		fmt.Fprintf(os.Stderr, "Parsing gotdict (with images).\n")
-		img = filepath.Join(*gotdict, "images")
+		img = filepath.Join(*gotdictp, "images")
 	} else {
 		fmt.Fprintf(os.Stderr, "Parsing gotdict (no images).\n")
 	}
 
-	gd, err := ParseGOTDict(filepath.Join(*gotdict, "_definitions"), img, true)
+	gd, err := gotdict.Parse(filepath.Join(*gotdictp, "_definitions"), img, true)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: parse gotdict: %v\n", err)
 		os.Exit(1)
@@ -86,6 +90,6 @@ func main() {
 		}
 	}
 
-	fmt.Fprintf(os.Stderr, "Successfully converted %d entries from gotdict %s to dictfile %s.\n", len(df), *gotdict, *output)
+	fmt.Fprintf(os.Stderr, "Successfully converted %d entries from gotdict %s to dictfile %s.\n", len(df), *gotdictp, *output)
 	os.Exit(0)
 }

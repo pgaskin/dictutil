@@ -1,4 +1,5 @@
-package main
+// Package gotdict parses GOTDict (https://github.com/wjdp/gotdict).
+package gotdict
 
 import (
 	"bytes"
@@ -14,59 +15,59 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// GOTDict represents the GOTDict.
-type GOTDict []*GOTDef
+// Dict represents the Dict.
+type Dict []*Def
 
-// GOTDef represents a definition.
-type GOTDef struct {
+// Def represents a definition.
+type Def struct {
 	// Title is the main title of the definition (it may contain spaces) (i.e. Tyrion Lannister).
 	Title string
 	// Terms are other forms of the title which should be recognized.
 	Terms []string
-	// Type is the record type.
-	Type GOTType
+	// Type is the record type. Currently, not many entries have one.
+	Type Type
 	// Images contains referenced image files.
 	Images map[string][]byte
 	// Definition contains the Markdown definition.
 	Definition string
 }
 
-// GOTType is a GOTDict record type.
-type GOTType string
+// Type is a Dict record type.
+type Type string
 
 const (
-	// GOTTypeUnknown is used for definitions without a type set (i.e. before types were used).
-	GOTTypeUnknown GOTType = ""
-	// GOTTypeCharacter is a character (e.g. Jon, Tyrion).
-	GOTTypeCharacter GOTType = "character"
-	// GOTTypeHouse is a house (e.g. Lannister, Stark).
-	GOTTypeHouse GOTType = "house"
-	// GOTTypeEvent is an event in time.
-	GOTTypeEvent GOTType = "event"
-	// GOTTypeCity is a city.
-	GOTTypeCity GOTType = "city"
-	// GOTTypeLocation is a location (e.g. King's Landing).
-	GOTTypeLocation GOTType = "location"
-	// GOTTypeRiver is a river.
-	GOTTypeRiver GOTType = "river"
-	// GOTTypeShip is a ship.
-	GOTTypeShip GOTType = "ship"
-	// GOTTypeWord is an uncommon or ASOIAF-specific word.
-	GOTTypeWord GOTType = "word"
+	// TypeUnknown is used for definitions without a type set (i.e. before types were used).
+	TypeUnknown Type = ""
+	// TypeCharacter is a character (e.g. Jon, Tyrion).
+	TypeCharacter Type = "character"
+	// TypeHouse is a house (e.g. Lannister, Stark).
+	TypeHouse Type = "house"
+	// TypeEvent is an event in time.
+	TypeEvent Type = "event"
+	// TypeCity is a city.
+	TypeCity Type = "city"
+	// TypeLocation is a location (e.g. King's Landing).
+	TypeLocation Type = "location"
+	// TypeRiver is a river.
+	TypeRiver Type = "river"
+	// TypeShip is a ship.
+	TypeShip Type = "ship"
+	// TypeWord is an uncommon or ASOIAF-specific word.
+	TypeWord Type = "word"
 )
 
-// ParseGOTDict parses the GOTDict. If imgdir is an empty string, images are
-// removed. If imgref is true, image paths are set to the full filepath rather
-// than reading the images to memory.
-func ParseGOTDict(defdir, imgdir string, imgref bool) (GOTDict, error) {
-	var dict GOTDict
+// Parse parses the Dict. If imgdir is an empty string, images are removed. If
+// imgref is true, image paths are set to the full filepath rather than reading
+// the images to memory.
+func Parse(defdir, imgdir string, imgref bool) (Dict, error) {
+	var dict Dict
 
 	fis, err := ioutil.ReadDir(defdir)
 	if err != nil {
 		return nil, err
 	}
 
-	seen := map[string]*GOTDef{}
+	seen := map[string]*Def{}
 	for _, fi := range fis {
 		if filepath.Ext(fi.Name()) != ".mdd" {
 			continue
@@ -80,7 +81,7 @@ func ParseGOTDict(defdir, imgdir string, imgref bool) (GOTDict, error) {
 		var obj struct {
 			Title string   `yaml:"title"`
 			Terms []string `yaml:"terms"`
-			Type  GOTType  `yaml:"type"`
+			Type  Type     `yaml:"type"`
 		}
 
 		md, err := unmarshalStrictFrontMatter(buf, &obj)
@@ -90,7 +91,7 @@ func ParseGOTDict(defdir, imgdir string, imgref bool) (GOTDict, error) {
 			return nil, fmt.Errorf("parse %s frontmatter: title not set", fi.Name())
 		}
 
-		def := &GOTDef{}
+		def := &Def{}
 
 		obj.Title = strings.TrimSpace(obj.Title)
 		if odef, ok := seen[obj.Title]; ok {
@@ -108,7 +109,7 @@ func ParseGOTDict(defdir, imgdir string, imgref bool) (GOTDict, error) {
 			def.Terms = append(def.Terms, term)
 		}
 
-		def.Type = GOTType(strings.TrimSpace(string(obj.Type)))
+		def.Type = Type(strings.TrimSpace(string(obj.Type)))
 		def.Images = map[string][]byte{}
 		def.Definition = string(md)
 

@@ -25,5 +25,7 @@ Options:
 To convert the resulting dictfile into a dictzip, use dictgen.
 ```
 
+You can also use the parser as a [Go library](https://pkg.go.dev/github.com/geek1011/dictutil/examples/gotdict-convert/gotdict).
+
 ## Pre-converted files
 Ready-to-use GOTDict builds for Kobo eReaders can be found [here](https://cloud.drone.io/geek1011/dictutil). Choose the top item, click on `gotdict-convert`, then click on `upload` to find the link to the latest version.
