@@ -25,5 +25,7 @@ To convert the resulting dictfile into a dictzip, use dictgen.
 
 The source dictionary can be downloaded [here](http://www.gutenberg.org/ebooks/29765.txt.utf-8) or [here](https://github.com/geek1011/dictserver/raw/master/data/dictionary.txt).
 
+You can also use the parser as a [Go library](https://pkg.go.dev/github.com/geek1011/dictutil/examples/webster1913-convert/webster1913).
+
 ## Pre-converted files
 Ready-to-use builds for Kobo eReaders can be found [here](https://cloud.drone.io/geek1011/dictutil). Choose the top item, click on `webster1913-convert`, then click on `upload` to find the link to the latest version.

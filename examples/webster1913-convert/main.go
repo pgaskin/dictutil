@@ -1,3 +1,5 @@
+// Command webster1913-convert converts Project Gutenberg's Webster's 1913
+// Unabridged Dictionary to a dictgen dictfile.
 package main
 
 import (
@@ -9,8 +11,10 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/geek1011/dictutil/dictgen"
 	"github.com/spf13/pflag"
+
+	"github.com/geek1011/dictutil/dictgen"
+	"github.com/geek1011/dictutil/examples/webster1913-convert/webster1913"
 )
 
 var version = "dev"
@@ -58,7 +62,7 @@ func main() {
 	}
 
 	fmt.Fprintf(os.Stderr, "Parsing dictionary.\n")
-	wd, err := ParseWebster1913(r, func(i int, word string) {
+	wd, err := webster1913.Parse(r, func(i int, word string) {
 		if i%1000 == 0 {
 			fmt.Fprintf(os.Stderr, "[% 5d] %s\n", i, word)
 		}

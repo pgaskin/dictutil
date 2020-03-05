@@ -1,4 +1,6 @@
-package main
+// Package webster1913 parses Project Gutenberg's Webster's 1913 Unabridged
+// Dictionary (http://www.gutenberg.org/ebooks/29765.txt.utf-8).
+package webster1913
 
 import (
 	"bufio"
@@ -9,23 +11,23 @@ import (
 	"strings"
 )
 
-// Webster1913 represents the parsed dictionary.
-type Webster1913 []*Webster1913Entry
+// Dict represents the parsed dictionary.
+type Dict []*Entry
 
-// Webster1913Entry is a single dictionary entry.
-type Webster1913Entry struct {
+// Entry is a single dictionary entry.
+type Entry struct {
 	Headword    string
 	Variant     []string
 	Info        string
 	Etymology   string
-	Meanings    []*Webster1913EntryMeaning
+	Meanings    []*EntryMeaning
 	Synonyms    []string
 	PhraseDefns []string
-	Extra       string
+	Extra       string // unparseable text
 }
 
-// Webster1913EntryMeaning is a meaning for a dictionary entry.
-type Webster1913EntryMeaning struct {
+// EntryMeaning is a meaning for a dictionary entry.
+type EntryMeaning struct {
 	Text    string
 	Example string
 }
@@ -60,15 +62,15 @@ const (
 	StateEntryPhraseDefn
 )
 
-// ParseWebster1913 parses Project Gutenberg's Webster's Unabridged Dictionary.
-func ParseWebster1913(r io.Reader, progress func(i int, w string)) (Webster1913, error) {
-	var wd Webster1913
+// Parse parses Project Gutenberg's Webster's Unabridged Dictionary.
+func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
+	var wd Dict
 	var perr error
 	sc := bufio.NewScanner(r)
 
 	var state state
-	var entry *Webster1913Entry
-	var meaning *Webster1913EntryMeaning
+	var entry *Entry
+	var meaning *EntryMeaning
 	var i int
 	for sc.Scan() {
 		ln := sc.Bytes()
@@ -80,7 +82,7 @@ func ParseWebster1913(r io.Reader, progress func(i int, w string)) (Webster1913,
 				progress(len(wd), entry.Headword)
 			}
 			spl := strings.Split(string(bytes.ToLower(ln)), ";")
-			entry = &Webster1913Entry{Headword: strings.TrimSpace(spl[0])}
+			entry = &Entry{Headword: strings.TrimSpace(spl[0])}
 			if len(spl) > 1 {
 				for _, v := range spl[1:] {
 					if w := strings.TrimSpace(v); w != "" {
@@ -115,11 +117,11 @@ func ParseWebster1913(r io.Reader, progress func(i int, w string)) (Webster1913,
 		case StateEntryExtra:
 			switch {
 			case singleDefnStartRe.Match(ln):
-				meaning = &Webster1913EntryMeaning{Text: string(singleDefnStartRe.ReplaceAllLiteral(ln, nil))}
+				meaning = &EntryMeaning{Text: string(singleDefnStartRe.ReplaceAllLiteral(ln, nil))}
 				entry.Meanings = append(entry.Meanings, meaning)
 				state = StateEntryMeaningText
 			case numberedDefnStartRe.Match(ln):
-				meaning = &Webster1913EntryMeaning{Text: string(numberedDefnStartRe.ReplaceAllLiteral(ln, nil))}
+				meaning = &EntryMeaning{Text: string(numberedDefnStartRe.ReplaceAllLiteral(ln, nil))}
 				entry.Meanings = append(entry.Meanings, meaning)
 				state = StateEntryMeaningText
 			case phraseDefnStartRe.Match(ln):
@@ -140,7 +142,7 @@ func ParseWebster1913(r io.Reader, progress func(i int, w string)) (Webster1913,
 				// if it is in any kind of definition (single/numbered), it is part of it.
 				meaning.Text += " " + string(singleDefnStartRe.ReplaceAllLiteral(lnt, nil))
 			case numberedDefnStartRe.Match(ln):
-				meaning = &Webster1913EntryMeaning{Text: string(numberedDefnStartRe.ReplaceAllLiteral(ln, nil))}
+				meaning = &EntryMeaning{Text: string(numberedDefnStartRe.ReplaceAllLiteral(ln, nil))}
 				entry.Meanings = append(entry.Meanings, meaning)
 				state = StateEntryMeaningText
 			case phraseDefnStartRe.Match(ln):
@@ -161,11 +163,11 @@ func ParseWebster1913(r io.Reader, progress func(i int, w string)) (Webster1913,
 		case StateEntryMeaningExample:
 			switch {
 			case singleDefnStartRe.Match(ln):
-				meaning = &Webster1913EntryMeaning{Text: string(singleDefnStartRe.ReplaceAllLiteral(ln, nil))}
+				meaning = &EntryMeaning{Text: string(singleDefnStartRe.ReplaceAllLiteral(ln, nil))}
 				entry.Meanings = append(entry.Meanings, meaning)
 				state = StateEntryMeaningText
 			case numberedDefnStartRe.Match(ln):
-				meaning = &Webster1913EntryMeaning{Text: string(numberedDefnStartRe.ReplaceAllLiteral(ln, nil))}
+				meaning = &EntryMeaning{Text: string(numberedDefnStartRe.ReplaceAllLiteral(ln, nil))}
 				entry.Meanings = append(entry.Meanings, meaning)
 				state = StateEntryMeaningText
 			case phraseDefnStartRe.Match(ln):
