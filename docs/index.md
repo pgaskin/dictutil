@@ -47,7 +47,7 @@ dictgen is an easy-to-use tool/library to generate Kobo dictionaries from scratc
 These are some tools which make use of dictutil to convert actual dictionaries.
 
 - **[gotdict-convert](./examples/gotdict-convert):** Converts [github.com/wjdp/gotdict](https://github.com/wjdp/gotdict) to a dictfile.
-- **[webster1913-convert](./examples/gotdict-convert):** Converts [Project Gutenberg's Webster's Unabridged Dictionary](http://www.gutenberg.org/ebooks/29765.txt.utf-8) to a dictfile.
+- **[webster1913-convert](./examples/webster1913-convert):** Converts [Project Gutenberg's Webster's Unabridged Dictionary](http://www.gutenberg.org/ebooks/29765.txt.utf-8) to a dictfile.
 
 ## other
 
