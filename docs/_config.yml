@@ -7,6 +7,8 @@ search_enabled: false
 aux_links:
   Download:
   - http://github.com/geek1011/dictutil/releases/latest
+  MobileRead:
+  - https://www.mobileread.com/forums/showthread.php?t=327854
   GitHub:
   - http://github.com/geek1011/dictutil
 heading_anchors: true
