@@ -16,7 +16,7 @@ test_script:
 - go test -v ./...
 
 build_script:
-- apt-get update -qqy && apt-get install -qqy swig
+- sudo apt-get update -qqy && sudo apt-get install -qqy swig
 - mkdir bin gotdict webster1913
 - go build -o ./bin/dictgen             ./cmd/dictgen
 - go build -o ./bin/gotdict-convert     ./examples/gotdict-convert
