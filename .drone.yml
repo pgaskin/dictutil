@@ -10,10 +10,12 @@ steps:
 - name: test
   image: golang:1.14-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go test -cover -v ./kobodict
 - name: bench
   image: golang:1.14-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go test -bench=. -benchmem ./kobodict
 
 trigger:
@@ -34,6 +36,7 @@ steps:
 - name: test
   image: golang:1.14-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go test -cover -v ./dictgen
 
 trigger:
@@ -52,6 +55,7 @@ steps:
 - name: build
   image: golang:1.14-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go build -o dictgen-out ./cmd/dictgen
 - name: run
   image: golang:1.14-buster
@@ -78,6 +82,7 @@ steps:
 - name: build
   image: golang:1.14-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go build -o dictutil-out ./cmd/dictutil
 - name: run
   image: golang:1.14-buster
@@ -111,33 +116,34 @@ steps:
 - name: test
   image: golang:1.14-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go test -v ./marisa
 - name: build-windows-386
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
   command: [
     "--platforms", "windows/386",
-    "--build-cmd", "CGO_ENABLED=1 go build -x ./marisa",
+    "--build-cmd", "apt-get update -qqy && apt-get install -qqy swig && CGO_ENABLED=1 go build -x ./marisa",
   ]
   depends_on: [test]
 - name: build-linux-amd64
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
   command: [
     "--platforms", "linux/amd64",
-    "--build-cmd", "CGO_ENABLED=1 go build -x ./marisa",
+    "--build-cmd", "apt-get update -qqy && apt-get install -qqy swig && CGO_ENABLED=1 go build -x ./marisa",
   ]
   depends_on: [test]
 - name: build-linux-arm
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-arm
   command: [
     "--platforms", "linux/armv6",
-    "--build-cmd", "CGO_ENABLED=1 go build -x ./marisa",
+    "--build-cmd", "apt-get update -qqy && apt-get install -qqy swig && CGO_ENABLED=1 go build -x ./marisa",
   ]
   depends_on: [test]
 - name: build-darwin-amd64
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-darwin
   command: [
     "--platforms", "darwin/amd64",
-    "--build-cmd", "CGO_ENABLED=1 go build -x ./marisa",
+    "--build-cmd", "apt-get update -qqy && apt-get install -qqy swig && CGO_ENABLED=1 go build -x ./marisa",
   ]
   depends_on: [test]
 
@@ -159,6 +165,7 @@ steps:
 - name: build
   image: golang:1.14-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go build -o gotdict-convert ./examples/gotdict-convert
 - name: run
   image: golang:1.14-buster
@@ -175,6 +182,7 @@ steps:
 - name: generate
   image: golang:1.14-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go run ./cmd/dictgen -Ibase64 -o dicthtml-gt.zip gotdict.df
   - go run ./cmd/dictgen -Iremove -o dicthtml-gt.noimg.zip gotdict.noimg.df
   - ls -lah dicthtml-gt*.zip
@@ -208,6 +216,7 @@ steps:
 - name: build
   image: golang:1.14-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go build -o webster1913-convert ./examples/webster1913-convert
 - name: run
   image: golang:1.14-buster
@@ -222,6 +231,7 @@ steps:
 - name: generate
   image: golang:1.14-buster
   commands:
+  - apt-get update -qqy && apt-get install -qqy swig
   - go run ./cmd/dictgen -o dicthtml-wb.zip webster1913.df
   - ls -lah dicthtml-wb*.zip
 - name: upload
@@ -257,6 +267,7 @@ steps:
   command: [
     "--platforms", "linux/amd64",
     "--build-cmd", "
+      apt-get update -qqy && apt-get install -qqy swig &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-linux-64bit ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-linux-64bit ./cmd/dictgen &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-64bit ./examples/gotdict-convert &&
@@ -267,6 +278,7 @@ steps:
   command: [
     "--platforms", "linux/amd64",
     "--build-cmd", "
+      apt-get update -qqy && apt-get install -qqy swig &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-linux-32bit ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-linux-32bit ./cmd/dictgen &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-32bit ./examples/gotdict-convert &&
@@ -277,6 +289,7 @@ steps:
   command: [
     "--platforms", "linux/armv6",
     "--build-cmd", "
+      apt-get update -qqy && apt-get install -qqy swig &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-linux-arm ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-linux-arm ./cmd/dictgen &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-arm ./examples/gotdict-convert &&
@@ -287,6 +300,7 @@ steps:
   command: [
     "--platforms", "windows/386",
     "--build-cmd", "
+      apt-get update -qqy && apt-get install -qqy swig &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-windows.exe ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-windows.exe ./cmd/dictgen &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-windows.exe ./examples/gotdict-convert &&
@@ -297,6 +311,7 @@ steps:
   command: [
     "--platforms", "darwin/amd64",
     "--build-cmd", "
+      apt-get update -qqy && apt-get install -qqy swig &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/dictutil-darwin-64bit ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/dictgen-darwin-64bit ./cmd/dictgen &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/gotdict-convert-darwin-64bit ./examples/gotdict-convert &&
