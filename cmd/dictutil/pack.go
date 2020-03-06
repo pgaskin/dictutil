@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/geek1011/dictutil/kobodict"
@@ -90,7 +91,7 @@ func packMain(args []string, fs *pflag.FlagSet) int {
 	}
 
 	fmt.Printf("Renaming output file.\n")
-	if err := f.Chmod(0644); err != nil {
+	if err := f.Chmod(0644); err != nil && runtime.GOOS != "windows" {
 		fmt.Fprintf(os.Stderr, "Error: rename output file: %v.\n", err)
 		return 2
 	}
