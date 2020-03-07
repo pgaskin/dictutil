@@ -296,7 +296,8 @@ steps:
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-linux-64bit ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-linux-64bit ./cmd/dictgen &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-64bit ./examples/gotdict-convert &&
-      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-convert-linux-64bit ./examples/webster1913-convert",
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-convert-linux-64bit ./examples/webster1913-convert &&
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictzip-decompile-linux-64bit ./examples/dictzip-decompile",
   ]
 - name: build-linux-386
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
@@ -307,7 +308,8 @@ steps:
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-linux-32bit ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-linux-32bit ./cmd/dictgen &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-32bit ./examples/gotdict-convert &&
-      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-linux-32bit ./examples/webster1913-convert",
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-convert-linux-32bit ./examples/webster1913-convert &&
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictzip-decompile-linux-32bit ./examples/dictzip-decompile",
   ]
 - name: build-linux-arm
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-arm
@@ -318,7 +320,8 @@ steps:
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-linux-arm ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-linux-arm ./cmd/dictgen &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-linux-arm ./examples/gotdict-convert &&
-      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-linux-arm ./examples/webster1913-convert",
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-convert-linux-arm ./examples/webster1913-convert &&
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictzip-decompile-linux-arm ./examples/dictzip-decompile",
   ]
 - name: build-windows-386
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
@@ -329,7 +332,8 @@ steps:
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-windows.exe ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-windows.exe ./cmd/dictgen &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/gotdict-convert-windows.exe ./examples/gotdict-convert &&
-      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-convert-windows.exe ./examples/webster1913-convert",
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-convert-windows.exe ./examples/webster1913-convert &&
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictzip-decompile-windows.exe ./examples/dictzip-decompile",
   ]
 - name: build-darwin-amd64
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-darwin
@@ -340,7 +344,8 @@ steps:
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/dictutil-darwin-64bit ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/dictgen-darwin-64bit ./cmd/dictgen &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/gotdict-convert-darwin-64bit ./examples/gotdict-convert &&
-      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/webster1913-convert-darwin-64bit ./examples/webster1913-convert",
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/webster1913-convert-darwin-64bit ./examples/webster1913-convert &&
+      CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always)\" -o build/dictzip-decompile-darwin-64bit ./examples/dictzip-decompile",
   ]
 - name: list
   image: golang:1.14-buster
