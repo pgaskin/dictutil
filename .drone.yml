@@ -249,6 +249,31 @@ depends_on: [dictgen-cmd]
 
 ---
 
+name: dictzip-decompile
+kind: pipeline
+type: docker
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: build
+  image: golang:1.14-buster
+  commands:
+  - apt-get update -qqy && apt-get install -qqy swig
+  - go build -o dictzip-decompile ./examples/dictzip-decompile
+- name: run
+  image: golang:1.14-buster
+  commands:
+  - ./dictzip-decompile --help
+
+trigger:
+  event:
+    exclude: [promote]
+
+---
+
 kind: pipeline
 name: release
 

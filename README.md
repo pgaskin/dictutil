@@ -12,6 +12,7 @@ Dictutil consists of multiple tools and libraries:
 - [**dicthtml**](https://pgaskin.net/dictutil/dicthtml) documents Kobo's dictionary format and how it works.
 - [**examples/gotdict-convert**](https://pgaskin.net/dictutil/examples/gotdict-convert) is a working example of using dictutil to convert [GOTDict](https://github.com/wjdp/gotdict) into a Kobo dictionary.
 - [**examples/webster1913-convert**](https://pgaskin.net/dictutil/examples/webster1913-convert) is a working example of using dictutil to convert [Project Gutenberg's Webster's Unabridged Dictionary](http://www.gutenberg.org/ebooks/29765.txt.utf-8) into a Kobo dictionary.
+- [**examples/dictzip-decompile**](https://pgaskin.net/dictutil/examples/dictzip-decompile) is an **experimental** tool to convert a dictzip into a dictfile.
 - *Library:* [**kobodict**](https://pkg.go.dev/github.com/geek1011/dictutil/kobodict) provides support for reading, writing, encrypting, and decrypting Kobo dictionaries.
 - *Library:* [**dictgen**](https://pkg.go.dev/github.com/geek1011/dictutil/dictgen) provides the functionality of dictgen as a library.
 - *Library:* [**marisa**](./marisa) provides self-contained CGO bindings for [marisa-trie](https://github.com/s-yata/marisa-trie).
@@ -141,8 +142,6 @@ To convert the resulting dictfile into a dictzip, use dictgen.
 ```
 Usage: webster1913-convert [options] gutenberg_webster1913_path
 
-Version: webster1913-convert dev
-
 Options:
   -o, --output string   The output filename (will be overwritten if it exists) (- is stdout) (default "./webster1913.df")
       --dump            Instead of converting, dump the parsed dictionary to stdout as JSON (for debugging)
@@ -155,3 +154,23 @@ To convert the resulting dictfile into a dictzip, use dictgen.
 ```
 
 The original dictionary can be downloaded [here](http://www.gutenberg.org/ebooks/29765.txt.utf-8) or [here](https://github.com/geek1011/dictserver/raw/master/data/dictionary.txt).
+
+### dictzip-decompile
+
+```
+Usage: dictzip-decompile [options] dictzip
+
+Options:
+  -o, --output string   The output filename (will be overwritten if it exists) (- is stdout) (default "./decompiled.df")
+  -r, --resources       Also extract referenced resources to the current directory (warning: any existing files will be overwritten, so it is recommended to run in an empty directory if enabled)
+  -h, --help            Show this help text
+
+Arguments:
+  dictzip is the path to the dictzip to decompile.
+
+To convert the resulting dictfile into a dictzip, use dictgen.
+
+Note: The regenerated dictzip from the dictfile may not match exactly, but it will look the same, and certain bugs with prefixes and variants will be implicitly fixed by the conversion process (i.e. variant in wrong file, incorrect prefix, missing words in index file). All output is in raw HTML, not Markdown.
+
+This is an experimental tool, and the output may not be perfect on complex dictionaries.
+```

@@ -48,6 +48,7 @@ These are some tools which make use of dictutil to convert actual dictionaries.
 
 - **[gotdict-convert](./examples/gotdict-convert):** Converts [github.com/wjdp/gotdict](https://github.com/wjdp/gotdict) to a dictfile.
 - **[webster1913-convert](./examples/webster1913-convert):** Converts [Project Gutenberg's Webster's Unabridged Dictionary](http://www.gutenberg.org/ebooks/29765.txt.utf-8) to a dictfile.
+- **[dictzip-decompile](./examples/dictzip-decompile):** An **experimental** tool to convert a dictzip into a dictfile.
 
 ## other
 
