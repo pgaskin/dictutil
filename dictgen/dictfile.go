@@ -32,6 +32,7 @@ func ParseDictFile(r io.Reader) (DictFile, error) {
 	var dfe *DictFileEntry
 
 	br := bufio.NewScanner(r)
+	br.Buffer(make([]byte, 64*1024), 2048*1024) // start with a 64KiB buffer, but allow up to 2MiB (for dictfiles with long lines of raw HTML)
 	var line int
 
 	for br.Scan() {
