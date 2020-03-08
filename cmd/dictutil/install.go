@@ -167,7 +167,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 		if len(*name) != 0 {
 			dictName += " " + *name
 			if newMethod {
-				fmt.Fprintf(os.Stderr, "Warning: Custom dictionary label doesn't have any effect on firmware 4.20.14601+.")
+				fmt.Fprintf(os.Stderr, "Warning: Custom dictionary label doesn't have any effect on firmware 4.20.14601+.\n")
 			}
 		}
 	} else if len(*name) != 0 {
