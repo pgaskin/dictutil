@@ -107,8 +107,8 @@ func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
 				}
 				// attempt to split into etymology
 				if spl := strings.SplitN(entry.Info, " Etym: ", 2); len(spl) == 2 {
-					entry.Info = spl[0]
-					entry.Etymology = spl[1]
+					entry.Info = strings.TrimSpace(spl[0])
+					entry.Etymology = strings.TrimSpace(spl[1])
 				}
 				state = StateEntryExtra
 			default:
@@ -180,7 +180,10 @@ func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
 			case blankLine:
 				// ignore
 			default:
-				meaning.Example += " " + string(lnt)
+				if meaning.Example != "" {
+					meaning.Example += " "
+				}
+				meaning.Example += string(lnt)
 			}
 		case StateEntrySynonym:
 			switch {
