@@ -186,15 +186,6 @@ steps:
   - go run ./cmd/dictgen -Ibase64 -o dicthtml-gt.zip gotdict.df
   - go run ./cmd/dictgen -Iremove -o dicthtml-gt.noimg.zip gotdict.noimg.df
   - ls -lah dicthtml-gt*.zip
-- name: upload
-  image: curlimages/curl
-  entrypoint: ["/bin/bash"]
-  commands:
-  - "curl --no-progress-meter -F 'file=@gotdict.df'      'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
-  - "curl --no-progress-meter -F 'file=@dicthtml-gt.zip' 'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
-  - "echo; echo 'If you are using a firmware version older than 4.20.14601, use the version without images (they cause crashes with the in-book dictionary view) below.'"
-  - "curl --no-progress-meter -F 'file=@gotdict.noimg.df'      'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
-  - "curl --no-progress-meter -F 'file=@dicthtml-gt.noimg.zip' 'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
 
 trigger:
   event:
@@ -234,12 +225,6 @@ steps:
   - apt-get update -qqy && apt-get install -qqy swig
   - go run ./cmd/dictgen -o dicthtml-wb.zip webster1913.df
   - ls -lah dicthtml-wb*.zip
-- name: upload
-  image: curlimages/curl
-  entrypoint: ["/bin/bash"]
-  commands:
-  - "curl --no-progress-meter -F 'file=@webster1913.df'  'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
-  - "curl --no-progress-meter -F 'file=@dicthtml-wb.zip' 'https://api.anonfile.com/upload' | grep -Eo '\"full\": *\"[^\"]+' | cut -d'\"' -f4"
 
 trigger:
   event:
