@@ -58,7 +58,7 @@ Usage: dictutil install [options] dictzip
 Options:
   -k, --kobo string      KOBOeReader path (default: automatically detected)
   -l, --locale string    Locale name to use (format: ALPHANUMERIC{2}; translation dictionaries are not supported) (default: detected from filename if in format dicthtml-**.zip)
-  -n, --name string      Custom additional label for dictionary (ignored when replacing built-in dictionaries)
+  -n, --name string      Custom additional label for dictionary (ignored when replacing built-in dictionaries) (doesn't have any effect on 4.20.14601+)
   -b, --builtin string   How to handle built-in locales [replace = replace and prevent from syncing] [ignore = replace and leave syncing as-is] (default "replace")
   -h, --help             Show this help text
 
@@ -73,7 +73,7 @@ Usage: dictutil uninstall [options] locale
 
 Options:
   -k, --kobo string      KOBOeReader path (default: automatically detected)
-  -b, --builtin string   How to handle built-in locales [normal = uninstall the same way as the UI] [delete = completely delete the entry] [restore = download the original dictionary from Kobo again] (default "normal")
+  -b, --builtin string   How to handle built-in locales [normal = uninstall the same way as the UI] [delete = completely delete the entry (doesn't have any effect on 4.20.14601+)] [restore = download the original dictionary from Kobo again] (default "normal")
   -h, --help             Show this help text
 ```
 

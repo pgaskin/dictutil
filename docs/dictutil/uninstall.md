@@ -13,7 +13,7 @@ Usage: dictutil uninstall [options] locale
 
 Options:
   -k, --kobo string      KOBOeReader path (default: automatically detected)
-  -b, --builtin string   How to handle built-in locales [normal = uninstall the same way as the UI] [delete = completely delete the entry] [restore = download the original dictionary from Kobo again] (default "normal")
+  -b, --builtin string   How to handle built-in locales [normal = uninstall the same way as the UI] [delete = completely delete the entry (doesn't have any effect on 4.20.14601+)] [restore = download the original dictionary from Kobo again] (default "normal")
   -h, --help             Show this help text
 ```
 

@@ -13,7 +13,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/geek1011/koboutils/kobo"
+	"github.com/geek1011/koboutils/v2/kobo"
 	"github.com/spf13/pflag"
 )
 
@@ -24,7 +24,7 @@ func init() {
 func uninstallMain(args []string, fs *pflag.FlagSet) int {
 	fs.SortFlags = false
 	root := fs.StringP("kobo", "k", "", "KOBOeReader path (default: automatically detected)")
-	builtin := fs.StringP("builtin", "b", "normal", "How to handle built-in locales [normal = uninstall the same way as the UI] [delete = completely delete the entry] [restore = download the original dictionary from Kobo again]")
+	builtin := fs.StringP("builtin", "b", "normal", "How to handle built-in locales [normal = uninstall the same way as the UI] [delete = completely delete the entry (doesn't have any effect on 4.20.14601+)] [restore = download the original dictionary from Kobo again]")
 	help := fs.BoolP("help", "h", false, "Show this help text")
 	fs.Parse(args[1:])
 
@@ -50,6 +50,7 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 		fmt.Fprintf(os.Stderr, "Error: firmware version too old (v2 dictionaries were only introduced in 4.7.10364).\n")
 		return 1
 	}
+	newMethod := kobo.VersionCompare(version, "4.20.14601") >= 0 // https://github.com/geek1011/kobopatch-patches/issues/49
 
 	var dictPath, dictLocale string
 	if dictLocale = strings.TrimLeft(fs.Args()[0], "-"); dictLocale == "en" {
@@ -72,6 +73,36 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 			return fmt.Errorf("open database: %w", err)
 		}
 		defer db.Close()
+
+		if exists, err := func() (bool, error) {
+			res, err := db.Query(`SELECT name FROM sqlite_master WHERE type="table" AND name="Dictionary";`)
+			if err != nil {
+				return false, fmt.Errorf("check dictionary table: %w", err)
+			}
+			defer res.Close()
+
+			if !res.Next() { // if no rows are returned, there was an error or the table didn't exist
+				if err := res.Err(); err != nil {
+					return false, fmt.Errorf("check dictionary table: %w", err)
+				}
+				return false, nil
+			}
+			return true, nil
+		}(); err != nil {
+			return fmt.Errorf("check dictionary table: %w", err)
+		} else if exists {
+			if newMethod {
+				fmt.Printf("  Note: the dictionary table is unnecessary and inconsequential in firmware 4.20.14601+ and can be safely removed.\n")
+			}
+		} else {
+			if newMethod {
+				// show a message to prevent confusion
+				fmt.Printf("  No need to update dictionary table on 4.20.14601, skipping.\n")
+				return nil
+			} else {
+				return fmt.Errorf("check dictionary table: not found, and version < 4.20.14123")
+			}
+		}
 
 		if !dictBuiltin || *builtin == "delete" {
 			if res, err := db.Exec("DELETE FROM Dictionary WHERE Suffix = ?", dictSuffix); err != nil {
@@ -187,7 +218,7 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 	}
 
 	fmt.Printf("Removing dictzip.\n")
-	if err := os.Remove(dictPath); os.IsNotExist(err) {
+	if err := os.Remove(dictPath); os.IsNotExist(err) { // this will still remove it if it's readonly on Windows (golang/go@2ffb3e5d905b5622204d199128dec06cefd57790)
 		fmt.Printf("  Already removed.\n")
 	} else if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: remove dictzip: %v.\n", err)

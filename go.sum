@@ -1,7 +1,7 @@
 github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
 github.com/disintegration/imaging v1.6.2/go.mod h1:44/5580QXChDfwIclfc/PCwrr44amcmDAg8hxG0Ewe4=
-github.com/geek1011/koboutils v1.1.0 h1:PwKhWb6ln6lfLO/IEPclcsdRplnEfccO1jmEb8MBjRQ=
-github.com/geek1011/koboutils v1.1.0/go.mod h1:piPNEBdKw8p896nlM4kAdSO1AjyXIMitHzEYxFRIpGA=
+github.com/geek1011/koboutils/v2 v2.0.1 h1:kDgk94UziyrgeUmTdckxKFJoYZ0ZUF/SDszUx6W7Fxo=
+github.com/geek1011/koboutils/v2 v2.0.1/go.mod h1:c/EwVM90qr2bHUrNBVi4jBUWdz+lH1ns2xlfQoiv1vk=
 github.com/mattn/go-sqlite3 v2.0.3+incompatible h1:gXHsfypPkaMZrKbD5209QV9jbUTJKjyR5WD3HYQSd+U=
 github.com/mattn/go-sqlite3 v2.0.3+incompatible/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
