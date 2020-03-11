@@ -164,6 +164,9 @@ func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
 			}
 		case StateEntryMeaningExample:
 			switch {
+			case synStartRe.Match(ln):
+				meaning = nil
+				state = StateEntrySynonym
 			case singleDefnStartRe.Match(ln):
 				meaning = &EntryMeaning{Text: string(singleDefnStartRe.ReplaceAllLiteral(ln, nil))}
 				entry.Meanings = append(entry.Meanings, meaning)
