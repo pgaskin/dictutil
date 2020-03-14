@@ -12,7 +12,7 @@ This document describes [version 2](./v1v2) of Kobo dictionaries. Japanese dicti
 
 Kobo dictzips are standard ZIP files. In general, they are named `dicthtml-LOCALE.zip` where **LOCALE** is the ISO-639-1 language code (although custom locale codes can be used if added to ExtraLocales in the Kobo config file). In addition, a dictzip may be named `dicthtml-LOCALE-LOCALE.zip` for translation dictionaries. Some official dictionaries have slightly different locale codes (e.g. `jaxxdjs`), but these are exceptions.
 
-As of firmware 4.20.14601, the official dictionaries are hosted on `https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v2/dicthtml*.zip`, and support the following locales:
+As of firmware 4.20.14622, the official dictionaries are hosted on `https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v2/dicthtml*.zip`, and support the following locales:
 
 | Locale     | Language |
 | ---        | --- |
