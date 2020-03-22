@@ -7,10 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"os"
 	"strings"
-
-	"github.com/geek1011/dictutil/marisa"
 )
 
 // Reader provides access to the contents of a dictzip file.
@@ -58,10 +55,22 @@ func NewReader(r io.ReaderAt, size int64) (*Reader, error) {
 		z: zr,
 	}
 
-	if words, err := kr.marisaWords(); err != nil {
-		return nil, fmt.Errorf("read index: %w", err)
-	} else {
-		kr.Word = words
+	var found bool
+	for _, zf := range zr.File {
+		if zf.Name == "words" {
+			if fr, err := zf.Open(); err != nil {
+				return nil, fmt.Errorf("open words index: %w", err)
+			} else if Marisa == nil {
+				return nil, fmt.Errorf("no marisa bindings found")
+			} else if kr.Word, err = Marisa.ReadAll(fr); err != nil {
+				return nil, fmt.Errorf("read words index: %w", err)
+			}
+			found = true
+			break
+		}
+	}
+	if !found {
+		return nil, fmt.Errorf("not a dictzip: no words index found")
 	}
 
 	for _, f := range zr.File {
@@ -94,57 +103,6 @@ func NewReader(r io.ReaderAt, size int64) (*Reader, error) {
 // SetDecrypter sets the Decrypter used to decrypt encrypted dicthtml files.
 func (r *Reader) SetDecrypter(d Decrypter) {
 	r.d = d
-}
-
-func (r *Reader) marisaWords() (words []string, err error) {
-	defer func() {
-		if err := recover(); err != nil {
-			words = nil
-			err = fmt.Errorf("marisa: %v", err)
-		}
-	}()
-
-	tf, err := ioutil.TempFile("", "marisa")
-	if err != nil {
-		return nil, fmt.Errorf("create temp file: %w", err)
-	}
-	defer os.Remove(tf.Name())
-	defer tf.Close()
-
-	var found bool
-	for _, zf := range r.z.File {
-		if zf.Name == "words" {
-			if fr, err := zf.Open(); err != nil {
-				return nil, fmt.Errorf("open words index: %w", err)
-			} else if _, err := io.Copy(tf, fr); err != nil {
-				return nil, fmt.Errorf("extract words index: %w", err)
-			} else if err = tf.Close(); err != nil {
-				return nil, fmt.Errorf("extract words index: %w", err)
-			}
-			found = true
-			break
-		}
-	}
-	if !found {
-		return nil, fmt.Errorf("not a dictzip: no words index found")
-	}
-
-	// based on marisa-dump
-	trie := marisa.NewTrie()
-	defer marisa.DeleteTrie(trie)
-
-	trie.Load(tf.Name())
-
-	agent := marisa.NewAgent()
-	defer marisa.DeleteAgent(agent)
-
-	agent.SetQueryString("")
-
-	for trie.PredictiveSearch(agent) {
-		words = append(words, agent.Key().Str())
-	}
-
-	return words, nil
 }
 
 // Open returns an io.ReadCloser which reads the decoded dicthtml file. Multiple

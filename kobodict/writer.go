@@ -6,13 +6,8 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 	"sort"
 	"strings"
-
-	"github.com/geek1011/dictutil/marisa"
 )
 
 // Writer creates dictzips. It does not do any validation; it only does what it
@@ -149,11 +144,17 @@ func (w *Writer) Close() error {
 		w.last = nil
 	}
 
-	if buf, err := w.marisaBytes(); err != nil {
-		return fmt.Errorf("generate index: %w", err)
-	} else if fw, err := w.z.Create("words"); err != nil {
+	var words []string
+	for word := range w.words {
+		words = append(words, word)
+	}
+	sort.Strings(words)
+
+	if fw, err := w.z.Create("words"); err != nil {
 		return fmt.Errorf("create index zip entry: %w", err)
-	} else if _, err := fw.Write(buf); err != nil {
+	} else if Marisa == nil {
+		return fmt.Errorf("no marisa bindings found")
+	} else if err := Marisa.WriteAll(fw, words); err != nil {
 		return fmt.Errorf("write index: %w", err)
 	}
 
@@ -167,45 +168,6 @@ func (w *Writer) Close() error {
 // will only apply to dicthtml files added after the encrypter is set.
 func (w *Writer) SetEncrypter(e Encrypter) {
 	w.e = e
-}
-
-func (w *Writer) marisaBytes() (buf []byte, err error) {
-	defer func() {
-		if err := recover(); err != nil {
-			buf = nil
-			err = fmt.Errorf("marisa: %v", err)
-		}
-	}()
-
-	var words []string
-	for word := range w.words {
-		words = append(words, word)
-	}
-	sort.Strings(words) // for deterministic output
-
-	ks := marisa.NewKeyset()
-	for _, word := range words {
-		ks.PushBackString(word)
-	}
-	defer marisa.DeleteKeyset(ks)
-
-	td, err := ioutil.TempDir("", "marisa")
-	if err != nil {
-		return nil, fmt.Errorf("create temp dir: %w", err)
-	}
-	defer os.RemoveAll(td)
-
-	trie := marisa.NewTrie()
-	defer marisa.DeleteTrie(trie)
-
-	trie.Build(ks)
-	trie.Save(filepath.Join(td, "words"))
-
-	buf, err = ioutil.ReadFile(filepath.Join(td, "words"))
-	if err != nil {
-		return nil, fmt.Errorf("read marisa output: %w", err)
-	}
-	return buf, err
 }
 
 type encryptWriter struct {
