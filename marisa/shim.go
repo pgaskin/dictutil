@@ -1,5 +1,6 @@
 package marisa
 
+//#include <stddef.h>
 import "C"
 
 import (
@@ -63,7 +64,7 @@ func iopDel(iid int) {
 }
 
 //export go_iop_read
-func go_iop_read(iid C.int, buf *C.char, buf_n C.int, out_err **C.char) C.int {
+func go_iop_read(iid C.int, buf *C.char, buf_n C.size_t, out_err **C.char) C.int {
 	switch i := iopGet(int(iid)).(type) {
 	case io.Reader:
 		n, err := i.Read((*[1 << 28]byte)(unsafe.Pointer(buf))[:int(buf_n):int(buf_n)])
@@ -72,20 +73,20 @@ func go_iop_read(iid C.int, buf *C.char, buf_n C.int, out_err **C.char) C.int {
 				return C.int(-1)
 			}
 		} else if err != nil {
-			*out_err = C.CString(fmt.Sprintf("iop_read: read up to %d bytes from iid %d: %v", buf_n, int(iid), err))
+			*out_err = C.CString(fmt.Sprintf("go_iop_read: read up to %d bytes from iid %d: %v", buf_n, int(iid), err))
 		}
 		return C.int(n)
 	case nil:
-		*out_err = C.CString(fmt.Sprintf("iop_read: iid %d has been deleted", int(iid)))
+		*out_err = C.CString(fmt.Sprintf("go_iop_read: iid %d has been deleted", int(iid)))
 		return C.int(0)
 	default:
-		*out_err = C.CString(fmt.Sprintf("iop_read: iid %d is a %T, not an io.Reader", int(iid), i))
+		*out_err = C.CString(fmt.Sprintf("go_iop_read: iid %d is a %T, not an io.Reader", int(iid), i))
 		return C.int(0)
 	}
 }
 
 //export go_iop_write
-func go_iop_write(iid C.int, buf *C.char, buf_n C.int, out_err **C.char) C.int {
+func go_iop_write(iid C.int, buf *C.char, buf_n C.size_t, out_err **C.char) C.int {
 	switch i := iopGet(int(iid)).(type) {
 	case io.Writer:
 		n, err := i.Write((*[1 << 28]byte)(unsafe.Pointer(buf))[:int(buf_n):int(buf_n)])
@@ -94,14 +95,14 @@ func go_iop_write(iid C.int, buf *C.char, buf_n C.int, out_err **C.char) C.int {
 				return C.int(-1)
 			}
 		} else if err != nil {
-			*out_err = C.CString(fmt.Sprintf("iop_write: write up to %d bytes to iid %d: %v", buf_n, int(iid), err))
+			*out_err = C.CString(fmt.Sprintf("go_iop_write: write up to %d bytes to iid %d: %v", buf_n, int(iid), err))
 		}
 		return C.int(n)
 	case nil:
-		*out_err = C.CString(fmt.Sprintf("iop_write: iid %d has been deleted", int(iid)))
+		*out_err = C.CString(fmt.Sprintf("go_iop_write: iid %d has been deleted", int(iid)))
 		return C.int(0)
 	default:
-		*out_err = C.CString(fmt.Sprintf("iop_write: iid %d is a %T, not an io.Writer", int(iid), i))
+		*out_err = C.CString(fmt.Sprintf("go_iop_write: iid %d is a %T, not an io.Writer", int(iid), i))
 		return C.int(0)
 	}
 }

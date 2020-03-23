@@ -1,14 +1,23 @@
 #ifndef GO_SHIM_H
 #define GO_SHIM_H
 
+#ifdef __cplusplus
+#include <cstddef>
+extern "C" {
+#else
+#include <stddef.h>
+#endif
+
+int go_iop_read(int iid, const char *p, size_t n, char **out_err);
+int go_iop_write(int iid, const char *p, size_t n, char **out_err);
+
+#ifdef __cplusplus
+}
+
 #include <cstdlib>
 #include <ios>
 #include <iostream>
 #include <stdexcept>
-
-extern "C" {
-#include "_cgo_export.h"
-}
 
 // https://accu.org/index.php/journals/264
 // https://golang.org/cmd/cgo/#hdr-C_references_to_Go
@@ -31,10 +40,8 @@ public:
 
     // --- reading
     int underflow() override {
-        // usually, the logic would be here directly, but this is cleaner
         char c;
-        std::streamsize n = this->xsgetn(&c, 1);
-        return n == 0
+        return this->xsgetn(&c, 1) == 0
             ? std::char_traits<char>::eof()
             : static_cast<int>(c);
     }
@@ -43,9 +50,9 @@ public:
     // but, we'll implement xsputn for more efficient bulk writes
     std::streamsize xsgetn(char* buf, std::streamsize buf_n) override {
         char* err = NULL;
-        int n = go_iop_read(this->iid_, buf, static_cast<int>(buf_n), &err);
+        int n = go_iop_read(this->iid_, buf, buf_n, &err);
         if (err) {
-            auto ex = go::error(err);
+            go::error ex = go::error(err);
             free(err);
             throw ex;
         }
@@ -59,11 +66,9 @@ public:
         if (std::char_traits<char>::eq_int_type(c, std::char_traits<char>::eof()))
             return 0; // usually, we would flush the buffer here, but we're writing directly, so it's basically a nop
 
-        // usually, the logic would be here directly, but this is cleaner
         char c_ = c;
-        if (this->xsputn(&c_, 1) != 1) {
+        if (this->xsputn(&c_, 1) != 1)
             throw go::error("short write");
-        }
         return c;
     }
     // the other members don't need to be overridden, as they just call overflow
@@ -71,32 +76,31 @@ public:
     // but, we'll implement xsputn for more efficient bulk writes
     std::streamsize xsputn(const char* buf, std::streamsize buf_n) override {
         char* err = NULL;
-        int n = go_iop_write(this->iid_, const_cast<char*>(buf), static_cast<int>(buf_n), &err);
+        int n = go_iop_write(this->iid_, buf, buf_n, &err);
         if (err) {
-            auto ex = go::error(err);
+            go::error ex = go::error(err);
             free(err);
             throw ex;
-        } else if (n == -1) {
-            throw go::error("EOF while writing to Go writer");
         }
+        if (n == -1)
+            throw go::error("EOF while writing to Go writer");
         return static_cast<std::streamsize>(n);
     }
 };
 
 struct basic_pstream {
     pbuf sbuf_;
-    basic_pstream(int iid)
-        : sbuf_(iid) {}
+    basic_pstream(int iid) : sbuf_(iid) {}
 };
 
 class pstream : virtual basic_pstream, public std::iostream {
 public:
-    pstream(int iid)
-        : basic_pstream(iid)
+    pstream(int iid) : basic_pstream(iid)
         , std::ios(&this->sbuf_)
         , std::iostream(&this->sbuf_) {}
 };
 
 }
 
+#endif
 #endif

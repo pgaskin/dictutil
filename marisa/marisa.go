@@ -6,8 +6,10 @@ package marisa
 
 //#cgo CPPFLAGS: -Wall
 //#cgo LDFLAGS:
+//#include <stddef.h>
 //#include <stdlib.h>
-//#include "marisa.h"
+//const char* marisa_read_all(int iid, char ***out_wd, size_t *out_wd_sz);
+//const char* marisa_write_all(int iid, const char** wd, size_t wd_sz);
 import "C"
 
 import (
@@ -18,65 +20,65 @@ import (
 
 func ReadAll(r io.Reader) ([]string, error) {
 	iid := iopPut(r)
-	defer iopDel(iid)
-
 	var out_wd **C.char
 	var out_wd_sz C.size_t
-	var out_err *C.char
-
-	C.marisa_read_all(
+	err := C.marisa_read_all(
 		(C.int)(iid),
 		(***C.char)(unsafe.Pointer(&out_wd)),
 		(*C.size_t)(unsafe.Pointer(&out_wd_sz)),
-		(**C.char)(unsafe.Pointer(&out_err)),
 	)
-
-	if out_wd != nil {
-		defer C.marisa_wd_free(out_wd, out_wd_sz)
-	}
-	if out_err != nil {
-		defer C.free(unsafe.Pointer(out_err))
-		return nil, errors.New(C.GoString(out_err))
-	}
-
-	wd := make([]string, int(out_wd_sz))
-	for i, w := range (*[1 << 28]*C.char)(unsafe.Pointer(out_wd))[:int(out_wd_sz):int(out_wd_sz)] {
-		wd[i] = C.GoString(w)
-	}
-	return wd, nil
+	iopDel(iid)
+	return gostrs(out_wd, out_wd_sz), goerr(err)
 }
 
 func WriteAll(w io.Writer, wd []string) error {
 	iid := iopPut(w)
-	defer iopDel(iid)
-
-	in_wd := make([]*C.char, len(wd))
-	for i, w := range wd {
-		in_wd[i] = C.CString(w)
-	}
-	defer func() {
-		for _, p := range in_wd {
-			C.free(unsafe.Pointer(p))
-		}
-	}()
-
-	var out_err *C.char
-
-	var in_wd_ptr unsafe.Pointer
-	if len(in_wd) != 0 {
-		in_wd_ptr = unsafe.Pointer(&in_wd[0])
-	}
-	C.marisa_write_all(
+	wd_ptr, wd_sz, wd_free := cstrs(wd)
+	err := C.marisa_write_all(
 		(C.int)(iid),
-		(**C.char)(in_wd_ptr),
-		(C.size_t)(len(in_wd)),
-		(**C.char)(unsafe.Pointer(&out_err)),
+		(**C.char)(wd_ptr),
+		(C.size_t)(wd_sz),
 	)
+	wd_free()
+	iopDel(iid)
+	return goerr(err)
+}
 
-	if out_err != nil {
-		defer C.free(unsafe.Pointer(out_err))
-		return errors.New(C.GoString(out_err))
+func goerr(p *C.char) (err error) {
+	if p != nil {
+		err = errors.New(C.GoString(p))
+		C.free(unsafe.Pointer(p))
 	}
+	return
+}
 
-	return nil
+func gostrs(p **C.char, n C.size_t) (s []string) {
+	if p != nil {
+		s = make([]string, int(n))
+		for i, v := range (*[1 << 28]*C.char)(unsafe.Pointer(p))[:int(n):int(n)] {
+			s[i] = C.GoString(v)
+			C.free(unsafe.Pointer(v))
+		}
+		C.free(unsafe.Pointer(p))
+	}
+	return
+}
+
+func cstrs(s []string) (p **C.char, n C.size_t, free func()) {
+	n = (C.size_t)(len(s))
+	if len(s) == 0 {
+		free = func() {}
+		return
+	}
+	c := make([]*C.char, len(s))
+	for i, v := range s {
+		c[i] = C.CString(v)
+	}
+	p = (**C.char)(unsafe.Pointer(&c[0]))
+	free = func() {
+		for _, v := range c {
+			C.free(unsafe.Pointer(v))
+		}
+	}
+	return
 }
