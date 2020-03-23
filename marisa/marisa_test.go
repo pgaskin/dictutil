@@ -6,16 +6,11 @@ import (
 	"encoding/hex"
 	"errors"
 	"io"
-	"os"
 	"reflect"
 	"runtime"
+	"strings"
 	"testing"
 )
-
-func TestMain(m *testing.M) {
-	marisa_go_test_error_helper(1)
-	os.Exit(m.Run())
-}
 
 func TestTrieIO(t *testing.T) {
 	emptyBuf := bytes.NewBuffer(nil)
@@ -27,15 +22,10 @@ func TestTrieIO(t *testing.T) {
 
 	t.Run("WriteAll", func(t *testing.T) {
 		t.Run("Error", func(t *testing.T) {
-			err := WriteAll(bytes.NewBuffer(nil), []string{""})
-			if v := "c++ runtime error: go_test_error"; err == nil || err.Error() != v {
-				t.Errorf("expected err to be `%v`, got `%v`", v, err)
-			}
-		})
-		t.Run("WriteError", func(t *testing.T) {
 			err := WriteAll(new(errIO), normalWd)
-			if v := "go_test_error"; err == nil || err.Error() != v {
-				t.Errorf("expected err to be `%v`, got `%v`", v, err)
+			t.Logf("err=%v", err)
+			if v := "MARISA_IO_ERROR"; err == nil || !strings.Contains(err.Error(), v) {
+				t.Errorf("expected err to contain `%v`, got `%v`", v, err)
 			}
 		})
 		t.Run("Empty", func(t *testing.T) {
@@ -43,6 +33,7 @@ func TestTrieIO(t *testing.T) {
 			if err := WriteAll(io.MultiWriter(emptyBuf, ss), nil); err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
+			t.Logf("sum=%x", ss.Sum(nil))
 			if runtime.GOARCH == "amd64" {
 				if v := hex.EncodeToString(ss.Sum(nil)); v != emptyS {
 					t.Errorf("output sha1 mismatch: expected %s, got %s", emptyS, v)
@@ -56,6 +47,7 @@ func TestTrieIO(t *testing.T) {
 			if err := WriteAll(io.MultiWriter(normalBuf, ss), normalWd); err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
+			t.Logf("sum=%x", ss.Sum(nil))
 			if runtime.GOARCH == "amd64" {
 				if v := hex.EncodeToString(ss.Sum(nil)); v != normalS {
 					t.Errorf("output sha1 mismatch: expected %s, got %s", normalS, v)
@@ -67,19 +59,11 @@ func TestTrieIO(t *testing.T) {
 	})
 	t.Run("ReadAll", func(t *testing.T) {
 		t.Run("Error", func(t *testing.T) {
-			wd, err := ReadAll(bytes.NewReader([]byte{0}))
-			if v := "c++ runtime error: go_test_error"; err == nil || err.Error() != v {
-				t.Errorf("expected err to be `%v`, got `%v`", v, err)
-			}
-			if wd != nil {
-				t.Errorf("expected returned slice to be nil, got %#v", wd)
-			}
-		})
-		t.Run("ReadError", func(t *testing.T) {
 			wd, err := ReadAll(new(errIO))
-			if v := "go_test_error"; err == nil || err.Error() != v {
-				t.Errorf("expected err to be `%v`, got `%v`", v, err)
+			if v := "MARISA_IO_ERROR"; err == nil || !strings.Contains(err.Error(), v) {
+				t.Errorf("expected err to contain `%v`, got `%v`", v, err)
 			}
+			t.Logf("err=%v", err)
 			if wd != nil {
 				t.Errorf("expected returned slice to be nil, got %#v", wd)
 			}
@@ -89,6 +73,7 @@ func TestTrieIO(t *testing.T) {
 			if err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
+			t.Logf("wd=%+s", wd)
 			if len(wd) != 0 {
 				t.Errorf("expected no words to be returned")
 			}
@@ -98,6 +83,7 @@ func TestTrieIO(t *testing.T) {
 			if err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
+			t.Logf("wd=%+s", wd)
 			if !reflect.DeepEqual(wd, normalWd) {
 				t.Errorf("expected %#v, got %#v", normalWd, wd)
 			}
@@ -108,4 +94,4 @@ func TestTrieIO(t *testing.T) {
 type errIO struct{}
 
 func (*errIO) Write([]byte) (int, error) { return 0, errors.New("go_test_error") }
-func (*errIO) Read([]byte) (int, error) { return 0, errors.New("go_test_error") }
+func (*errIO) Read([]byte) (int, error)  { return 0, errors.New("go_test_error") }
