@@ -13,6 +13,7 @@ Dictutil consists of multiple tools and libraries:
 - [**examples/gotdict-convert**](https://pgaskin.net/dictutil/examples/gotdict-convert) is a working example of using dictutil to convert [GOTDict](https://github.com/wjdp/gotdict) into a Kobo dictionary.
 - [**examples/webster1913-convert**](https://pgaskin.net/dictutil/examples/webster1913-convert) is a working example of using dictutil to convert [Project Gutenberg's Webster's Unabridged Dictionary](http://www.gutenberg.org/ebooks/29765.txt.utf-8) into a Kobo dictionary.
 - [**examples/dictzip-decompile**](https://pgaskin.net/dictutil/examples/dictzip-decompile) is an **experimental** tool to convert a dictzip into a dictfile.
+- [**examples/bgl-convert**](https://pgaskin.net/dictutil/examples/bgl-convert) is a simple tool to convert Babylon BGL dictionaries to a dictfile.
 - *Library:* [**kobodict**](https://pkg.go.dev/github.com/geek1011/dictutil/kobodict) provides support for reading, writing, encrypting, and decrypting Kobo dictionaries.
 - *Library:* [**dictgen**](https://pkg.go.dev/github.com/geek1011/dictutil/dictgen) provides the functionality of dictgen as a library.
 - *Library:* [**marisa**](./marisa) provides a simplified self-contained CGO wrapper for [marisa-trie](https://github.com/s-yata/marisa-trie).
