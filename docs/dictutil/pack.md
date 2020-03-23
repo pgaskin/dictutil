@@ -33,4 +33,4 @@ dictutil pack --output "dicthtml-aa.zip" /path/to/dictdir
 ```
 
 ## Input format
-The input dictdir is the same as the output of [dictutil unpack](./unpack).
+The input dictdir is the same as the output of [dictutil unpack](./unpack.html).

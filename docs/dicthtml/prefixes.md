@@ -54,7 +54,7 @@ Prefixes are calculated using the following steps. Note that "character" refers 
 ## Testing
 You can test Kobo's prefix algorithm directly using [dictword-test](https://github.com/geek1011/kobo-mods/tree/master/dictword-test/).
 
-If you just want an easy way to generate prefixes for words, use the [dictutil prefix](../dictutil/prefix) command
+If you just want an easy way to generate prefixes for words, use the [dictutil prefix](../dictutil/prefix.html) command
 
 ## Sample implementation
 Here is the Go implementation used in dictutil:

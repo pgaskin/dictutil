@@ -51,4 +51,4 @@ dictutil install --name "My Dictionary" dicthtml-aa.zip
 ```
 
 ## Details
-See [installing dictionaries](../dicthtml/install) for more details on how this works.
+See [installing dictionaries](../dicthtml/install.html) for more details on how this works.

@@ -7,23 +7,23 @@ This repository contains a collection of tools and libraries to work with Kobo d
 Unlike previous attempts at working with Kobo dictionaries, dictutil has full support for all features supported by nickel (word prefixes, unicode, variants, images, etc), with a focus on simplicity, correctness (prefix generation and other features are directly tested against libnickel's code and regexps, v1/v2 dictionaries are differentiated), and completeness (most of the research was done by reverse-engineering libnickel).
 
 Dictutil consists of multiple tools and libraries:
-- [**dictutil**](https://pgaskin.net/dictutil/dictutil) provides commands for installing, removing, unpacking, packing, and performing low-level modifications and tests on Kobo dictionaries. All operations are intended to be correct, lossless, and deterministic.
-- [**dictgen**](https://pgaskin.net/dictutil/dictgen) simplifies creating full-featured dictionaries for Kobo eReaders, with support for images, unicode prefixes, raw html, markdown, and more.
-- [**dicthtml**](https://pgaskin.net/dictutil/dicthtml) documents Kobo's dictionary format and how it works.
-- [**examples/gotdict-convert**](https://pgaskin.net/dictutil/examples/gotdict-convert) is a working example of using dictutil to convert [GOTDict](https://github.com/wjdp/gotdict) into a Kobo dictionary.
-- [**examples/webster1913-convert**](https://pgaskin.net/dictutil/examples/webster1913-convert) is a working example of using dictutil to convert [Project Gutenberg's Webster's Unabridged Dictionary](http://www.gutenberg.org/ebooks/29765.txt.utf-8) into a Kobo dictionary.
-- [**examples/dictzip-decompile**](https://pgaskin.net/dictutil/examples/dictzip-decompile) is an **experimental** tool to convert a dictzip into a dictfile.
-- [**examples/bgl-convert**](https://pgaskin.net/dictutil/examples/bgl-convert) is a simple tool to convert Babylon BGL dictionaries to a dictfile.
+- [**dictutil**](https://pgaskin.net/dictutil/dictutil/) provides commands for installing, removing, unpacking, packing, and performing low-level modifications and tests on Kobo dictionaries. All operations are intended to be correct, lossless, and deterministic.
+- [**dictgen**](https://pgaskin.net/dictutil/dictgen/) simplifies creating full-featured dictionaries for Kobo eReaders, with support for images, unicode prefixes, raw html, markdown, and more.
+- [**dicthtml**](https://pgaskin.net/dictutil/dicthtml/) documents Kobo's dictionary format and how it works.
+- [**examples/gotdict-convert**](https://pgaskin.net/dictutil/examples/gotdict-convert.html) is a working example of using dictutil to convert [GOTDict](https://github.com/wjdp/gotdict) into a Kobo dictionary.
+- [**examples/webster1913-convert**](https://pgaskin.net/dictutil/examples/webster1913-convert.html) is a working example of using dictutil to convert [Project Gutenberg's Webster's Unabridged Dictionary](http://www.gutenberg.org/ebooks/29765.txt.utf-8) into a Kobo dictionary.
+- [**examples/dictzip-decompile**](https://pgaskin.net/dictutil/examples/dictzip-decompile.html) is an **experimental** tool to convert a dictzip into a dictfile.
+- [**examples/bgl-convert**](https://pgaskin.net/dictutil/examples/bgl-convert.html) is a simple tool to convert Babylon BGL dictionaries to a dictfile.
 - *Library:* [**kobodict**](https://pkg.go.dev/github.com/geek1011/dictutil/kobodict) provides support for reading, writing, encrypting, and decrypting Kobo dictionaries.
 - *Library:* [**dictgen**](https://pkg.go.dev/github.com/geek1011/dictutil/dictgen) provides the functionality of dictgen as a library.
 - *Library:* [**marisa**](./marisa) provides a simplified self-contained CGO wrapper for [marisa-trie](https://github.com/s-yata/marisa-trie).
 
-Dictutil implements [version 2](https://pgaskin.net/dictutil/dicthtml/v1v2) of the Kobo dictionary format, which supports firmware versions 4.7.10364+.
+Dictutil implements [version 2](https://pgaskin.net/dictutil/dicthtml/v1v2.html) of the Kobo dictionary format, which supports firmware versions 4.7.10364+.
 
-For more information, see the [documentation](https://pgaskin.net/dictutil). If you just want a quick overview of the utilities provided, continue reading below.
+For more information, see the [documentation](https://pgaskin.net/dictutil/). If you just want a quick overview of the utilities provided, continue reading below.
 
 ## Download
-- **Documentation** can be found on the [website](https://pgaskin.net/dictutil).
+- **Documentation** can be found on the [website](https://pgaskin.net/dictutil/).
 - **Tools** (dictutil, dictgen, gotdict-convert, webster1913-convert) can be downloaded from the [releases](https://github.com/geek1011/dictutil/releases) page.
 - **Pre-built dictionaries** from gotdict-convert and webster1913-convert can be downloaded from [AppVeyor](https://ci.appveyor.com/api/projects/geek1011/dictutil/artifacts) or from the links below:
   - GOTDict *(with images, firmware 4.20.14601+)*: [dictzip (dicthtml-gt.zip)](https://ci.appveyor.com/api/projects/geek1011/dictutil/artifacts/gotdict/dicthtml-gt.zip?branch=master&all=false&pr=false), [source dictfile (gotdict.df)](https://ci.appveyor.com/api/projects/geek1011/dictutil/artifacts/gotdict/gotdict.df?branch=master&all=false&pr=false)
@@ -32,7 +32,7 @@ For more information, see the [documentation](https://pgaskin.net/dictutil). If 
 - **API documentation** for the Go libraries can be found on [pkg.go.dev](https://pkg.go.dev/github.com/geek1011/dictutil).
 
 ## Usage
-See the [documentation](https://pgaskin.net/dictutil) for more detailed information and examples.
+See the [documentation](https://pgaskin.net/dictutil/) for more detailed information and examples.
 
 ### dictutil
 
@@ -122,7 +122,7 @@ Note that the only usable image method is currently removing them or using base6
 See https://pgaskin.net/dictutil/dictgen for more information about the dictfile format.
 ```
 
-**See [here](https://pgaskin.net/dictutil/dictgen) for information and examples of the dictfile format.**
+**See [here](https://pgaskin.net/dictutil/dictgen/) for information and examples of the dictfile format.**
 
 ### gotdict-convert
 

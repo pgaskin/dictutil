@@ -8,7 +8,7 @@ parent: dicthtml
 
 This document will refer to a packed `dicthtml*.zip` files as a *dictzip*, an unpacked and deindexed one as a *dictdir*, and an individual dictionary html file as a *dicthtml* file.
 
-This document describes [version 2](./v1v2) of Kobo dictionaries. Japanese dictionaries are not the focus of this document, and information about such may be incomplete.
+This document describes [version 2](./v1v2.html) of Kobo dictionaries. Japanese dictionaries are not the focus of this document, and information about such may be incomplete.
 
 Kobo dictzips are standard ZIP files. In general, they are named `dicthtml-LOCALE.zip` where **LOCALE** is the ISO-639-1 language code (although custom locale codes can be used if added to ExtraLocales in the Kobo config file). In addition, a dictzip may be named `dicthtml-LOCALE-LOCALE.zip` for translation dictionaries. Some official dictionaries have slightly different locale codes (e.g. `jaxxdjs`), but these are exceptions.
 
@@ -79,7 +79,7 @@ int main() {
 }
 ```
 
-For more details on word matching, see [here](./matching).
+For more details on word matching, see [here](./matching.html).
 
 ### *.html (dicthtml)
 Each dictzip contains one or more UTF-8 encoded dicthtml files named `PREFIX.html`, where **PREFIX** is the prefix calculated from the words within it.
