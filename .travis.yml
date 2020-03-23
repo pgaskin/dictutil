@@ -1,0 +1,18 @@
+os:
+- osx
+
+language: go
+
+go:
+- 1.14.x
+
+env:
+  GO111MODULE: "on"
+
+script:
+- go run -mod=readonly ./cmd/dictutil --help
+- go run -mod=readonly ./cmd/dictgen --help
+- go run -mod=readonly ./examples/dictzip-decompile --help
+- go run -mod=readonly ./examples/gotdict-convert --help
+- go run -mod=readonly ./examples/webster1913-convert --help
+- go test -mod=readonly -v ./...
