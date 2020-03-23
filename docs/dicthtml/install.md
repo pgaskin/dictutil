@@ -52,6 +52,6 @@ In short:
 - **Therefore:** The steps required to install custom dictionaries are now (note that these have already been incorporated into the instructions above, they are just here for convenience):
   - Copy the dictzip and mark it read-only.
   - Add it to ExtraLocales if it is not a built-in locale.
-  - Use the patch to replace `Extra: ` in libnickel with any other string (same length or shorter with a null byte at the end), but not containing anything in the Unicode whitespace class.
+  - Use the patch to replace `Extra: ` in libnickel with any other string (same length or shorter with a null byte at the end), but does not contain a space (` `).
 
 See [#49](https://github.com/geek1011/kobopatch-patches/issues/49) for more information.
