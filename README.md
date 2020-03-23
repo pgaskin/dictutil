@@ -15,7 +15,7 @@ Dictutil consists of multiple tools and libraries:
 - [**examples/dictzip-decompile**](https://pgaskin.net/dictutil/examples/dictzip-decompile) is an **experimental** tool to convert a dictzip into a dictfile.
 - *Library:* [**kobodict**](https://pkg.go.dev/github.com/geek1011/dictutil/kobodict) provides support for reading, writing, encrypting, and decrypting Kobo dictionaries.
 - *Library:* [**dictgen**](https://pkg.go.dev/github.com/geek1011/dictutil/dictgen) provides the functionality of dictgen as a library.
-- *Library:* [**marisa**](./marisa) provides self-contained CGO bindings for [marisa-trie](https://github.com/s-yata/marisa-trie).
+- *Library:* [**marisa**](./marisa) provides a simplified self-contained CGO wrapper for [marisa-trie](https://github.com/s-yata/marisa-trie).
 
 Dictutil implements [version 2](https://pgaskin.net/dictutil/dicthtml/v1v2) of the Kobo dictionary format, which supports firmware versions 4.7.10364+.
 
