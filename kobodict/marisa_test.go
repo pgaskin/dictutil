@@ -39,7 +39,11 @@ func TestMarisa(t *testing.T) {
 		t.Errorf("read tree: expected %+s, got %+s", w, nw)
 	}
 
-	if x, y := hex.EncodeToString(ss.Sum(nil)), "ea7252fc4e86585dea884e4bcb5ce7be90676474"; x != y {
-		t.Errorf("trie output is incorrect or non-determinstic, expected sha1 %s, got %s", y, x)
+	if runtime.GOARCH == "amd64" {
+		if x, y := hex.EncodeToString(ss.Sum(nil)), "ea7252fc4e86585dea884e4bcb5ce7be90676474"; x != y {
+			t.Errorf("trie output is incorrect or non-determinstic, expected sha1 %s, got %s", y, x)
+		}
+	} else {
+		t.Logf("skipping sha1 check on non-amd64 architecture, as the correct file differs slightly on each one (usually by ~4 bytes)")
 	}
 }
