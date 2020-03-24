@@ -31,7 +31,7 @@ go_func marisa_read_all(int iid, char ***out_wd, size_t *out_wd_sz) {
     try {
         if (!out_wd || !out_wd_sz)
             throw std::runtime_error("parameter is null");
-        go::pstream r(iid);
+        go::rstream r(iid);
         marisa::Trie t;
         marisa::read(r, &t);
         marisa::Agent a;
@@ -57,7 +57,7 @@ go_func marisa_write_all(int iid, const char** wd, size_t wd_sz) {
             k.push_back(wd[i]);
         marisa::Trie t;
         t.build(k);
-        go::pstream w(iid);
+        go::wstream w(iid);
         marisa::write(w, t);
     } catch_go
 }
