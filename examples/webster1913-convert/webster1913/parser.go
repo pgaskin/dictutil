@@ -78,22 +78,31 @@ func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
 		blankLine := len(lnt) == 0
 
 		if entryWordRe.Match(ln) {
-			if entry != nil {
-				progress(len(wd), entry.Headword)
-			}
-			spl := strings.Split(string(bytes.ToLower(ln)), ";")
-			entry = &Entry{Headword: strings.TrimSpace(spl[0])}
-			if len(spl) > 1 {
-				for _, v := range spl[1:] {
-					if w := strings.TrimSpace(v); w != "" {
-						entry.Variant = append(entry.Variant, w)
-					}
+			if state == StateNone {
+				// skip the file header(up to the word "A")
+				if !bytes.Equal(lnt, []byte{'A'}) {
+					continue
 				}
 			}
-			meaning = nil
-			wd = append(wd, entry)
-			state = StateEntryInfo
-			continue
+			if bytes.Count(lnt, []byte{'-'}) != len(lnt) {
+				// ^ if all dashes, it is a false positive
+				if entry != nil {
+					progress(len(wd), entry.Headword)
+				}
+				spl := strings.Split(string(bytes.ToLower(ln)), ";")
+				entry = &Entry{Headword: strings.TrimSpace(spl[0])}
+				if len(spl) > 1 {
+					for _, v := range spl[1:] {
+						if w := strings.TrimSpace(v); w != "" {
+							entry.Variant = append(entry.Variant, w)
+						}
+					}
+				}
+				meaning = nil
+				wd = append(wd, entry)
+				state = StateEntryInfo
+				continue
+			}
 		}
 
 		switch state {
