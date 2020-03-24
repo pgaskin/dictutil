@@ -96,8 +96,8 @@ public:
 
         this->setg(&this->rbuf_, &this->rbuf_, &this->rbuf_ + (n>0 ? n : 0));   // Update the current byte.
         return this->gptr() == this->egptr()                                    // If the new current pos == past end of buffer, no byte was read (n<=0).
-            ? iopbuf::traits_type::eof()                                          // If no byte was read (and no error was thrown earlier), it's an EOF.
-            : iopbuf::traits_type::to_int_type(this->rbuf_);                      // Otherwise, return the byte we just read (note: without to_int_type, 0xFF would be sign extended to -1/eof).
+            ? iopbuf::traits_type::eof()                                        // If no byte was read (and no error was thrown earlier), it's an EOF.
+            : iopbuf::traits_type::to_int_type(this->rbuf_);                    // Otherwise, return the byte we just read (note: without to_int_type, 0xFF would be sign extended to -1/eof).
     }
 
     std::streamsize xsgetn(iopbuf::char_type* buf, std::streamsize buf_n) override {
@@ -113,7 +113,7 @@ public:
         this->rbuf_ = n>0 ? buf[n-1] : 0;                                       // Set the current byte to the last one read, if any.
         this->setg(&this->rbuf_, &this->rbuf_, &this->rbuf_ + (n>0 ? 1 : 0));   // Update the current byte.
         return this->gptr() == this->egptr()                                    // If the new current pos == past end of buffer, no byte was read (n<=0).
-            ? iopbuf::traits_type::eof()                                          // If no byte was read (and no error was thrown earlier), it's an EOF
+            ? iopbuf::traits_type::eof()                                        // If no byte was read (and no error was thrown earlier), it's an EOF
             : n;                                                                // Otherwise, return the number of bytes read.
     }
 
