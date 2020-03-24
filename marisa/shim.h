@@ -41,6 +41,7 @@ ptrdiff_t go_iop_write(int iid, const char *p, size_t n, char **out_err);
 #ifdef __cplusplus
 }
 
+#include <cstdarg>
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
@@ -50,9 +51,24 @@ ptrdiff_t go_iop_write(int iid, const char *p, size_t n, char **out_err);
 
 namespace go {
 
+bool dbg(const char* format, ...) {
+    static bool _dbg = getenv("GOSHIMDEBUG") ? getenv("GOSHIMDEBUG")[0] == '1' && getenv("GOSHIMDEBUG")[1] == '\0' : false;
+    if (!_dbg)
+        return false;
+    fprintf(stderr, "GOSHIMDEBUG: ");
+    va_list arg;
+    va_start(arg, format);
+    vfprintf(stderr, format, arg);
+    va_end(arg);
+    fflush(stderr);
+    return true;
+}
+
 class error : public std::runtime_error {
 public:
-    error(const char* what) : std::runtime_error(what) {};
+    error(const char* what) : std::runtime_error(what) {
+        go::dbg("new go::error(%s)\n", what);
+    };
 
     // check checks an output err pointer and frees+throws it if set.
     static void check(char* err) {
@@ -91,7 +107,7 @@ public:
 
         char* err = NULL;
         ptrdiff_t n = go_iop_read(this->iid_, &this->rbuf_, 1, &err);
-        // printf("underflow: go_iop_read(%d, 1) = %td %02x err=%s\n", this->iid_, n, this->rbuf_, err); fflush(stdout);
+        go::dbg("underflow: go_iop_read(%d, 1) = %td %02x err=%s\n", this->iid_, n, this->rbuf_, err); fflush(stdout);
         go::error::check(err);
 
         this->setg(&this->rbuf_, &this->rbuf_, &this->rbuf_ + (n>0 ? n : 0));   // Update the current byte.
@@ -105,16 +121,25 @@ public:
         // default one which gets each byte one-by-one in a loop.
         // Note: Remember to test ::underflow by forcing it to use the default
         // implementation: return std::streambuf::xsgetn(buf, buf_n);
-        char* err = NULL;
-        ptrdiff_t n = go_iop_read(this->iid_, buf, buf_n, &err);
-        // printf("xsgetn: go_iop_read(%d, %zu) = %td err=%s\n", this->iid_, buf_n, n, err); fflush(stdout);
-        go::error::check(err);
 
-        this->rbuf_ = n>0 ? buf[n-1] : 0;                                       // Set the current byte to the last one read, if any.
-        this->setg(&this->rbuf_, &this->rbuf_, &this->rbuf_ + (n>0 ? 1 : 0));   // Update the current byte.
+        std::streamsize t = 0;
+
+        ptrdiff_t n = 0;
+        char* err = NULL;
+        while (t != buf_n && n != -1) {
+            n = go_iop_read(this->iid_, buf+t, buf_n-t, &err);
+            go::dbg("xsgetn: go_iop_read(%d, %zu) = %td (%td/%td) err=%s\n", this->iid_, buf_n-t, n, t+(n>0 ? n : 0), buf_n, err); fflush(stdout);
+            t += n>0 ? n : 0;
+            if (t > buf_n)
+                throw go::error("read returned too many bytes!");
+            go::error::check(err);
+        }
+
+        this->rbuf_ = t>0 ? buf[t-1] : 0;                                       // Set the current byte to the last one read, if any.
+        this->setg(&this->rbuf_, &this->rbuf_, &this->rbuf_ + (t>0 ? 1 : 0));   // Update the current byte.
         return this->gptr() == this->egptr()                                    // If the new current pos == past end of buffer, no byte was read (n<=0).
             ? iopbuf::traits_type::eof()                                        // If no byte was read (and no error was thrown earlier), it's an EOF
-            : n;                                                                // Otherwise, return the number of bytes read.
+            : t;                                                                // Otherwise, return the number of bytes read.
     }
 
     iopbuf::int_type overflow(iopbuf::int_type c = iopbuf::traits_type::eof()) override {
