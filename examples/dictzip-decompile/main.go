@@ -13,9 +13,10 @@ import (
 	"io"
 	"os"
 
+	"github.com/geek1011/dictutil/kobodict"
 	"github.com/spf13/pflag"
 
-	"github.com/geek1011/dictutil/kobodict"
+	_ "github.com/geek1011/dictutil/kobodict/marisa"
 )
 
 var version = "dev"

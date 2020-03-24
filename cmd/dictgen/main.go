@@ -4,16 +4,19 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	_ "image/gif"
-	_ "image/jpeg"
-	_ "image/png"
 	"io"
 	"os"
 	"strings"
 
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
+
 	"github.com/geek1011/dictutil/dictgen"
 	"github.com/geek1011/dictutil/kobodict"
 	"github.com/spf13/pflag"
+
+	_ "github.com/geek1011/dictutil/kobodict/marisa"
 )
 
 var version = "dev"

@@ -1,4 +1,4 @@
-package kobodict
+package marisa
 
 import (
 	"bytes"
@@ -8,10 +8,16 @@ import (
 	"reflect"
 	"runtime"
 	"testing"
+
+	"github.com/geek1011/dictutil/kobodict"
 )
 
 func TestMarisa(t *testing.T) {
-	if Marisa == nil {
+	impl, ok := (interface{})(new(platform)).(interface {
+		kobodict.MarisaReader
+		kobodict.MarisaWriter
+	})
+	if !ok {
 		t.Skipf("warning: Marisa not supported on platform GOOS=%s GOARCH=%s and must be provided externally", runtime.GOOS, runtime.GOARCH)
 	}
 
@@ -22,7 +28,7 @@ func TestMarisa(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer(nil)
-	if err := Marisa.WriteAll(buf, w); err != nil {
+	if err := impl.WriteAll(buf, w); err != nil {
 		t.Fatalf("unexpected error when writing trie: %v", err)
 	} else if buf.Len() == 0 {
 		t.Errorf("written trie is empty")
@@ -30,7 +36,7 @@ func TestMarisa(t *testing.T) {
 
 	ss := sha1.New()
 
-	nw, err := Marisa.ReadAll(io.TeeReader(buf, ss))
+	nw, err := impl.ReadAll(io.TeeReader(buf, ss))
 	if err != nil {
 		t.Fatalf("unexpected error when reading written trie: %v", err)
 	} else if len(nw) == 0 {

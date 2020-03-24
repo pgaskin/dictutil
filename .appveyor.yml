@@ -17,9 +17,9 @@ test_script:
 
 build_script:
 - mkdir bin gotdict webster1913
-- go build -o ./bin/dictgen             ./cmd/dictgen
-- go build -o ./bin/gotdict-convert     ./examples/gotdict-convert
-- go build -o ./bin/webster1913-convert ./examples/webster1913-convert
+- CGO_ENABLED=1 go build -o ./bin/dictgen             ./cmd/dictgen
+- CGO_ENABLED=0 go build -o ./bin/gotdict-convert     ./examples/gotdict-convert
+- CGO_ENABLED=0 go build -o ./bin/webster1913-convert ./examples/webster1913-convert
 - curl -#Lo ./webster1913/webster1913.txt http://www.gutenberg.org/ebooks/29765.txt.utf-8
 - curl -#Lo - https://github.com/wjdp/gotdict/archive/6b4d6cdbb1f5d899d418783ab842f487aafa79ec.tar.gz | tar -xzf - --strip-components=1 -C ./gotdict
 - ./bin/gotdict-convert     -o ./gotdict/gotdict.df         -g ./gotdict --images

@@ -9,6 +9,8 @@ import (
 	"sort"
 
 	"github.com/spf13/pflag"
+
+	_ "github.com/geek1011/dictutil/kobodict/marisa"
 )
 
 var version = "dev"

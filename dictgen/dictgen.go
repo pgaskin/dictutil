@@ -1,6 +1,9 @@
 // Package dictgen simplifies creating full-featured dictionaries for Kobo
 // eReaders, with support for images, unicode prefixes, raw html, markdown, and
 // more.
+//
+// A marisa implementation must be provided by
+// github.com/geek1011/kobodict/marisa or a custom one for this package to work.
 package dictgen
 
 import (
