@@ -12,9 +12,6 @@ install:
 - sudo dpkg -i go1.14.deb
 - go mod download
 
-test_script:
-- go test -v ./...
-
 build_script:
 - mkdir bin gotdict webster1913
 - CGO_ENABLED=1 go build -o ./bin/dictgen             ./cmd/dictgen
@@ -28,6 +25,22 @@ build_script:
 - ./bin/dictgen -Ibase64 -o ./gotdict/dicthtml-gt.zip       ./gotdict/gotdict.df
 - ./bin/dictgen -Iremove -o ./gotdict/dicthtml-gt.noimg.zip ./gotdict/gotdict.noimg.df
 - ./bin/dictgen -Iremove -o ./webster1913/dicthtml-wb.zip   ./webster1913/webster1913.df
+
+test_script:
+- go test -v -cover ./...
+- mkdir tmp
+- CGO_ENABLED=1 go build -o ./bin/dictutil ./cmd/dictutil
+- ./bin/dictutil u -o ./tmp/1 ./gotdict/dicthtml-gt.zip
+- ./bin/dictutil u -o ./tmp/2 ./gotdict/dicthtml-gt.noimg.zip
+- ./bin/dictutil u -o ./tmp/3 ./webster1913/dicthtml-wb.zip
+- ./bin/dictutil p -o ./tmp/1.zip ./tmp/1
+- ./bin/dictutil p -o ./tmp/2.zip ./tmp/2
+- ./bin/dictutil p -o ./tmp/3.zip ./tmp/3
+- sha1sum ./gotdict/dicthtml-gt.zip ./gotdict/dicthtml-gt.noimg.zip ./webster1913/dicthtml-wb.zip
+- sha1sum ./tmp/1.zip               ./tmp/2.zip                     ./tmp/3.zip
+- cmp ./tmp/1.zip ./gotdict/dicthtml-gt.zip
+- cmp ./tmp/2.zip ./gotdict/dicthtml-gt.noimg.zip
+- cmp ./tmp/3.zip ./webster1913/dicthtml-wb.zip
 
 artifacts:
 - path: gotdict/gotdict.df
