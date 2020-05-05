@@ -14,6 +14,12 @@ A collection of documentation and tools for working with Kobo dictionaries.
 
 ---
 
+**Prebuilt dictionaries:**
+
+[GOTDict](./examples/gotdict-convert.html#download){: .btn .fs-3 .mb-1 .mb-md-0 } [Webster's 1913 Unabridged Dictionary](./examples/webster1913-convert.html#download){: .btn .fs-3 .mb-1 .mb-md-0 }
+
+---
+
 These tools are designed to work with v2 dictionaries (4.7.10364+).
 
 ## Getting started
