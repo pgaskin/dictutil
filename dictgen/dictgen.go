@@ -147,6 +147,9 @@ var koboHTMLTmpl = template.Must(template.New("").Funcs(template.FuncMap{
 			{{md .}}
 		{{- end -}}
 	{{- end -}}
+	{{- with .PostRawHTML -}}
+		{{.}}
+	{{- end -}}
 </w>
 
 {{- /* trim */ -}}

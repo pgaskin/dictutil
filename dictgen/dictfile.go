@@ -22,6 +22,8 @@ type DictFileEntry struct {
 	RawHTML    bool
 	Definition string
 
+	PostRawHTML string // will not be parsed or saved, only to be used for runtime additions before generating
+
 	line int // for internal use if parsed, zero otherwise
 }
 
