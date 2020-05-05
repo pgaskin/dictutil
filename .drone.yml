@@ -296,10 +296,10 @@ steps:
       CGO_ENABLED=0 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/webster1913-convert-linux-arm ./examples/webster1913-convert &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictzip-decompile-linux-arm ./examples/dictzip-decompile",
   ]
-- name: build-windows-386
+- name: build-windows-amd64
   image: docker.elastic.co/beats-dev/golang-crossbuild:1.14.0-main
   command: [
-    "--platforms", "windows/386",
+    "--platforms", "windows/amd64",
     "--build-cmd", "
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictutil-windows.exe ./cmd/dictutil &&
       CGO_ENABLED=1 go build -ldflags \"-s -w -linkmode external -X main.version=$(git describe --tags --always) -extldflags -static\" -o build/dictgen-windows.exe ./cmd/dictgen &&
