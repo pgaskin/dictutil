@@ -322,7 +322,7 @@ steps:
   image: golang:1.14-buster
   commands:
   - ls -lah build
-  depends_on: [build-linux-amd64, build-linux-arm, build-linux-386, build-windows-386, build-darwin-amd64]
+  depends_on: [build-linux-amd64, build-linux-arm, build-linux-386, build-windows-amd64, build-darwin-amd64]
 - name: release
   image: plugins/github-release
   settings:
