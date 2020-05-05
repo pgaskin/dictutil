@@ -26,6 +26,7 @@ func main() {
 	output := pflag.StringP("output", "o", "dicthtml.zip", "The output filename (will be overwritten if it exists) (- is stdout)")
 	crypt := pflag.StringP("crypt", "c", "", "Encrypt the dictzip using the specified encryption method (format: method:keyhex)")
 	imageMethod := pflag.StringP("image-method", "I", "base64", "How to handle images (if an image path is relative, it is loaded from the current dir) (base64 - optimize and encode as base64, embed - add to dictzip, remove)")
+	removeFooter := pflag.Bool("remove-footer", false, "Add code to prevent the non-applicable dictionary source footer for certain locales from being added after the entry (e.g. if replacing the French dictionary)")
 	help := pflag.BoolP("help", "h", false, "Show this help text")
 	pflag.Parse()
 
@@ -110,6 +111,14 @@ func main() {
 			return
 		}
 	}
+
+	if *removeFooter {
+		fmt.Fprintf(os.Stderr, "Appending HTML code to remove entry footers (note: you don't need this and should not use it unless you are replacing a dictionary which adds it, such as the French one).\n")
+		for _, dfe := range tdf {
+			dfe.PostRawHTML += `<span class="end"><style>.end,.end+*{display: none !important;}</style></span>`
+		}
+	}
+	fmt.Println(dictgen.DictFile{tdf[0]}.WriteKoboHTML(os.Stdout))
 
 	fmt.Fprintf(os.Stderr, "Opening output.\n")
 	var f io.WriteCloser
