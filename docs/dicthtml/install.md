@@ -41,7 +41,7 @@ In short:
 
 - **Same:** Nickel will still attempt to sync all dictionaries, including sideloaded ones, unless IsSynced is false.
 - **New:** IsSynced can't be changed anymore due to the dictionary table being removed.
-- **New:** Nickel will avoid overwriting dictionary files if they are marked read-only, and will instead write `"dicthtml-LOCALE" marked as read-only.. skipping` to the log in the `sync` category.
+- **New:** Nickel will avoid overwriting dictionary files if they are marked read-only, and will instead write `"dicthtml-LOCALE" marked as read-only.. skipping` to the log in the `sync` category. Note that this functionality has been around since at least 4.10.11655, but the database needed to be modified anyways, so there wasn't much point to using it (and nobody noticed it either).
 - **Same:** Nickel still generates locale names by default with `Extra: LOCALE`.
 - **New:** Nickel doesn't read the dictionary table anymore, so the name in it is ignored. In addition, entries in the table won't change anything even if it is still present.
 - **New:** The built-in dictionaries are hard-coded, rather than writing them to the db during migrations and reading from it at runtime.
@@ -55,3 +55,17 @@ In short:
   - Use the patch to replace `Extra: ` in libnickel with any other string (same length or shorter with a null byte at the end), but does not contain a space (` `).
 
 See [#49](https://github.com/geek1011/kobopatch-patches/issues/49) for more information.
+
+## Issues with the read-only method for preventing dictionaries from being overwritten
+There have been reports of the read-only property (see [#6](https://github.com/geek1011/dictutil/issues/6) and the threads on MobileRead for more details) not having an effect since at least 4.20.14622. This seems to be due to other checks in the code (for IsSynced and the file size) preventing the read-only one from actually being checked under some conditions. Additionally, some people have had problems marking the dictionary as read-only to begin with (this doesn't seem to be an issue on Linux).
+
+For now, you can use this [patch](https://pgaskin.net/kobopatch-patches) (for kobopatch v0.15.0, which is included in patches v60+) to prevent all dictionaries from being synced. It should work on most recent firmware versions, and has been tested for versions 4.20.14601 to 4.20.14622:
+
+```yaml
+Never sync dictionaries:
+- Enabled: no
+- BaseAddress:  {Sym: "SyncDictionariesCommand::prepareDownloadList()"}
+- ReplaceBytes: {Offset: 1048, FindH: 0CD5,     ReplaceH:       0CE0}   #permissions
+- ReplaceBytes: {Offset: 1026, FindH: FFF68DAE, ReplaceInstNOP: true}   #size
+- ReplaceBytes: {Offset:  992, FindH: 3FF49EAE, ReplaceInstNOP: true}   #isSynced
+```
