@@ -77,6 +77,10 @@ func Parse(r io.Reader, progress func(i int, w string)) (Dict, error) {
 		lnt := bytes.TrimSpace(ln)
 		blankLine := len(lnt) == 0
 
+		if bytes.HasPrefix(lnt, []byte("*** END")) {
+			break
+		}
+
 		if entryWordRe.Match(ln) {
 			if state == StateNone {
 				// skip the file header(up to the word "A")
