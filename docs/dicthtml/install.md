@@ -59,7 +59,18 @@ See [#49](https://github.com/geek1011/kobopatch-patches/issues/49) for more info
 ## Issues with the read-only method for preventing dictionaries from being overwritten
 There have been reports of the read-only property (see [#6](https://github.com/geek1011/dictutil/issues/6) and the threads on MobileRead for more details) not having an effect since at least 4.20.14622. This seems to be due to other checks in the code (for IsSynced and the file size) preventing the read-only one from actually being checked under some conditions. Additionally, some people have had problems marking the dictionary as read-only to begin with (this doesn't seem to be an issue on Linux).
 
-For now, you can use this [patch](https://pgaskin.net/kobopatch-patches) (for kobopatch v0.15.0, which is included in patches v60+) to prevent all dictionaries from being synced. It should work on most recent firmware versions, and has been tested for versions 4.20.14601 to 4.20.14622:
+For now, you can use this [patch](https://pgaskin.net/kobopatch-patches) (for kobopatch v0.15.0, which is included in patches v60+) to prevent all dictionaries from being synced. It should work on most recent firmware versions starting from 4.22.15190.
+
+```yaml
+Never sync dictionaries:
+- Enabled: no
+- BaseAddress:  {Sym: "SyncDictionariesCommand::prepareDownloadList()"}
+- ReplaceBytes: {Offset: 922, FindH: 0CD5,     ReplaceH:       0CE0}   #permissions
+- ReplaceBytes: {Offset: 900, FindH: FFF6CAAE, ReplaceInstNOP: true}   #size
+- ReplaceBytes: {Offset: 866, FindH: 3FF4DBAE, ReplaceInstNOP: true}   #isSynced
+```
+
+For versions 4.20.14601 to 4.21.15015, use this patch instead:
 
 ```yaml
 Never sync dictionaries:
