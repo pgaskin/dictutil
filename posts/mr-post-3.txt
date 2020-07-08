@@ -1,0 +1,146 @@
+[SIZE=4][B]Changelogs[/B][/SIZE]
+
+v0.3.1:[SPOILER]**Patrick Gaskin (@geek1011)**
+a4519b2 Checked built-in dictionaries against 4.21.15015
+4e955b7 examples/webster1913-convert: Fixed end license being included as a word
+5b406d0 docs: Updated dictionary sync patch for 4.22.15190
+53c3fc5 Checked built-in dictionaries against 4.22.15190
+fdc0799 Added support for installing translation dictionaries (closes #10)[/SPOILER]
+v0.3.0:[SPOILER]6c333b4 all: Switched windows builds to 64-bit
+e442434 docs: Added links to pre-built dictionaries to the main header
+50aa051 docs: Clarified the current situation with read-only dictionaries (#6)
+939235f cmd/dictgen: Added option to prevent the footer from showing on certain locales (fixes #5)
+8ef75c2 dictgen: Added PostRawHTML option to DictFileEntry
+10e0680 all: Added integration tests for overall dictzip-related functionality
+1a820d5 examples/webster1913-convert: Fixed false positives for headwords
+dae2dd1 marisa: Fixed reading large tries, added debug env var
+5bfa4c5 marisa: Finished with the last bit of cleanup
+0239665 all: Make marisa optional for building kobodict
+fdc6c66 marisa: Fixed a few subtle errors and simplified the stream shim
+018a9ae docs: Updated links
+a84722e docs: Added documentation for examples/bgl-convert
+f490dfc examples/bgl-convert: Added new tool to convert Babylon BGL dictionaries
+1a80ab6 marisa: Cleaned up everything
+0b4392a marisa: Cleaned up imports
+65ab5e6 all: Added Travis builds for testing on macOS
+bbb361d marisa: Added support for directly using io.Reader/io.Writer
+3930b08 all: Removed SWIG from AppVeyor builds
+338b88a marisa: Fixed tests on non-amd64 architectures
+c91db49 marisa: Rewrote wrapper to run completely in-memory and not depend on SWIG
+3c56b2e kobodict: Abstracted marisa-trie bindings into an interface
+61364e6 all: Checked built-in dictionaries against 4.20.14622
+bca4c53 examples/webster1913-convert: Handle synonyms starting after the example of a numbered definition
+0b8179b cmd/dictutil: Fixed missing newline in fmt.Printf[/SPOILER]
+v0.2.1: [SPOILER]ec6e0d7 all: Don't upload converted dictionaries from Drone
+6913bda examples/webster1913-convert: Cleaned up leading and trailing whitespace in parsed dictionary
+b6f76da cmd/dictutil: Added warning about dictionary label not having an effect on 4.20.14601+
+96b86db all: Updated dictionary installation for 4.20.14601[/SPOILER]
+v0.2.0: [SPOILER]8a0e9ee all: Updated release build script
+ccfb5f6 examples/dictzip-decompile: Implemented a tool to convert a dictzip into a dictfile
+1e207d6 dictgen: Increased maximum line buffer size[/SPOILER]
+v0.1.2: [SPOILER]7e56ba0 cmd/dictutil: Fixed file permissions on Windows[/SPOILER]
+v0.1.1: [SPOILER]a761abd all: Fixed AppVeyor builds
+652765b marisa: Removed pre-generated SWIG wrapper for now (fixes #2)
+78994bb docs: Added MobileRead link to nav
+0881c03 docs: Fixed link on homepage
+c9e9847 examples/webster1913-convert: Fixed phrase definitions[/SPOILER]
+v0.1.0: [SPOILER]6024447 all: Updated dependencies
+025a074 all: Fixed AppVeyor artifact download links
+8dca7a7 all: Use AppVeyor to build pre-built dictionaries for examples/*
+54d1ad1 examples/webster1913-convert: Separated parser into its own package
+1aedd40 examples/gotdict-convert: Separated parser into its own package
+e49fcfd all: Added package and command godoc comments
+53ccb4e examples/webster1913-convert: Also add phrase definitions as variants so they can be looked up
+555d4f1 examples/webster1913-convert: Added new tool for parsing and converting Gutenberg's Webster's 1913 dictionary
+2e5270c docs: Improved nav order
+1635ed0 docs: Finshed documentation for dictutil commands
+f08f72b docs: Added getting started section to main page
+164094b docs: Improved dicthtml format examples
+382b790 docs: Finished dictgen and dictfile documentation
+45c48a8 cmd/dictgen: Improved wording of help text
+ad77e8c docs: Added note about custom dictionary labels on 4.20.14601
+e984c78 cmd/dictutil: Added note about dictionary labels on 4.20.14601
+712d5fa docs: Finished prefix documentation
+6492cbc dictgen: Updated notes about image methods (#1)
+10eadad docs: Updated gotdict-convert docs
+da6d4ad docs: Updated dictgen docs
+01da35f examples/gotdict-convert: Prefer the version with images (#1)
+d05535b cmd/dictgen: Enable images with base64 encoding by default (#1)
+512c333 docs: Updated for 4.20.14601
+2a80ab3 all: Updated Go to 1.14
+5931c7f examples/gotdict-convert: Made version string consistent with other dictutil commands
+da99419 examples/gotdict-convert: Updated gotdict, removed workarounds
+8de70b8 kobodict: Further simplified and improved performance of WordPrefix
+bc52ded marisa: Removed compile-time dependency on SWIG
+7cdb1d8 kobodict: Fixed memory leak from marisa
+7276923 examples/gotdict-convert: Fixed build
+3533800 all: Updated build dependency graph
+641efd5 all: Disabled image support by default (#1)
+b403da2 dictgen: Added Description func to ImageHandler
+aa108b2 cmd/dictgen: Show more information about options
+66d311f dictgen: Extracted ImageFunc from WriteDictZip for extensibility
+b3acaf0 all: Added README, updated links in help text
+2ccdbb6 dictgen: Added some doc comments
+1aeb44b dictgen: Added support for image CSS, fixed images displaying too small
+b56c1b8 examples/gotdict-convert: Implemented image support
+a739fca cmd/dictgen: Implemented image support
+46a4fd3 dictgen: Implemented image support
+744fca8 kobodict: Added Exists function on Writer
+c7a1fc8 cmd/dictutil: Fixed locale removal when ExtraLocales contains spaces
+3d3008f docs: Misc fixes
+54ab4a1 docs: Added stubs for all pages, wrote some more docs
+ce7bc60 docs: Finished format docs
+e1e4b25 cmd/dictutil: Implemented prefix command
+ccc6c72 examples/gotdict-convert: Improved Drone config for uploads
+2f4c068 kobodict: Improved parameter name
+55fa1c6 all: Added version info to commands
+dea5f2e all: Cleaned up old files, updated some TODOs
+0ac4192 cmd/dictutil: Implemented uninstall command
+0e4ba01 cmd/dictutil: Made help text more complete in Drone config
+f2e29b8 cmd/dictutil: Implemented install command
+c24c2fb marisa: Silenced the -Wimplicit-fallthrough warning
+70ace33 docs: Added alternative dictionary installation method
+d5bd3b7 all: Added cross-compilation and releases to Drone config
+25e0621 cmd/dictutil: Changed return code to 0 for help text
+6edaf98 docs: Fixed site URL
+79969ed docs: Changed Jekyll theme to just-the-docs
+932448c docs: Added info about installing dictionaries
+fcb478e cmd/dictutil: Implemented dictutil command
+99aedd6 dictgen: Added test to ensure the reparsing the generated dictfile is identical to the original
+95ceef9 examples/gotdict-convert: Also generate and upload dictzip in Drone config
+0551eb2 dictgen: Implemented Validate
+2865b7c kobodict: Implemented Pack and Unpack
+5539d29 all: Updated TODOs
+eaf7d0c kobodict: Added stubs for Pack/Unpack
+0dbd59c kobodict: Implemented Reader
+7f22617 kobodict: Fixed build
+384d955 cmd/dictgen: Implemented encryption
+e89d5b5 dictgen: Improved API by allowing access to the kobodict.Writer
+514a77c kobodict: Implemented Crypter, fixed bugs in Writer
+ccf7f38 all: Updated Drone config
+2927cb3 cmd/dictgen: Implemented initial version of the dictgen CLI
+fccdcbb dictgen: Implemented dictzip generation
+2d3b54c kobodict: Implemented kobodict.Writer
+abda141 examples/gotdict-convert: Fixed definition image cleanup
+0cc2589 cmd/dictutil: Reorganized files
+2462a54 examples/gotdict-convert: Misc CLI improvements
+3befc43 examples/gotdict-convert: Fixed CLI arguments
+b54757e all: Added license
+461c408 dictutil: Updated main func
+ac9f819 docs: Added dictword-test and marisa to index
+958390a all: Made Drone config more deterministic
+33ff613 docs: Updated index
+60664a6 examples/gotdict-convert: Implemented tool to convert github.com/wjdp/gotdict
+91a6e55 marisa: Included merged libmarisa sources instead of depending on the lib.
+81dbf10 all: Disable cross-compiling marisa for macOS for now
+9b653e9 all: Cross-compile marisa
+ce0107c all: Fixed Drone config
+3ea1df4 marisa: Added Go wrapper
+725206f all: Simplified Drone config
+226f40a dictgen: Implemented parser and dicthtml generation
+ec22c1a kobodict: Cleaned up outdated TODOs
+c12cbf1 all: Ignore GH Pages build in Drone config
+8512fa8 kobodict: Finished implementing reverse-engineered word prefix and normalization stuff
+d5297b8 docs: Added note about kobo-mods/dictword-test
+3758fcf docs: Added some notes about v1/v2 dictionaries and stubs for other docs
+5a5a443 docs: Initial commit[/SPOILER]

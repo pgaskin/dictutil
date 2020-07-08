@@ -1,0 +1,137 @@
+[SIZE=5][B]dictutil[/B][/SIZE]
+[SIZE=4]Tools, documentation, and libraries related to Kobo dictionaries (and a few converted ones).[/SIZE]
+___
+
+[URL="https://github.com/geek1011/dictutil/releases/latest"][IMG]https://img.shields.io/github/v/release/geek1011/dictutil?label=Download&style=flat-square&color=gray[/IMG][/URL] [URL="https://pgaskin.net/dictutil"][IMG]https://img.shields.io/badge/Website-pgaskin.net%2Fdictutil-gray?style=flat-square[/IMG][/URL]
+
+This project contains a collection of tools and libraries to work with Kobo dictionaries, plus comprehensive documentation of Kobo's dictionary format.
+
+Unlike previous attempts at working with Kobo dictionaries, dictutil has full support for all features supported by nickel (word prefixes, unicode, variants, images, etc), with a focus on simplicity, correctness (prefix generation and other features are directly tested against libnickel's code and regexps, v1/v2 dictionaries are differentiated), and completeness (most of the research was done by reverse-engineering libnickel).
+
+In addition, it has a custom format for creating Kobo dictionaries which has a simple syntax and full support for all features.
+
+Dictutil consists of multiple tools and libraries:
+[LIST]
+[*][B][URL="https://pgaskin.net/dictutil/dictutil/"]dictutil[/URL][/B] provides commands for installing, removing, unpacking, packing, and performing low-level modifications and tests on Kobo dictionaries. All operations are intended to be correct, lossless, and deterministic.
+[*][B][URL="https://pgaskin.net/dictutil/dictgen/"]dictgen[/URL][/B] simplifies creating full-featured dictionaries for Kobo eReaders, with support for images, unicode prefixes, raw html, markdown, and more.
+[*][B][URL="https://pgaskin.net/dictutil/dicthtml/"]dicthtml[/URL][/B] documents Kobo's dictionary format and how it works.
+[*][B][URL="https://pgaskin.net/dictutil/examples/gotdict-convert.html"]examples/gotdict-convert[/URL][/B] is a working example of using dictutil to convert [URL="https://github.com/wjdp/gotdict"]GOTDict[/URL] into a Kobo dictionary.
+[*][B][URL="https://pgaskin.net/dictutil/examples/webster1913-convert.html"]examples/webster1913-convert[/URL][/B] is a working example of using dictutil to convert [URL="http://www.gutenberg.org/ebooks/29765.txt.utf-8"]Project Gutenberg's Webster's Unabridged Dictionary[/URL] into a Kobo dictionary.
+[*][B][URL="https://pgaskin.net/dictutil/examples/dictzip-decompile.html"]examples/dictzip-decompile[/URL][/B] is an [B]experimental[/B] tool to convert a dictzip into a dictfile.
+[*][B][URL="https://pgaskin.net/dictutil/examples/bgl-convert.html"]examples/bgl-convert[/URL][/B] is a simple tool to convert Babylon BGL dictionaries to a dictfile.
+[*][I]Library:[/I] [B][URL="https://pkg.go.dev/github.com/geek1011/dictutil/kobodict"]kobodict[/URL][/B] provides support for reading, writing, encrypting, and decrypting Kobo dictionaries.
+[*][I]Library:[/I] [B][URL="https://pkg.go.dev/github.com/geek1011/dictutil/dictgen"]dictgen[/URL][/B] provides the functionality of dictgen as a library.
+[*][I]Library:[/I] [B][URL="https://pkg.go.dev/github.com/geek1011/dictutil/marisa"]marisa[/URL][/B] provides a simplified self-contained CGO wrapper for [URL="https://github.com/s-yata/marisa-trie"]marisa-trie[/URL].
+[/LIST]
+Dictutil implements [URL="https://pgaskin.net/dictutil/dicthtml/v1v2.html"]version 2[/URL] of the Kobo dictionary format, which supports firmware versions 4.7.10364+.
+
+[SIZE=4][B]See the [URL="https://pgaskin.net/dictutil/"]website[/URL] for more details and examples.[/B][/SIZE]
+
+[B]Quick reference:[/B]
+
+dictgen: [SPOILER][CODE]Usage: dictgen [options] dictfile...
+
+Options:
+  -o, --output string         The output filename (will be overwritten if it exists) (- is stdout) (default "dicthtml.zip")
+  -c, --crypt string          Encrypt the dictzip using the specified encryption method (format: method:keyhex)
+  -I, --image-method string   How to handle images (if an image path is relative, it is loaded from the current dir) (base64 - optimize and encode as base64, embed - add to dictzip, remove) (default "base64")
+      --remove-footer         Add code to prevent the non-applicable dictionary source footer for certain locales from being added after the entry (e.g. if replacing the French dictionary)
+  -h, --help                  Show this help text
+
+If multiple dictfiles (*.df) are provided, they will be merged (duplicate entries are fine; they will be shown in sequential order). To read from stdin, use - as the filename.
+
+Note that the only usable image method is currently removing them or using base64-encoding (for firmware 4.20.14601+; older versions segfault in the in-book dictionary), as embedded dict:/// image URLs cause the webviews to appear blank (this is a nickel bug). See https://github.com/geek1011/dictutil/issues/1 for more details.
+
+See https://pgaskin.net/dictutil/dictgen/ for more information about the dictfile format.[/CODE][/SPOILER]
+dictgen dictfile format: [SPOILER][CODE]- `@ HEADWORD`: Start a new entry. The headword doesn't have to be unique, and can contain spaces.
+  - Header
+    - `: WORD_INFO` or `::` *(optional)*: Add extra word info after the headword, or remove it entirely.
+    - `& VARIANT` *(optional)*: Add an additional word to match. Follows the same rules as the headword. Can be repeated multiple times.
+  - Body
+    - `MARKDOWN` or `<html> RAW_HTML`: Include a definition written in Markdown or raw HTML code.[/CODE][/SPOILER]
+dictutil: [SPOILER][CODE]Usage: dictutil command [options] [arguments]
+
+Dictutil provides low-level utilities to manipulate Kobo dictionaries (v2).
+
+Commands:
+  install (I)          Install a dictzip file
+  pack (p)             Pack a dictzip file
+  prefix (x)           Calculate the prefix for a word
+  uninstall (U)        Uninstall a dictzip file
+  unpack (u)           Unpack a dictzip file
+  help                 Show help for all commands
+
+Options:
+  -h, --help   Show this help text[/CODE][/SPOILER]
+dictutil install: [SPOILER][CODE]Usage: dictutil install [options] dictzip
+
+Options:
+  -k, --kobo string      KOBOeReader path (default: automatically detected)
+  -l, --locale string    Locale name to use (format: ALPHANUMERIC{2}[-ALPHANUMERIC{2}]) (default: detected from filename if in format dicthtml-**.zip)
+  -n, --name string      Custom additional label for dictionary (ignored when replacing built-in dictionaries) (doesn't have any effect on 4.20.14601+)
+  -b, --builtin string   How to handle built-in locales [replace = replace and prevent from syncing] [ignore = replace and leave syncing as-is] (default "replace")
+  -h, --help             Show this help text
+
+Note:
+  If you are not replacing a built-in dictionary, the 'Enable searches on extra
+  dictionaries patch' must be installed, or you will not be able to select
+  your custom dictionary.[/CODE][/SPOILER]
+dictutil uninstall: [SPOILER][CODE]Usage: dictutil uninstall [options] locale
+
+Options:
+  -k, --kobo string      KOBOeReader path (default: automatically detected)
+  -b, --builtin string   How to handle built-in locales [normal = uninstall the same way as the UI] [delete = completely delete the entry (doesn't have any effect on 4.20.14601+)] [restore = download the original dictionary from Kobo again] (default "normal")
+  -h, --help             Show this help text[/CODE][/SPOILER]
+dictutil pack: [SPOILER][CODE]Usage: dictutil pack [options] dictdir
+
+Options:
+  -o, --output string   The output dictzip filename (will be overwritten if it exists) (default "dicthtml.zip")
+  -c, --crypt string    Encrypt the dictzip using the specified encryption method (format: method:keyhex)
+  -h, --help            Show this help text[/CODE][/SPOILER]
+dictutil unpack: [SPOILER][CODE]Usage: dictutil unpack [options] dictzip
+
+Options:
+  -o, --output string   The output directory (must not exist) (default: the basename of the input without the extension)
+  -c, --crypt string    Decrypt the dictzip (if needed) using the specified encryption method (format: method:keyhex)
+  -h, --help            Show this help text[/CODE][/SPOILER]
+dictutil prefix: [SPOILER][CODE]Usage: dictutil prefix [options] word...
+
+Options:
+  -f, --format string   The output format (go-slice, go-map, csv, tsv, json-array, json-object) (default "json-array")
+  -h, --help            Show this help text[/CODE][/SPOILER]
+gotdict-convert: [SPOILER][CODE]Usage: gotdict-convert [options]
+
+Options:
+  -g, --gotdict string   The path to the local copy of github.com/wjdp/gotdict. (default "./gotdict")
+  -o, --output string    The output filename (will be overwritten if it exists) (- is stdout) (default "./gotdict.df")
+  -I, --images           Include images in dictfile
+  -h, --help             Show this help text
+
+To convert the resulting dictfile into a dictzip, use dictgen.[/CODE][/SPOILER]
+webster1913-convert: [SPOILER][CODE]Usage: webster1913-convert [options] gutenberg_webster1913_path
+
+Options:
+  -o, --output string   The output filename (will be overwritten if it exists) (- is stdout) (default "./webster1913.df")
+      --dump            Instead of converting, dump the parsed dictionary to stdout as JSON (for debugging)
+  -h, --help            Show this help text
+
+Arguments:
+  gutenberg_webster1913_path is the path to Project Gutenberg's Webster's 1913 dictionary. Use - to read from stdin.
+
+To convert the resulting dictfile into a dictzip, use dictgen.[/CODE][/SPOILER]
+dictzip-decompile: [SPOILER][CODE]Usage: dictzip-decompile [options] dictzip
+
+Options:
+  -o, --output string   The output filename (will be overwritten if it exists) (- is stdout) (default "./decompiled.df")
+  -r, --resources       Also extract referenced resources to the current directory (warning: any existing files will be overwritten, so it is recommended to run in an empty directory if enabled)
+  -h, --help            Show this help text
+
+Arguments:
+  dictzip is the path to the dictzip to decompile.
+
+To convert the resulting dictfile into a dictzip, use dictgen.
+
+Note: The regenerated dictzip from the dictfile may not match exactly, but it will look the same, and certain bugs with prefixes and variants will be implicitly fixed by the conversion process (i.e. variant in wrong file, incorrect prefix, missing words in index file). All output is in raw HTML, not Markdown.
+
+This is an experimental tool, and the output may not be perfect on complex dictionaries.[/CODE][/SPOILER]
+[SIZE=4][URL="https://github.com/geek1011/dictutil/releases/latest"]Download[/URL] | [URL="https://pgaskin.net/dictutil/"]Website[/URL][/SIZE]
