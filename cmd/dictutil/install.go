@@ -44,7 +44,8 @@ var (
 		"pt-en":     "Português - English",
 		"pt":        "Português",
 	}
-	builtinSorted []string
+	builtinDictLocales map[string]struct{} // for use with translation dictionaries
+	builtinSorted      []string
 )
 
 func findDevice(root string) (string, string, error) {
@@ -78,8 +79,12 @@ func builtinHelp() {
 }
 
 func builtinInit() {
+	builtinDictLocales = map[string]struct{}{}
 	for k := range builtinDict {
 		builtinSorted = append(builtinSorted, k)
+		for _, p := range strings.Split(k, "-") {
+			builtinDictLocales[p] = struct{}{}
+		}
 	}
 	sort.Strings(builtinSorted)
 }
@@ -94,7 +99,7 @@ func init() {
 func installMain(args []string, fs *pflag.FlagSet) int {
 	fs.SortFlags = false
 	root := fs.StringP("kobo", "k", "", "KOBOeReader path (default: automatically detected)")
-	locale := fs.StringP("locale", "l", "", "Locale name to use (format: ALPHANUMERIC{2}; translation dictionaries are not supported) (default: detected from filename if in format dicthtml-**.zip)")
+	locale := fs.StringP("locale", "l", "", "Locale name to use (format: ALPHANUMERIC{2}[-ALPHANUMERIC{2}]) (default: detected from filename if in format dicthtml-**.zip)")
 	name := fs.StringP("name", "n", "", "Custom additional label for dictionary (ignored when replacing built-in dictionaries) (doesn't have any effect on 4.20.14601+)")
 	builtin := fs.StringP("builtin", "b", "replace", "How to handle built-in locales [replace = replace and prevent from syncing] [ignore = replace and leave syncing as-is]")
 	help := fs.BoolP("help", "h", false, "Show this help text")
@@ -128,7 +133,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 
 	dictLocale := *locale
 	if len(dictLocale) == 0 {
-		m := regexp.MustCompile(`^dicthtml-([a-zA-Z0-9]{2})\.zip$`).FindStringSubmatch(filepath.Base(fs.Args()[0]))
+		m := regexp.MustCompile(`^dicthtml-([a-zA-Z0-9]{2}(?:-[a-zA-Z0-9]{2})?)\.zip$`).FindStringSubmatch(filepath.Base(fs.Args()[0]))
 		if len(m) == 0 {
 			fmt.Fprintf(os.Stderr, "Error: no locale specified, and dictzip name doesn't include one.\n")
 			return 1
@@ -136,7 +141,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 		dictLocale = m[1]
 	}
 
-	if !regexp.MustCompile(`^[a-zA-Z0-9]{2}$`).MatchString(dictLocale) { // this is a bit on the overly safe side, but there's not much harm in it anyways, and it can be loosened if needed
+	if !regexp.MustCompile(`^[a-zA-Z0-9]{2}(?:-[a-zA-Z0-9]{2})?$`).MatchString(dictLocale) { // this is a bit on the overly safe side, but there's not much harm in it anyways, and it can be loosened if needed
 		fmt.Fprintf(os.Stderr, "Error: invalid locale %#v specified.\n", dictLocale)
 		return 1
 	}
@@ -248,21 +253,41 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 				buf.WriteRune('\n')
 			}
 
-			var added bool
-			for _, loc := range locales {
-				if loc == dictLocale {
-					added = true
-					break
+			var modified bool
+			for _, dloc := range strings.Split(dictLocale, "-") {
+				if _, ok := builtinDictLocales[dloc]; ok {
+					// if an individual locale from a dict exists (like for some
+					// translation dictionaries), it doesn't need to be added as
+					// an extra one, and we don't check it earlier since you can
+					// still add a custom label to a translation dict on the
+					// older FW versions (note that this won't be reached for
+					// non-translation dicts because it would have already been
+					// caught at that time)
+					fmt.Printf("  Locale %#v already built-in.\n", dloc)
+					continue
 				}
+
+				var added bool
+				for _, loc := range locales {
+					if loc == dloc {
+						added = true
+						break
+					}
+				}
+				if added {
+					fmt.Printf("  Locale %#v already added to ExtraLocales.\n", dloc)
+					continue
+				}
+
+				fmt.Printf("  Adding locale %#v to ExtraLocales.\n", dloc)
+				locales = append(locales, dloc)
+				sort.Strings(locales)
+				modified = true
 			}
-			if added {
-				fmt.Printf("  Locale %#v already added to ExtraLocales.\n", dictLocale)
+			if !modified {
+				fmt.Printf("  No updates required.\n")
 				return nil
 			}
-
-			fmt.Printf("  Adding locale %#v to ExtraLocales.\n", dictLocale)
-			locales = append(locales, dictLocale)
-			sort.Strings(locales)
 
 			buf.WriteString("\n[ApplicationPreferences]\n") // this will get merged by Qt
 			buf.WriteString("ExtraLocales=" + strings.Join(locales, ","))
@@ -291,6 +316,8 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 			if err := os.Rename(cfg+".tmp", cfg); err != nil {
 				return fmt.Errorf("rename new config file: %w", err)
 			}
+
+			fmt.Printf("  Wrote updated config file.\n")
 
 			return nil
 		}(); err != nil {
