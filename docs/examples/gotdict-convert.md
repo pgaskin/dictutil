@@ -11,8 +11,8 @@ Images are supported on firmware 4.20.14601+.
 
 ## Download
 Pre-built dictionaries can be downloaded from the following links:
-- GOTDict *(with images, firmware 4.20.14601+)*: [dictzip (dicthtml-gt.zip)](https://ci.appveyor.com/api/projects/geek1011/dictutil/artifacts/gotdict/dicthtml-gt.zip?branch=master&all=false&pr=false), [source dictfile (gotdict.df)](https://ci.appveyor.com/api/projects/geek1011/dictutil/artifacts/gotdict/gotdict.df?branch=master&all=false&pr=false)
-- GOTDict *(without images)*: [dictzip (dicthtml-gt.noimg.zip)](https://ci.appveyor.com/api/projects/geek1011/dictutil/artifacts/gotdict/dicthtml-gt.noimg.zip?branch=master&all=false&pr=false), [source dictfile (gotdict.noimg.df)](https://ci.appveyor.com/api/projects/geek1011/dictutil/artifacts/gotdict/gotdict.noimg.df?branch=master&all=false&pr=false)
+- GOTDict *(with images, firmware 4.20.14601+)*: [dictzip (dicthtml-gt.zip)](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts/gotdict/dicthtml-gt.zip?branch=master&all=false&pr=false), [source dictfile (gotdict.df)](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts/gotdict/gotdict.df?branch=master&all=false&pr=false)
+- GOTDict *(without images)*: [dictzip (dicthtml-gt.noimg.zip)](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts/gotdict/dicthtml-gt.noimg.zip?branch=master&all=false&pr=false), [source dictfile (gotdict.noimg.df)](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts/gotdict/gotdict.noimg.df?branch=master&all=false&pr=false)
 
 You can use [dictutil](../dictutil/install.html) to install the dictionaries, or see [here](../dicthtml/install.html) for manual installation instructions.
 
