@@ -10,7 +10,7 @@ nav_order: 1
 A collection of documentation and tools for working with Kobo dictionaries.
 {: .fs-6 .fw-300 }
 
-[Download](https://github.com/geek1011/dictutil/releases){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [dicthtml](./dicthtml/){: .btn .fs-5 .mb-4 .mb-md-0 } [dictgen](./dictgen/){: .btn .fs-5 .mb-4 .mb-md-0 } [dictutil](./dictutil/){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Download](https://github.com/pgaskin/dictutil/releases){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [dicthtml](./dicthtml/){: .btn .fs-5 .mb-4 .mb-md-0 } [dictgen](./dictgen/){: .btn .fs-5 .mb-4 .mb-md-0 } [dictutil](./dictutil/){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
 
@@ -59,5 +59,5 @@ These are some tools which make use of dictutil to convert actual dictionaries.
 
 ## other
 
-- **[dictword-test](https://github.com/geek1011/kobo-mods/tree/master/dictword-test):** Calculates word prefixes using libnickel.
-- **[marisa](https://github.com/geek1011/dictutil/tree/master/marisa):** Marisa bindings for Go.
+- **[dictword-test](https://github.com/pgaskin/kobo-mods/tree/master/dictword-test):** Calculates word prefixes using libnickel.
+- **[marisa](https://github.com/pgaskin/dictutil/tree/master/marisa):** Marisa bindings for Go.

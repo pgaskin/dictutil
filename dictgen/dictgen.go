@@ -3,7 +3,7 @@
 // more.
 //
 // A marisa implementation must be provided by
-// github.com/geek1011/kobodict/marisa or a custom one for this package to work.
+// github.com/pgaskin/kobodict/marisa or a custom one for this package to work.
 package dictgen
 
 import (
@@ -14,7 +14,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/geek1011/dictutil/kobodict"
+	"github.com/pgaskin/dictutil/kobodict"
 	"github.com/russross/blackfriday/v2"
 )
 

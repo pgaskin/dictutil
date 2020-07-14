@@ -129,7 +129,7 @@ Another way to add images is to reference them with a data URL (e.g. `<img src="
 
 If you have control over the target device, you can also use `file:///...` URLs to reference a local file (which can also be of any filetype).
 
-As of firmware 4.19.14123, all of these methods are too buggy (due to bugs in libnickel) to be usable. The only one which works is base64-encoded images in the full-screen dictionary view (i.e. not the in-book dictionary). The `dict:///` URLs cause the webview to appear blank, and the base64-encoded and file URLs cause nickel to segfault in the in-book dictionary view. See [#1](https://github.com/geek1011/dictutil/issues/1) for more details.
+As of firmware 4.19.14123, all of these methods are too buggy (due to bugs in libnickel) to be usable. The only one which works is base64-encoded images in the full-screen dictionary view (i.e. not the in-book dictionary). The `dict:///` URLs cause the webview to appear blank, and the base64-encoded and file URLs cause nickel to segfault in the in-book dictionary view. See [#1](https://github.com/pgaskin/dictutil/issues/1) for more details.
 
 Starting in firmware 4.20.14601, the base64 method works perfectly in both views (yay!). Other URLs don't segfault the in-book dictionary view anymore, and `dict:///` URLs still blank the webview.
 

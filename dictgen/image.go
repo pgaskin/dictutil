@@ -14,7 +14,7 @@ import (
 	"strings"
 
 	"github.com/disintegration/imaging"
-	"github.com/geek1011/dictutil/kobodict"
+	"github.com/pgaskin/dictutil/kobodict"
 )
 
 // ImageFunc reads an image from the path (it may be absolute or relative) src,

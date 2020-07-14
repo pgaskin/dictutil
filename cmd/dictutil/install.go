@@ -14,7 +14,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/geek1011/koboutils/v2/kobo"
+	"github.com/pgaskin/koboutils/v2/kobo"
 	"github.com/spf13/pflag"
 )
 
@@ -164,7 +164,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 		fmt.Fprintf(os.Stderr, "Error: firmware version too old (v2 dictionaries were only introduced in 4.7.10364).\n")
 		return 1
 	}
-	newMethod := kobo.VersionCompare(version, "4.20.14601") >= 0 // https://github.com/geek1011/kobopatch-patches/issues/49
+	newMethod := kobo.VersionCompare(version, "4.20.14601") >= 0 // https://github.com/pgaskin/kobopatch-patches/issues/49
 
 	dictName, dictBuiltin := builtinDict[dictLocale]
 	if !dictBuiltin {
@@ -349,7 +349,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 		// Thus, if it's using the new method, it doesn't matter if the
 		// table doesn't exist.
 		//
-		// See https://github.com/geek1011/kobopatch-patches/issues/49.
+		// See https://github.com/pgaskin/kobopatch-patches/issues/49.
 		if exists, err := func() (bool, error) {
 			res, err := db.Query(`SELECT name FROM sqlite_master WHERE type="table" AND name="Dictionary";`)
 			if err != nil {

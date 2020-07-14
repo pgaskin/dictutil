@@ -12,8 +12,8 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"github.com/geek1011/dictutil/dictgen"
-	"github.com/geek1011/dictutil/examples/webster1913-convert/webster1913"
+	"github.com/pgaskin/dictutil/dictgen"
+	"github.com/pgaskin/dictutil/examples/webster1913-convert/webster1913"
 )
 
 var version = "dev"

@@ -5,7 +5,7 @@ package marisa
 import (
 	"io"
 
-	"github.com/geek1011/dictutil/marisa"
+	"github.com/pgaskin/dictutil/marisa"
 )
 
 func (*platform) ReadAll(r io.Reader) (wd []string, err error) {

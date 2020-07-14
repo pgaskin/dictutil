@@ -6,7 +6,7 @@
 // is available for your GOOS/GOARCH.
 package marisa
 
-import "github.com/geek1011/dictutil/kobodict"
+import "github.com/pgaskin/dictutil/kobodict"
 
 // This is done so it can still be instantiated even if not implemented for the
 // current platform (it will be caught when assigning it to kobodict.Marisa),

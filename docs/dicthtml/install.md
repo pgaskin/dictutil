@@ -54,10 +54,10 @@ In short:
   - Add it to ExtraLocales if it is not a built-in locale.
   - Use the patch to replace `Extra: ` in libnickel with any other string (same length or shorter with a null byte at the end), but does not contain a space (` `).
 
-See [#49](https://github.com/geek1011/kobopatch-patches/issues/49) for more information.
+See [#49](https://github.com/pgaskin/kobopatch-patches/issues/49) for more information.
 
 ## Issues with the read-only method for preventing dictionaries from being overwritten
-There have been reports of the read-only property (see [#6](https://github.com/geek1011/dictutil/issues/6) and the threads on MobileRead for more details) not having an effect since at least 4.20.14622. This seems to be due to other checks in the code (for IsSynced and the file size) preventing the read-only one from actually being checked under some conditions. Additionally, some people have had problems marking the dictionary as read-only to begin with (this doesn't seem to be an issue on Linux).
+There have been reports of the read-only property (see [#6](https://github.com/pgaskin/dictutil/issues/6) and the threads on MobileRead for more details) not having an effect since at least 4.20.14622. This seems to be due to other checks in the code (for IsSynced and the file size) preventing the read-only one from actually being checked under some conditions. Additionally, some people have had problems marking the dictionary as read-only to begin with (this doesn't seem to be an issue on Linux).
 
 For now, you can use this [patch](https://pgaskin.net/kobopatch-patches) (for kobopatch v0.15.0, which is included in patches v60+) to prevent all dictionaries from being synced. It should work on most recent firmware versions starting from 4.22.15190.
 

@@ -29,6 +29,6 @@ Arguments:
 To convert the resulting dictfile into a dictzip, use dictgen.
 ```
 
-The source dictionary can be downloaded [here](http://www.gutenberg.org/ebooks/29765.txt.utf-8) or [here](https://github.com/geek1011/dictserver/raw/master/data/dictionary.txt).
+The source dictionary can be downloaded [here](http://www.gutenberg.org/ebooks/29765.txt.utf-8) or [here](https://github.com/pgaskin/dictserver/raw/master/data/dictionary.txt).
 
-You can also use the parser as a [Go library](https://pkg.go.dev/github.com/geek1011/dictutil/examples/webster1913-convert/webster1913).
+You can also use the parser as a [Go library](https://pkg.go.dev/github.com/pgaskin/dictutil/examples/webster1913-convert/webster1913).

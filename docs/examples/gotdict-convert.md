@@ -32,4 +32,4 @@ Options:
 To convert the resulting dictfile into a dictzip, use dictgen.
 ```
 
-You can also use the parser as a [Go library](https://pkg.go.dev/github.com/geek1011/dictutil/examples/gotdict-convert/gotdict).
+You can also use the parser as a [Go library](https://pkg.go.dev/github.com/pgaskin/dictutil/examples/gotdict-convert/gotdict).

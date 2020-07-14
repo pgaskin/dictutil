@@ -1,6 +1,6 @@
 <h1 align="center">dictutil</h1>
 
-[![](https://img.shields.io/github/v/release/geek1011/dictutil?include_prereleases)](https://github.com/geek1011/dictutil/releases) [![](https://img.shields.io/drone/build/geek1011/dictutil/master)](https://cloud.drone.io/geek1011/dictutil) [![](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/mod/github.com/geek1011/dictutil?tab=versions) [![](https://goreportcard.com/badge/github.com/geek1011/dictutil)](https://goreportcard.com/report/github.com/geek1011/dictutil)
+[![](https://img.shields.io/github/v/release/pgaskin/dictutil?include_prereleases)](https://github.com/pgaskin/dictutil/releases) [![](https://img.shields.io/drone/build/pgaskin/dictutil/master)](https://cloud.drone.io/pgaskin/dictutil) [![](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/mod/github.com/pgaskin/dictutil?tab=versions) [![](https://goreportcard.com/badge/github.com/pgaskin/dictutil)](https://goreportcard.com/report/github.com/pgaskin/dictutil)
 
 This repository contains a collection of tools and libraries to work with Kobo dictionaries, plus comprehensive documentation of Kobo's dictionary format.
 
@@ -14,8 +14,8 @@ Dictutil consists of multiple tools and libraries:
 - [**examples/webster1913-convert**](https://pgaskin.net/dictutil/examples/webster1913-convert.html) is a working example of using dictutil to convert [Project Gutenberg's Webster's Unabridged Dictionary](http://www.gutenberg.org/ebooks/29765.txt.utf-8) into a Kobo dictionary.
 - [**examples/dictzip-decompile**](https://pgaskin.net/dictutil/examples/dictzip-decompile.html) is an **experimental** tool to convert a dictzip into a dictfile.
 - [**examples/bgl-convert**](https://pgaskin.net/dictutil/examples/bgl-convert.html) is a simple tool to convert Babylon BGL dictionaries to a dictfile.
-- *Library:* [**kobodict**](https://pkg.go.dev/github.com/geek1011/dictutil/kobodict) provides support for reading, writing, encrypting, and decrypting Kobo dictionaries.
-- *Library:* [**dictgen**](https://pkg.go.dev/github.com/geek1011/dictutil/dictgen) provides the functionality of dictgen as a library.
+- *Library:* [**kobodict**](https://pkg.go.dev/github.com/pgaskin/dictutil/kobodict) provides support for reading, writing, encrypting, and decrypting Kobo dictionaries.
+- *Library:* [**dictgen**](https://pkg.go.dev/github.com/pgaskin/dictutil/dictgen) provides the functionality of dictgen as a library.
 - *Library:* [**marisa**](./marisa) provides a simplified self-contained CGO wrapper for [marisa-trie](https://github.com/s-yata/marisa-trie).
 
 Dictutil implements [version 2](https://pgaskin.net/dictutil/dicthtml/v1v2.html) of the Kobo dictionary format, which supports firmware versions 4.7.10364+.
@@ -24,12 +24,12 @@ For more information, see the [documentation](https://pgaskin.net/dictutil/). If
 
 ## Download
 - **Documentation** can be found on the [website](https://pgaskin.net/dictutil/).
-- **Tools** (dictutil, dictgen, gotdict-convert, webster1913-convert) can be downloaded from the [releases](https://github.com/geek1011/dictutil/releases) page.
+- **Tools** (dictutil, dictgen, gotdict-convert, webster1913-convert) can be downloaded from the [releases](https://github.com/pgaskin/dictutil/releases) page.
 - **Pre-built dictionaries** from gotdict-convert and webster1913-convert can be downloaded from [AppVeyor](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts) or from the links below:
   - GOTDict *(with images, firmware 4.20.14601+)*: [dictzip (dicthtml-gt.zip)](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts/gotdict/dicthtml-gt.zip?branch=master&all=false&pr=false), [source dictfile (gotdict.df)](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts/gotdict/gotdict.df?branch=master&all=false&pr=false)
   - GOTDict *(without images)*: [dictzip (dicthtml-gt.noimg.zip)](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts/gotdict/dicthtml-gt.noimg.zip?branch=master&all=false&pr=false), [source dictfile (gotdict.noimg.df)](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts/gotdict/gotdict.noimg.df?branch=master&all=false&pr=false)
   - Webster's 1913 Dictionary: [dictzip (dicthtml-wb.zip)](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts/webster1913/dicthtml-wb.zip?branch=master&all=false&pr=false), [source dictfile (webster1913.df)](https://ci.appveyor.com/api/projects/pgaskin/dictutil/artifacts/webster1913/webster1913.df?branch=master&all=false&pr=false)
-- **API documentation** for the Go libraries can be found on [pkg.go.dev](https://pkg.go.dev/github.com/geek1011/dictutil).
+- **API documentation** for the Go libraries can be found on [pkg.go.dev](https://pkg.go.dev/github.com/pgaskin/dictutil).
 
 ## Usage
 See the [documentation](https://pgaskin.net/dictutil/) for more detailed information and examples.
@@ -118,7 +118,7 @@ Options:
 
 If multiple dictfiles (*.df) are provided, they will be merged (duplicate entries are fine; they will be shown in sequential order). To read from stdin, use - as the filename.
 
-Note that the only usable image method is currently removing them or using base64-encoding (for firmware 4.20.14601+; older versions segfault in the in-book dictionary), as embedded dict:/// image URLs cause the webviews to appear blank (this is a nickel bug). See https://github.com/geek1011/dictutil/issues/1 for more details.
+Note that the only usable image method is currently removing them or using base64-encoding (for firmware 4.20.14601+; older versions segfault in the in-book dictionary), as embedded dict:/// image URLs cause the webviews to appear blank (this is a nickel bug). See https://github.com/pgaskin/dictutil/issues/1 for more details.
 
 See https://pgaskin.net/dictutil/dictgen for more information about the dictfile format.
 ```
@@ -155,7 +155,7 @@ Arguments:
 To convert the resulting dictfile into a dictzip, use dictgen.
 ```
 
-The original dictionary can be downloaded [here](http://www.gutenberg.org/ebooks/29765.txt.utf-8) or [here](https://github.com/geek1011/dictserver/raw/master/data/dictionary.txt).
+The original dictionary can be downloaded [here](http://www.gutenberg.org/ebooks/29765.txt.utf-8) or [here](https://github.com/pgaskin/dictserver/raw/master/data/dictionary.txt).
 
 ### dictzip-decompile
 

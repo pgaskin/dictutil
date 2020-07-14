@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"unicode"
 
-	"github.com/geek1011/dictutil/dictgen"
-	"github.com/geek1011/dictutil/kobodict"
+	"github.com/pgaskin/dictutil/dictgen"
+	"github.com/pgaskin/dictutil/kobodict"
 )
 
 // This isn't exposed as a separate package, as it's subject to change and

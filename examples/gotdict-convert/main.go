@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"github.com/geek1011/dictutil/dictgen"
-	"github.com/geek1011/dictutil/examples/gotdict-convert/gotdict"
+	"github.com/pgaskin/dictutil/dictgen"
+	"github.com/pgaskin/dictutil/examples/gotdict-convert/gotdict"
 )
 
 var version = "dev"

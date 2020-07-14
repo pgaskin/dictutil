@@ -2,7 +2,7 @@
 // dictionaries (v2).
 //
 // A marisa implementation must be provided by
-// github.com/geek1011/kobodict/marisa or a custom one if Writer or Reader is
+// github.com/pgaskin/kobodict/marisa or a custom one if Writer or Reader is
 // used.
 package kobodict
 

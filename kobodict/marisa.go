@@ -4,7 +4,7 @@ import "io"
 
 // Marisa is used by Reader and Writer for reading/writing Marisa tries. It is
 // automatically set on supported platforms if
-// github.com/geek1011/dictutil/kobodict/marisa is imported, but can be
+// github.com/pgaskin/dictutil/kobodict/marisa is imported, but can be
 // overridden manually.
 var Marisa interface {
 	MarisaReader

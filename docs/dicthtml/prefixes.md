@@ -52,7 +52,7 @@ Prefixes are calculated using the following steps. Note that "character" refers 
 | "` 未`" | "`未a`" | The two-byte "未" character isn't split up when taking the first 2 characters. |
 
 ## Testing
-You can test Kobo's prefix algorithm directly using [dictword-test](https://github.com/geek1011/kobo-mods/tree/master/dictword-test/).
+You can test Kobo's prefix algorithm directly using [dictword-test](https://github.com/pgaskin/kobo-mods/tree/master/dictword-test/).
 
 If you just want an easy way to generate prefixes for words, use the [dictutil prefix](../dictutil/prefix.html) command
 

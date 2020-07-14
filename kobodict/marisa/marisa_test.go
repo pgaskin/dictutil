@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/geek1011/dictutil/kobodict"
+	"github.com/pgaskin/dictutil/kobodict"
 )
 
 func TestMarisa(t *testing.T) {

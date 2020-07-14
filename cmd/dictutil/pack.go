@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/geek1011/dictutil/kobodict"
+	"github.com/pgaskin/dictutil/kobodict"
 	"github.com/spf13/pflag"
 )
 

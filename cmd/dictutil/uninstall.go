@@ -13,7 +13,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/geek1011/koboutils/v2/kobo"
+	"github.com/pgaskin/koboutils/v2/kobo"
 	"github.com/spf13/pflag"
 )
 
@@ -50,7 +50,7 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 		fmt.Fprintf(os.Stderr, "Error: firmware version too old (v2 dictionaries were only introduced in 4.7.10364).\n")
 		return 1
 	}
-	newMethod := kobo.VersionCompare(version, "4.20.14601") >= 0 // https://github.com/geek1011/kobopatch-patches/issues/49
+	newMethod := kobo.VersionCompare(version, "4.20.14601") >= 0 // https://github.com/pgaskin/kobopatch-patches/issues/49
 
 	var dictPath, dictLocale string
 	if dictLocale = strings.TrimLeft(fs.Args()[0], "-"); dictLocale == "en" {

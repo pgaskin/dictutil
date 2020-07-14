@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/pflag"
 
-	_ "github.com/geek1011/dictutil/kobodict/marisa"
+	_ "github.com/pgaskin/dictutil/kobodict/marisa"
 )
 
 var version = "dev"
