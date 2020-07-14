@@ -1,0 +1,5 @@
+[B][SIZE=5]dictutil v0.3.2[/SIZE][/B]
+
+This release updates my GitHub username in the module name. There isn't any reason to upgrade unless you are embedding dictutil in your application.
+
+See the [URL="https://github.com/pgaskin/dictutil/releases/v0.3.2"]release[/URL] on GitHub for more details.
