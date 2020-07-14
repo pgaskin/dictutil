@@ -1,6 +1,6 @@
 [SIZE=4][B]Changelogs[/B][/SIZE]
 
-v0.3.1:[SPOILER]**Patrick Gaskin (@geek1011)**
+v0.3.1:[SPOILER]**Patrick Gaskin (@pgaskin)**
 a4519b2 Checked built-in dictionaries against 4.21.15015
 4e955b7 examples/webster1913-convert: Fixed end license being included as a word
 5b406d0 docs: Updated dictionary sync patch for 4.22.15190

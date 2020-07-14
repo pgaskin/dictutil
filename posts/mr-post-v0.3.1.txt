@@ -2,4 +2,4 @@
 
 This release adds support for installing translation dictionaries with dictutil install (both with built-in and custom locales), updates the documentation, and improves the conversion for the Webster's 1913 dictionary.
 
-See the [URL="https://github.com/geek1011/dictutil/releases/v0.3.1"]release[/URL] on GitHub for more details.
+See the [URL="https://github.com/pgaskin/dictutil/releases/v0.3.1"]release[/URL] on GitHub for more details.
