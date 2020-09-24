@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	builtinUpdated = "4.23.15548"
+	builtinUpdated = "4.24.15672"
 	builtinDict    = map[string]string{
 		"de":        "Deutsch",
 		"de-en":     "Deutsch - English",
@@ -29,20 +29,24 @@ var (
 		"en-fr":     "English - Français",
 		"en-it":     "English - Italiano",
 		"en-ja":     "English - 日本語（ジーニアス）",
-		"en-ja-pgs": "English - 日本語（プログレッシブ）",
+		"en-ja-pgs": "English - 日本語（プログレッシブ）", // not v3
 		"en-nl":     "English - Nederlands",
 		"en-pt":     "English - Português",
 		"en-tr":     "English - Türkçe",
 		"es-en":     "Español - English",
 		"es":        "Español",
 		"fr-en":     "Français - English",
+		"fr-nl":     "Français - Nededlands", // v3 only
 		"fr":        "Français",
 		"it-en":     "Italiano - English",
 		"it":        "Italiano",
 		"jaxxdjs":   "日本語",
 		"nl":        "Nederlands",
+		"nl-en":     "Nededlands - English",  // v3 only
+		"nl-fr":     "Nededlands - Français", // v3 only
 		"pt-en":     "Português - English",
 		"pt":        "Português",
+		"sv":        "Svenska", // v3 only
 	}
 	builtinDictLocales map[string]struct{} // for use with translation dictionaries
 	builtinSorted      []string

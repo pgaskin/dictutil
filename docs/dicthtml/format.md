@@ -12,32 +12,38 @@ This document describes [version 2](./v1v2.html) of Kobo dictionaries. Japanese 
 
 Kobo dictzips are standard ZIP files. In general, they are named `dicthtml-LOCALE.zip` where **LOCALE** is the ISO-639-1 language code (although custom locale codes can be used if added to ExtraLocales in the Kobo config file). In addition, a dictzip may be named `dicthtml-LOCALE-LOCALE.zip` for translation dictionaries. Some official dictionaries have slightly different locale codes (e.g. `jaxxdjs`), but these are exceptions.
 
-As of firmware 4.23.15548, the official dictionaries are hosted on `https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v2/dicthtml*.zip`, and support the following locales:
+As of firmware 4.24.15672, the official dictionaries support the following locales:
 
-| Locale     | Language |
-| ---        | --- |
-| de         | Deutsch |
-| de-en      | Deutsch - English |
-| en-de      | English - Deutsch |
-| en         | English |
-| en-es      | English - Español |
-| en-fr      | English - Français |
-| en-it      | English - Italiano |
-| en-ja      | English - 日本語（ジーニアス） |
-| en-ja-pgs  | English - 日本語（プログレッシブ） |
-| en-nl      | English - Nederlands |
-| en-pt      | English - Português |
-| en-tr      | English - Türkçe |
-| es-en      | Español - English |
-| es         | Español |
-| fr-en      | Français - English |
-| fr         | Français |
-| it-en      | Italiano - English |
-| it         | Italiano |
-| jaxxdjs    | 日本語 |
-| nl         | Nederlands |
-| pt-en      | Português - English |
-| pt         | Português |
+| Locale     | Language                       | v2  | v3  |
+| ---        | ---                            | --- | --- |
+| de         | Deutsch                        | ✓ | ✓ |
+| de-en      | Deutsch - English              | ✓ | ✓ |
+| en-de      | English - Deutsch              | ✓ | ✓ |
+| en         | English                        | ✓ | ✓ |
+| en-es      | English - Español              | ✓ | ✓ |
+| en-fr      | English - Français             | ✓ | ✓ |
+| en-it      | English - Italiano             | ✓ | ✓ |
+| en-ja      | English - 日本語（ジーニアス）    | ✓ | ✓ |
+| en-ja-pgs  | English - 日本語（プログレッシブ） | ✓ |   |
+| en-nl      | English - Nederlands           | ✓ | ✓ |
+| en-pt      | English - Português            | ✓ | ✓ |
+| en-tr      | English - Türkçe               | ✓ | ✓ |
+| es-en      | Español - English              | ✓ | ✓ |
+| es         | Español                        | ✓ | ✓ |
+| fr-en      | Français - English             | ✓ | ✓ |
+| fr         | Français                       | ✓ | ✓ |
+| fr-nl      | French - Nederlands            |   | ✓ |
+| it-en      | Italiano - English             | ✓ | ✓ |
+| it         | Italiano                       | ✓ | ✓ |
+| jaxxdjs    | 日本語                          | ✓ | ✓ |
+| nl         | Nederlands                     | ✓ | ✓ |
+| nl-en      | Nederlands - English           |   | ✓ |
+| nl-fr      | Nederlands - Français          |   | ✓ |
+| pt-en      | Português - English            | ✓ | ✓ |
+| pt         | Português                      | ✓ | ✓ |
+| sv         | Svenska                        |   | ✓ |
+
+The v2 dictionaries (pre-4.24.15672) are downloaded from `https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v2/dicthtml*.zip`. The v3 dictionaries (4.24.15672+) are downloaded from `https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v3/dicthtml*.zip`.
 
 Note that due to licensing reasons, some locales, like `nl`, aren't directly searchable. In addition, the official dictionaries are encrypted (there won't be any details on this here).
 
