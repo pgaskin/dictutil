@@ -24,12 +24,13 @@ func init() {
 func uninstallMain(args []string, fs *pflag.FlagSet) int {
 	fs.SortFlags = false
 	root := fs.StringP("kobo", "k", "", "KOBOeReader path (default: automatically detected)")
-	builtin := fs.StringP("builtin", "b", "normal", "How to handle built-in locales [normal = uninstall the same way as the UI] [delete = completely delete the entry (doesn't have any effect on 4.20.14601+)] [restore = download the original dictionary from Kobo again]")
+	builtin := fs.StringP("builtin", "b", "normal", "How to handle built-in locales [normal = uninstall the same way as the UI] [delete = completely delete the entry (doesn't have any effect on 4.20.14601+)] [restore = download the original dictionary from Kobo again] (doesn't have any effect on 4.24.15672+)")
+	noCustom := fs.BoolP("no-custom", "B", false, "Uninstall built-in dictionaries instead of custom ones on 4.24.15672+")
 	help := fs.BoolP("help", "h", false, "Show this help text")
 	fs.Parse(args[1:])
 
 	if *help || fs.NArg() != 1 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [options] locale\n\nOptions:\n%s\n", args[0], fs.FlagUsages())
+		fmt.Fprintf(os.Stderr, "Usage: %s [options] locale|dicthtml-name.zip\n\nOptions:\n%s\n", args[0], fs.FlagUsages())
 		builtinHelp()
 		return 0
 	}
@@ -50,13 +51,23 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 		fmt.Fprintf(os.Stderr, "Error: firmware version too old (v2 dictionaries were only introduced in 4.7.10364).\n")
 		return 1
 	}
-	newMethod := kobo.VersionCompare(version, "4.20.14601") >= 0 // https://github.com/pgaskin/kobopatch-patches/issues/49
+
+	fw14601 := kobo.VersionCompare(version, "4.20.14601") >= 0 // https://github.com/pgaskin/kobopatch-patches/issues/49
+	fw15672 := kobo.VersionCompare(version, "4.24.15672") >= 0 // https://github.com/pgaskin/kobopatch-patches/issues/76
 
 	var dictPath, dictLocale string
 	if dictLocale = strings.TrimLeft(fs.Args()[0], "-"); dictLocale == "en" {
-		dictPath = filepath.Join(kobopath, ".kobo", "dict", "dicthtml.zip")
+		if fw15672 && !*noCustom {
+			dictPath = filepath.Join(kobopath, ".kobo", "custom-dict", "dicthtml.zip")
+		} else {
+			dictPath = filepath.Join(kobopath, ".kobo", "dict", "dicthtml.zip")
+		}
 	} else if regexp.MustCompile(`^[a-zA-Z0-9-]+$`).MatchString(dictLocale) {
-		dictPath = filepath.Join(kobopath, ".kobo", "dict", "dicthtml-"+dictLocale+".zip")
+		if fw15672 && !*noCustom {
+			dictPath = filepath.Join(kobopath, ".kobo", "custom-dict", "dicthtml-"+dictLocale+".zip")
+		} else {
+			dictPath = filepath.Join(kobopath, ".kobo", "dict", "dicthtml-"+dictLocale+".zip")
+		}
 	} else {
 		fmt.Fprintf(os.Stderr, "Error: invalid locale name.\n")
 		return 1
@@ -67,77 +78,84 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 	fmt.Printf("Uninstalling dictionary %#v (locale: %s).\n\n", dictPath, dictLocale)
 
 	fmt.Printf("Updating database.\n")
-	if err := func() error {
-		db, err := sql.Open("sqlite3", filepath.Join(kobopath, ".kobo", "KoboReader.sqlite"))
-		if err != nil {
-			return fmt.Errorf("open database: %w", err)
-		}
-		defer db.Close()
-
-		if exists, err := func() (bool, error) {
-			res, err := db.Query(`SELECT name FROM sqlite_master WHERE type="table" AND name="Dictionary";`)
+	if fw15672 {
+		// We won't bother to check the DB anymore since it's been a while since
+		// 4.20.14601, and everyone who would be confused by the dictionary
+		// table probaby would have already seen the message.
+		fmt.Printf("  No need to update dictionary table on 4.24.15672+, skipping.\n")
+	} else {
+		if err := func() error {
+			db, err := sql.Open("sqlite3", filepath.Join(kobopath, ".kobo", "KoboReader.sqlite"))
 			if err != nil {
-				return false, fmt.Errorf("check dictionary table: %w", err)
+				return fmt.Errorf("open database: %w", err)
 			}
-			defer res.Close()
+			defer db.Close()
 
-			if !res.Next() { // if no rows are returned, there was an error or the table didn't exist
-				if err := res.Err(); err != nil {
+			if exists, err := func() (bool, error) {
+				res, err := db.Query(`SELECT name FROM sqlite_master WHERE type="table" AND name="Dictionary";`)
+				if err != nil {
 					return false, fmt.Errorf("check dictionary table: %w", err)
 				}
-				return false, nil
+				defer res.Close()
+
+				if !res.Next() { // if no rows are returned, there was an error or the table didn't exist
+					if err := res.Err(); err != nil {
+						return false, fmt.Errorf("check dictionary table: %w", err)
+					}
+					return false, nil
+				}
+				return true, nil
+			}(); err != nil {
+				return fmt.Errorf("check dictionary table: %w", err)
+			} else if exists {
+				if fw14601 {
+					fmt.Printf("  Note: the dictionary table is unnecessary and inconsequential in firmware 4.20.14601+ and can be safely removed.\n")
+				}
+			} else {
+				if fw14601 {
+					// show a message to prevent confusion
+					fmt.Printf("  No need to update dictionary table on 4.20.14601+, skipping.\n")
+					return nil
+				} else {
+					return fmt.Errorf("check dictionary table: not found, and version < 4.20.14123")
+				}
 			}
-			return true, nil
+
+			if !dictBuiltin || *builtin == "delete" {
+				if res, err := db.Exec("DELETE FROM Dictionary WHERE Suffix = ?", dictSuffix); err != nil {
+					return fmt.Errorf("delete row from database: %w", err)
+				} else if ra, _ := res.RowsAffected(); ra == 0 {
+					fmt.Printf("  Row already removed from database (suffix=%s).\n", dictSuffix)
+				} else {
+					fmt.Printf("  Removed row from database (suffix=%s).\n", dictSuffix)
+				}
+			}
+
+			if dictBuiltin && *builtin == "normal" {
+				if _, err := db.Exec("UPDATE Dictionary SET Installed = ? WHERE Suffix = ?", "false", dictSuffix); err != nil {
+					return fmt.Errorf("update row in database: %w", err)
+				} else {
+					fmt.Printf("  Set IsInstalled to false in database for built-in dictionary (suffix=%s).\n", dictSuffix)
+				}
+			}
+
+			if dictBuiltin && *builtin == "restore" {
+				if _, err := db.Exec("UPDATE Dictionary SET Installed = ? WHERE Suffix = ?", "true", dictSuffix); err != nil {
+					return fmt.Errorf("update row in database: %w", err)
+				} else {
+					fmt.Printf("  Set IsInstalled to true in database for built-in dictionary (suffix=%s).\n", dictSuffix)
+				}
+			}
+
+			if err := db.Close(); err != nil {
+				return fmt.Errorf("close database: %w", err)
+			}
+
+			return nil
 		}(); err != nil {
-			return fmt.Errorf("check dictionary table: %w", err)
-		} else if exists {
-			if newMethod {
-				fmt.Printf("  Note: the dictionary table is unnecessary and inconsequential in firmware 4.20.14601+ and can be safely removed.\n")
-			}
-		} else {
-			if newMethod {
-				// show a message to prevent confusion
-				fmt.Printf("  No need to update dictionary table on 4.20.14601, skipping.\n")
-				return nil
-			} else {
-				return fmt.Errorf("check dictionary table: not found, and version < 4.20.14123")
-			}
+			fmt.Fprintf(os.Stderr, "Error: update database: %v.\n", err)
+			return 1
 		}
-
-		if !dictBuiltin || *builtin == "delete" {
-			if res, err := db.Exec("DELETE FROM Dictionary WHERE Suffix = ?", dictSuffix); err != nil {
-				return fmt.Errorf("delete row from database: %w", err)
-			} else if ra, _ := res.RowsAffected(); ra == 0 {
-				fmt.Printf("  Row already removed from database (suffix=%s).\n", dictSuffix)
-			} else {
-				fmt.Printf("  Removed row from database (suffix=%s).\n", dictSuffix)
-			}
-		}
-
-		if dictBuiltin && *builtin == "normal" {
-			if _, err := db.Exec("UPDATE Dictionary SET Installed = ? WHERE Suffix = ?", "false", dictSuffix); err != nil {
-				return fmt.Errorf("update row in database: %w", err)
-			} else {
-				fmt.Printf("  Set IsInstalled to false in database for built-in dictionary (suffix=%s).\n", dictSuffix)
-			}
-		}
-
-		if dictBuiltin && *builtin == "restore" {
-			if _, err := db.Exec("UPDATE Dictionary SET Installed = ? WHERE Suffix = ?", "true", dictSuffix); err != nil {
-				return fmt.Errorf("update row in database: %w", err)
-			} else {
-				fmt.Printf("  Set IsInstalled to true in database for built-in dictionary (suffix=%s).\n", dictSuffix)
-			}
-		}
-
-		if err := db.Close(); err != nil {
-			return fmt.Errorf("close database: %w", err)
-		}
-
-		return nil
-	}(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: update database: %v.\n", err)
-		return 1
 	}
 
 	fmt.Printf("Updating ExtraLocales.\n")
@@ -175,7 +193,7 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 			}
 
 			if !filtered {
-				fmt.Printf("  Locale %#v already removed from ExtraLocales.\n", dictLocale)
+				fmt.Printf("  Locale %#v already removed from ExtraLocales (or wasn't there to begin with).\n", dictLocale)
 				return nil
 			}
 
@@ -236,7 +254,13 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 		//  - It might not even belong in dictutil at all because the URLs may
 		//    change (and it isn't that hard to manually download a dictionary
 		//    to install it with dictutil install)
-		url := "https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v2/" + filepath.Base(dictPath)
+
+		url := "https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v2/"
+		if fw15672 {
+			url = "https://kbdownload1-a.akamaihd.net/ereader/dictionaries/v3/"
+		}
+		url += filepath.Base(dictPath)
+
 		fmt.Printf("Restoring original dictionary from %#v.\n", url)
 
 		if err := func() error {

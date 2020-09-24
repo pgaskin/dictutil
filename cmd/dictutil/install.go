@@ -105,14 +105,16 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 	root := fs.StringP("kobo", "k", "", "KOBOeReader path (default: automatically detected)")
 	locale := fs.StringP("locale", "l", "", "Locale name to use (format: ALPHANUMERIC{2}[-ALPHANUMERIC{2}]) (default: detected from filename if in format dicthtml-**.zip)")
 	name := fs.StringP("name", "n", "", "Custom additional label for dictionary (ignored when replacing built-in dictionaries) (doesn't have any effect on 4.20.14601+)")
-	builtin := fs.StringP("builtin", "b", "replace", "How to handle built-in locales [replace = replace and prevent from syncing] [ignore = replace and leave syncing as-is]")
+	builtin := fs.StringP("builtin", "b", "replace", "How to handle built-in locales [replace = replace and prevent from syncing] [ignore = replace and leave syncing as-is] (doesn't have any effect on 4.24.15672+)")
+	noCustom := fs.BoolP("no-custom", "B", false, "Whether to force installation to .kobo/dict instead of .kobo/custom-dict (4.24.15672+ only)")
+	useExtraLocales := fs.BoolP("use-extra-locales", "", false, "Whether to use ExtraLocales on 4.24.15672+ if not a built-in dictionary (this is not required anymore since 4.24.15672) (4.24.15672+ only)")
 	help := fs.BoolP("help", "h", false, "Show this help text")
 	fs.Parse(args[1:])
 
 	if *help || fs.NArg() != 1 {
 		fmt.Fprintf(os.Stderr, "Usage: %s [options] dictzip\n\nOptions:\n%s\n", args[0], fs.FlagUsages())
 		builtinHelp()
-		fmt.Fprintf(os.Stderr, "\nNote:\n  If you are not replacing a built-in dictionary, the 'Enable searches on extra\n  dictionaries patch' must be installed, or you will not be able to select\n  your custom dictionary.\n")
+		fmt.Fprintf(os.Stderr, "\nNote:\n  If you are not replacing a built-in dictionary and are using a firmware\n  version before 4.24.15672, the 'Enable searches on extra dictionaries patch'\n  must be installed or you will not be able to select your custom dictionary.\n")
 		return 0
 	}
 
@@ -168,14 +170,16 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 		fmt.Fprintf(os.Stderr, "Error: firmware version too old (v2 dictionaries were only introduced in 4.7.10364).\n")
 		return 1
 	}
-	newMethod := kobo.VersionCompare(version, "4.20.14601") >= 0 // https://github.com/pgaskin/kobopatch-patches/issues/49
+
+	fw14601 := kobo.VersionCompare(version, "4.20.14601") >= 0 // https://github.com/pgaskin/kobopatch-patches/issues/49
+	fw15672 := kobo.VersionCompare(version, "4.24.15672") >= 0 // https://github.com/pgaskin/kobopatch-patches/issues/76
 
 	dictName, dictBuiltin := builtinDict[dictLocale]
 	if !dictBuiltin {
 		dictName = "Extra:_" + dictLocale
 		if len(*name) != 0 {
 			dictName += " " + *name
-			if newMethod {
+			if fw14601 {
 				fmt.Fprintf(os.Stderr, "Warning: Custom dictionary label doesn't have any effect on firmware 4.20.14601+.\n")
 			}
 		}
@@ -190,6 +194,10 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 	fmt.Printf("Copying dictzip.\n")
 	if err := func() error {
 		dz := filepath.Join(kobopath, ".kobo", "dict", dictFilename)
+
+		if fw15672 && !*noCustom {
+			dz = filepath.Join(kobopath, ".kobo", "custom-dict", dictFilename)
+		}
 
 		_ = os.Chmod(dz, 0644) // in case it was readonly before, ignore the error (it's essentially checked when opening the file if needed)
 
@@ -208,7 +216,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 		}
 
 		// note: we can't use dfo.Chmod, as it's not supported on Windows
-		if newMethod && *builtin != "ignore" {
+		if !fw15672 && fw14601 && *builtin != "ignore" {
 			fmt.Printf("  Note: firmware version >= 4.20.14601, so using new method for preventing nickel from overwriting dictionaries.\n")
 			// we're doing this for all sideloaded dicts, not just built-in ones
 			// for better forwards-compatibility if Kobo decides to add another
@@ -232,6 +240,8 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 	fmt.Printf("Updating ExtraLocales.\n")
 	if dictBuiltin {
 		fmt.Printf("  No need; replacing built-in dictionary.\n")
+	} else if !*useExtraLocales && fw15672 {
+		fmt.Printf("  No need; not necessary anymore on 4.24.15672+ and --use-extra-locales was not specified (the dictionary will be displayed as the 'dicthtml-*.zip' filename instead of 'Extra: *').\n")
 	} else {
 		if err := func() error {
 			cfg := filepath.Join(kobopath, ".kobo", "Kobo", "Kobo eReader.conf")
@@ -323,6 +333,10 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 
 			fmt.Printf("  Wrote updated config file.\n")
 
+			if fw15672 {
+				fmt.Printf("  You may need to reboot for the dictionary to work on 4.24.15672+.\n")
+			}
+
 			return nil
 		}(); err != nil {
 			fmt.Fprintf(os.Stderr, "Error: update ExtraLocales: %v.\n", err)
@@ -331,89 +345,97 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 	}
 
 	fmt.Printf("Updating database.\n")
-	if err := func() error {
-		db, err := sql.Open("sqlite3", filepath.Join(kobopath, ".kobo", "KoboReader.sqlite"))
-		if err != nil {
-			return fmt.Errorf("open database: %w", err)
-		}
-		defer db.Close()
-
-		// On 4.20.14601, Kobo removed the need for the dictionary table,
-		// and now hardcodes the list of built-in dictionaries. The names of
-		// sideloaded dictionaries are now dynamically generated from the
-		// "Extra: " string in libnickel (the patch for removing the
-		// whitespace in that is still necessary, though). The thing is,
-		// instead of removing the dictionary table with a migration, they
-		// just neutered the existing migrations which added them. That may
-		// seem like a bad idea at first, but it allows them to remove the
-		// dictionary db manipulation cruft from libnickel instead of
-		// keeping it around with two cases just so the migrations would
-		// continue to work (just to be removed again later).
-		//
-		// Thus, if it's using the new method, it doesn't matter if the
-		// table doesn't exist.
-		//
-		// See https://github.com/pgaskin/kobopatch-patches/issues/49.
-		if exists, err := func() (bool, error) {
-			res, err := db.Query(`SELECT name FROM sqlite_master WHERE type="table" AND name="Dictionary";`)
+	if fw15672 {
+		// We won't bother to check the DB anymore since it's been a while since
+		// 4.20.14601, and everyone who would have done something would have
+		// already seen the message about the possibility of deleting the
+		// unnecessary table.
+		fmt.Printf("  No need to update dictionary table on 4.24.15672+, skipping.\n")
+	} else {
+		if err := func() error {
+			db, err := sql.Open("sqlite3", filepath.Join(kobopath, ".kobo", "KoboReader.sqlite"))
 			if err != nil {
-				return false, fmt.Errorf("check dictionary table: %w", err)
+				return fmt.Errorf("open database: %w", err)
 			}
-			defer res.Close()
+			defer db.Close()
 
-			if !res.Next() { // if no rows are returned, there was an error or the table didn't exist
-				if err := res.Err(); err != nil {
+			// On 4.20.14601, Kobo removed the need for the dictionary table,
+			// and now hardcodes the list of built-in dictionaries. The names of
+			// sideloaded dictionaries are now dynamically generated from the
+			// "Extra: " string in libnickel (the patch for removing the
+			// whitespace in that is still necessary, though). The thing is,
+			// instead of removing the dictionary table with a migration, they
+			// just neutered the existing migrations which added them. That may
+			// seem like a bad idea at first, but it allows them to remove the
+			// dictionary db manipulation cruft from libnickel instead of
+			// keeping it around with two cases just so the migrations would
+			// continue to work (just to be removed again later).
+			//
+			// Thus, if it's using the new method, it doesn't matter if the
+			// table doesn't exist.
+			//
+			// See https://github.com/pgaskin/kobopatch-patches/issues/49.
+			if exists, err := func() (bool, error) {
+				res, err := db.Query(`SELECT name FROM sqlite_master WHERE type="table" AND name="Dictionary";`)
+				if err != nil {
 					return false, fmt.Errorf("check dictionary table: %w", err)
 				}
-				return false, nil
-			}
-			return true, nil
-		}(); err != nil {
-			return fmt.Errorf("check dictionary table: %w", err)
-		} else if exists {
-			if newMethod {
-				fmt.Printf("  Note: the dictionary table is unnecessary and inconsequential in firmware 4.20.14601+ and can be safely removed.\n")
-			}
-		} else {
-			if newMethod {
-				// show a message to prevent confusion
-				fmt.Printf("  No need to update dictionary table on 4.20.14601, skipping.\n")
-				return nil
+				defer res.Close()
+
+				if !res.Next() { // if no rows are returned, there was an error or the table didn't exist
+					if err := res.Err(); err != nil {
+						return false, fmt.Errorf("check dictionary table: %w", err)
+					}
+					return false, nil
+				}
+				return true, nil
+			}(); err != nil {
+				return fmt.Errorf("check dictionary table: %w", err)
+			} else if exists {
+				if fw14601 {
+					fmt.Printf("  Note: the dictionary table is unnecessary and inconsequential in firmware 4.20.14601+ and can be safely removed.\n")
+				}
 			} else {
-				return fmt.Errorf("check dictionary table: not found, and version < 4.20.14123")
+				if fw14601 {
+					// show a message to prevent confusion
+					fmt.Printf("  No need to update dictionary table on 4.20.14601+, skipping.\n")
+					return nil
+				} else {
+					return fmt.Errorf("check dictionary table: not found, and version < 4.20.14123")
+				}
 			}
-		}
 
-		rSuffix := "-" + dictLocale
-		rName := dictName
-		rInstalled := "true"
-		rSize := dictSize
-		// Kobo won't sync dictionaries with IsSynced false, but note that
-		// this will cause the settings to always say a # of dictionaries
-		// have pending downloads (it's just a cosmetic issue)
-		rIsSynced := "false"
-		if dictBuiltin && *builtin == "ignore" {
-			rIsSynced = "true"
-		}
-
-		if _, err := db.Exec("INSERT OR REPLACE INTO Dictionary (Suffix, Name, Installed, Size, IsSynced) VALUES (?, ?, ?, ?, ?)", rSuffix, rName, rInstalled, rSize, rIsSynced); err != nil {
-			return fmt.Errorf("update database: %w", err)
-		} else {
-			if newMethod {
-				// show a warning to prevent confusion
-				fmt.Printf("  Note: The dictionary table is unnecessary and inconsequential in firmware 4.20.14601+ and can be safely removed.\n")
+			rSuffix := "-" + dictLocale
+			rName := dictName
+			rInstalled := "true"
+			rSize := dictSize
+			// Kobo won't sync dictionaries with IsSynced false, but note that
+			// this will cause the settings to always say a # of dictionaries
+			// have pending downloads (it's just a cosmetic issue)
+			rIsSynced := "false"
+			if dictBuiltin && *builtin == "ignore" {
+				rIsSynced = "true"
 			}
-			fmt.Printf("  Added row to database: Suffix=%#v Name=%#v Installed=%#v Size=%#v IsSynced=%#v.\n", rSuffix, rName, rInstalled, rSize, rIsSynced)
-		}
 
-		if err := db.Close(); err != nil {
-			return fmt.Errorf("close database: %w", err)
-		}
+			if _, err := db.Exec("INSERT OR REPLACE INTO Dictionary (Suffix, Name, Installed, Size, IsSynced) VALUES (?, ?, ?, ?, ?)", rSuffix, rName, rInstalled, rSize, rIsSynced); err != nil {
+				return fmt.Errorf("update database: %w", err)
+			} else {
+				if fw14601 {
+					// show a warning to prevent confusion
+					fmt.Printf("  Note: The dictionary table is unnecessary and inconsequential in firmware 4.20.14601+ and can be safely removed.\n")
+				}
+				fmt.Printf("  Added row to database: Suffix=%#v Name=%#v Installed=%#v Size=%#v IsSynced=%#v.\n", rSuffix, rName, rInstalled, rSize, rIsSynced)
+			}
 
-		return nil
-	}(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: update database: %v.\n", err)
-		return 1
+			if err := db.Close(); err != nil {
+				return fmt.Errorf("close database: %w", err)
+			}
+
+			return nil
+		}(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: update database: %v.\n", err)
+			return 1
+		}
 	}
 
 	fmt.Printf("\nSuccessfully installed dictzip %#v to Kobo %#v.\n", fs.Args()[0], kobopath)
