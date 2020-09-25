@@ -118,7 +118,6 @@ func main() {
 			dfe.PostRawHTML += `<span class="end"><style>.end,.end+*{display: none !important;}</style></span>`
 		}
 	}
-	fmt.Println(dictgen.DictFile{tdf[0]}.WriteKoboHTML(os.Stdout))
 
 	fmt.Fprintf(os.Stderr, "Opening output.\n")
 	var f io.WriteCloser
