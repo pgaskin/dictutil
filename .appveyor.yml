@@ -4,12 +4,7 @@ version: "{build}"
 environment:
   GO111MODULE: on
 
-cache:
-- go1.14.deb
-
 install:
-- "wget --no-clobber -O go1.14.deb https://deb.geek1011.net/pool/main/g/go/go_1.14-godeb1_amd64.deb || true"
-- sudo dpkg -i go1.14.deb
 - go mod download
 
 build_script:
