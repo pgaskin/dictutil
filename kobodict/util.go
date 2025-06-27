@@ -131,12 +131,9 @@ func wordPrefix(w string) string {
 	// DictionaryParser::isCyrillic(w[0])
 	// skip if != false
 	switch {
-	case (len(r) != 0 && unicode.Is(unicode.Cyrillic, r[0])):
-		// inlined QChar::isLetter(w[1])
-		// skip if false
-		if len(r) >= 2 && r[1] == '/' {
-			return ""
-		}
+	case (len(r) >= 2 && unicode.Is(unicode.Cyrillic, r[0]) && r[1] == '/'):
+		// Cyrillic followed by a slash
+		return ""
 	case !(len(r) != 0 && unicode.Is(unicode.Cyrillic, r[0])):
 		// inlined QChar::isLetter(w[0]), QChar::isLetter(w[1]), unnecessary length check
 		// skip if both true
