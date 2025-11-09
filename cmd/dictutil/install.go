@@ -12,7 +12,7 @@ import (
 	"sort"
 	"strings"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/ncruces/go-sqlite3"
 
 	"github.com/pgaskin/koboutils/v2/kobo"
 	"github.com/spf13/pflag"
