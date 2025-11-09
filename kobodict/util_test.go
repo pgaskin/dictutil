@@ -117,6 +117,10 @@ var tcs = []struct{ w, p string }{
 	{" xx!", "xa"},
 	{" xxx!", "xa"},
 
+	// Cyrillic with non-letter, see GitHub #22
+	{"б/а", ""},
+	{"б-р", "б-"},
+
 	// synthetic
 	{"x\x00y", "xa"},
 	{"\x00xy", "11"},
