@@ -8,6 +8,8 @@ import (
 	"io"
 	"io/ioutil"
 	"strings"
+
+	"github.com/pgaskin/go-marisa"
 )
 
 // Reader provides access to the contents of a dictzip file.
@@ -60,10 +62,16 @@ func NewReader(r io.ReaderAt, size int64) (*Reader, error) {
 		if zf.Name == "words" {
 			if fr, err := zf.Open(); err != nil {
 				return nil, fmt.Errorf("open words index: %w", err)
-			} else if Marisa == nil {
-				return nil, fmt.Errorf("no marisa bindings found")
-			} else if kr.Word, err = Marisa.ReadAll(fr); err != nil {
+			} else if trie, err := marisa.Load(fr); err != nil {
 				return nil, fmt.Errorf("read words index: %w", err)
+			} else {
+				kr.Word = make([]string, 0, trie.Size())
+				for _, word := range trie.DumpSeq()(&err) {
+					kr.Word = append(kr.Word, word)
+				}
+				if err != nil {
+					return nil, fmt.Errorf("read words index: %w", err)
+				}
 			}
 			found = true
 			break

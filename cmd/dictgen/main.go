@@ -15,8 +15,6 @@ import (
 	"github.com/pgaskin/dictutil/dictgen"
 	"github.com/pgaskin/dictutil/kobodict"
 	"github.com/spf13/pflag"
-
-	_ "github.com/pgaskin/dictutil/kobodict/marisa"
 )
 
 var version = "dev"

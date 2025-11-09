@@ -6,8 +6,11 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
+	"maps"
 	"sort"
 	"strings"
+
+	"github.com/pgaskin/go-marisa"
 )
 
 // Writer creates dictzips. It does not do any validation; it only does what it
@@ -144,6 +147,11 @@ func (w *Writer) Close() error {
 		w.last = nil
 	}
 
+	var trie marisa.Trie
+	if err := trie.Build(maps.Keys(w.words), marisa.Config{}); err != nil {
+		return fmt.Errorf("build index: %w", err)
+	}
+
 	var words []string
 	for word := range w.words {
 		words = append(words, word)
@@ -152,9 +160,7 @@ func (w *Writer) Close() error {
 
 	if fw, err := w.z.Create("words"); err != nil {
 		return fmt.Errorf("create index zip entry: %w", err)
-	} else if Marisa == nil {
-		return fmt.Errorf("no marisa bindings found")
-	} else if err := Marisa.WriteAll(fw, words); err != nil {
+	} else if _, err := trie.WriteTo(fw); err != nil {
 		return fmt.Errorf("write index: %w", err)
 	}
 
