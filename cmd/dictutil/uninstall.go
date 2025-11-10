@@ -92,7 +92,7 @@ func uninstallMain(args []string, fs *pflag.FlagSet) int {
 			defer db.Close()
 
 			if exists, err := func() (bool, error) {
-				res, err := db.Query(`SELECT name FROM sqlite_master WHERE type="table" AND name="Dictionary";`)
+				res, err := db.Query(`SELECT name FROM sqlite_master WHERE type='table' AND name='Dictionary';`)
 				if err != nil {
 					return false, fmt.Errorf("check dictionary table: %w", err)
 				}

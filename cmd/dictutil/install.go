@@ -376,7 +376,7 @@ func installMain(args []string, fs *pflag.FlagSet) int {
 			//
 			// See https://github.com/pgaskin/kobopatch-patches/issues/49.
 			if exists, err := func() (bool, error) {
-				res, err := db.Query(`SELECT name FROM sqlite_master WHERE type="table" AND name="Dictionary";`)
+				res, err := db.Query(`SELECT name FROM sqlite_master WHERE type='table' AND name='Dictionary';`)
 				if err != nil {
 					return false, fmt.Errorf("check dictionary table: %w", err)
 				}
